@@ -1,0 +1,362 @@
+---
+title: Troubleshooting
+navigation_icon: circle-check
+---
+
+This guide explains how to debug apps on Unikraft Cloud so you can fix issues or collect enough information for the support team to help you.
+It follows platform best practices and supports efficient troubleshooting.
+If you need help, reach out to Unikraft Cloud Support.
+
+
+## Debugging a problematic app
+
+An app may crash, freeze, or misbehave.
+To inspect it, try either:
+
+```bash title=""
+kraft cloud inst logs <instance_name>
+# or
+kraft cloud inst get <instance_name>
+```
+
+This may, in certain times, provide insufficient information.
+
+
+## Large filesystem build process gets stuck
+
+When the filesystem is larger than about `800 MB`, the build may get stuck.
+A limitation in BuildKit, the current filesystem build component, causes the issue.
+
+Work around this by reducing the filesystem image below `800 MB`.
+Work is in progress to integrate a component without this limitation.
+
+
+## Gateway error when accessing a service
+
+When you query a Unikraft Cloud service via its public address, such as:
+
+```bash title=""
+curl https://frosty-bobo-zeev783o.fra0.kraft.host
+```
+
+you may get a `Bad Gateway` response:
+
+```html title=""
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>openresty</center>
+</body>
+</html>
+```
+
+This happens when you specify the wrong internal app port (for example, the app exposes port 8080 but you use `443:80` instead of `443:8080`).
+
+Another error response you may get is:
+
+```html title=""
+<!doctype html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Service not found</title>
+</head>
+<body>
+There is no service on this URL.
+</body>
+</html>
+```
+
+This happens when you connect with an HTTPS client (port `443`) and the app doesn't expose that port.
+Database services such as [MongoDB](/docs/guides/mongodb) or [MariaDB](/docs/guides/mariadb) use different ports (for example, `27017`, `3306`).
+
+Use the correct exposed port.
+You may need a TLS tunnel (see below).
+
+
+## Connect to a non-TLS app
+
+Unikraft Cloud uses TLS to expose services to the outside world.
+Some apps (such as [MongoDB](/docs/guides/mongodb) or [MariaDB](/docs/guides/mariadb)) don't use TLS.
+Create a TLS tunnel via `kraft cloud tunnel`, which opens a local endpoint (`localhost` / `127.0.0.1`) and forwards traffic over TLS.
+See the [MariaDB guide](/docs/guides/mariadb) for an example.
+
+
+## "No such file or directory" when building or deploying an image
+
+When building / deploying an image, you may get the error below:
+
+```ansi title=""
+ E  unpacking the image: opening layer: open <path_to_home_directory>/.local/share/kraftkit/runtime/oci/digests/sha256/3d30a7ba2a819aec2e73c5df07c24264d66891e926b395b9ef0f66f151db4b49: no such file or directory
+```
+
+This often means the local `kraft` cache is in an inconsistent state.
+
+To solve this, remove the local `kraft` cache and local packages:
+
+```bash title=""
+kraft pkg rm --all
+rm -fr ~/.local/share/kraftkit
+```
+
+## Launched app not visible in list
+
+The most common reason is that you deployed an app to one metro but listed a different one.
+Set the metro for a session with an env variable:
+
+```bash title=""
+export UKC_METRO=<metro_name>
+```
+
+or for each indvidual command via the `--metro` flag, for example:
+
+```bash title=""
+kraft cloud instance list --metro <metro_name>
+```
+
+## How can you cache the app's filesystem for faster builds
+
+When using a `Dockerfile` for the app filesystem, Unikraft Cloud passes the commands to [BuildKit](https://docs.docker.com/build/buildkit/).
+
+By default, each `kraft cloud deploy` command starts an ephemeral BuildKit container.
+The platform then removes the filesystem app data, so each deploy starts from zero.
+
+To prevent this, follow the instructions [here](https://unikraft.org/guides/building-dockerfile-images-with-buildkit):
+
+```bash title=""
+docker run -d --name buildkitd --privileged moby/buildkit:latest
+export KRAFTKIT_BUILDKIT_HOST=docker-container://buildkitd
+```
+
+The approach above caches builds in the BuildKit container filesystem.
+Another approach saves the cache in a local host directory:
+
+```bash title=""
+docker run -d --name buildkitd --privileged -v $HOME/.buildkit-cache:/var/lib/buildkit moby/buildkit:latest
+export KRAFTKIT_BUILDKIT_HOST=docker-container://buildkitd
+```
+
+Here `$HOME/.buildkit-cache` is a local path on your machine where BuildKit stores cache data.
+
+## What's a `Kraftfile`
+
+A `Kraftfile` is used by the `kraft` CLI tool to understand how to build and deploy your instance.
+Typically you can use the default `Kraftfile` found in each Unikraft Cloud example.
+Below is a sample `Kraftfile` with a brief explanation:
+
+```yaml title="Kraftfile"
+spec: v0.6
+
+runtime: python:3.12
+
+rootfs: ./Dockerfile
+
+cmd: ["/usr/bin/python3", "/src/server.py"]
+
+labels:
+  cloud.unikraft.v1.instances/scale_to_zero.policy: "on"
+  cloud.unikraft.v1.instances/scale_to_zero.stateful: "true"
+  cloud.unikraft.v1.instances/scale_to_zero.cooldown_time_ms: 1000
+```
+
+The `runtime` specifies one of the Unikraft Cloud runtimes (unikernels) built to run different languages and apps.
+Here it specifies a Python runtime.
+
+The `rootfs` parameter tells `kraft` to use a `Dockerfile` in the same directory to build the root filesystem, and the `cmd` parameter which command to run when deployed (although you can also specify this in the `Dockerfile`).
+
+Finally the `labels` specify runtime options.
+In the example above, the configuration enables stateful scale-to-zero and the platform waits 1 second with no requests before putting the instance to sleep.
+
+## Debugging the build, packaging and pushing steps
+
+The `kraft cloud deploy` command performs steps on your local device before actually deploying your app to Unikraft Cloud:
+
+1. Downloads the runtime image (defined in the `Kraftfile`) from the Unikraft Cloud registry.
+1. Builds the app filesystem using the `Dockerfile` via [BuildKit](https://unikraft.org/guides/building-dockerfile-images-with-buildkit).
+1. Packages the app filesystem and the runtime in an Open Container Initiative (OCI) image.
+1. Pushes the OCI image to the to the Unikraft Cloud registry under your username's namespace.
+
+If any of these steps fail, enable `kraft` debugging with the `--log-level` and `--log-type` flags:
+
+```bash title=""
+kraft cloud deploy --log-level debug --log-type basic [...]
+```
+
+You should then see debug output for the 4 steps above.
+
+```ansi title=""
+ D  using metro=fra0
+ D  using token=***
+ D  cannot run because: no image specified deployer=image-name
+ D  using deployer=kraftfile-runtime
+ D  querying catalog local=true name=index.unikraft.io/razvan.unikraft.io/http-go-strace2:latest remote=false
+ D  found 0/66 matching packages in oci catalog
+ D  using packager=kraftfile-runtime
+ D  querying catalog arch=x86_64 local=true name=index.unikraft.io/official/base plat=kraftcloud remote=false version=latest
+ D  found 0/66 matching packages in oci catalog
+ D  querying catalog arch=x86_64 local=true name=index.unikraft.io/official/base plat=kraftcloud remote=true version=latest
+ i  found index.unikraft.io/official/base:latest-dbg (kraftcloud/x86_64) (6bd4542, 11c196e, 2.0 MB)
+ D  found 1/67 matching packages in oci catalog
+ D  saving manifest digest=sha256:6bd45428b8ecf667954cb8f829ee3f8f6f6f23fa0a0e7dc1aa27fcae39826f89 ref=index.unikraft.io/official/base:latest
+ i  building rootfs
+ D  using buildkit addr=docker-container://buildkitd version=v0.12.3
+```
+
+This output should give enough context to diagnose the issue.
+If not, report it with the output on the [Discord server](/discord).
+
+
+## Debugging running apps
+
+The most direct way to debug an app is to use the app console output, which may include kernel output.
+To see it, after starting the Unikraft Cloud instance (via `kraft cloud deploy` or `kraft cloud inst create`), use:
+
+```bash title=""
+kraft cloud inst logs <instance_name>
+```
+
+In case of a crash, you'll see a full crash output:
+
+```text title=""
+Powered by Unikraft Telesto (0.16.2~9c264902)
+[    0.066949] CRIT: [libukvmem] Cannot handle write page fault at 0x1000bb8024 (ec: 0x2): -12
+[    0.067680] CRIT: [libkvmplat] page fault handler returned error: -12
+[    0.068227] CRIT: [libkvmplat] Unhandled page fault vaddr=0x1000bb8024, error code=0x2
+[    0.068910] CRIT: [appelfloader] Unikraft crash - Telesto (0.16.2~9c264902)
+[    0.069503] CRIT: [appelfloader] Thread "python3"@0x4017e4020
+[    0.069993] CRIT: [appelfloader] RIP: 0008:000000100041fdcb
+[    0.070468] CRIT: [appelfloader] RSP: 0010:000000100017f760 EFLAGS: 00010206 ORIG_RAX: 0000000000000002
+[    0.071269] CRIT: [appelfloader] RAX: 0000001000bb8000 RBX: 00000004018012f0 RCX:0000000000000007
+[    0.072040] CRIT: [appelfloader] RDX: 0000000000000000 RSI: aaaaaaaaaaaaaaab RDI:00000010007bccc0
+[    0.072793] CRIT: [appelfloader] RBP: 000000000000001a R08: 0000000000000001 R09:00000010004e2b99
+[    0.073558] CRIT: [appelfloader] R10: bb9e744ce6503a27 R11: 0000000401861290 R12:00000010007bccc0
+[    0.074312] CRIT: [appelfloader] R13: 00000010007bbd48 R14: 000000100017f890 R15:0000000000000038
+[    0.075076] CRIT: [appelfloader] Stack:
+[    0.075406] CRIT: [appelfloader]  100017f760  00 00 00 00 00 00 00 00  |........|
+[    0.076043] CRIT: [appelfloader]  100017f768  a1 01 00 00 00 00 00 00  |........|
+[    0.076680] CRIT: [appelfloader]  100017f770  48 bd 7b 00 10 00 00 00  |H.{.....|
+[    0.077324] CRIT: [appelfloader]  100017f778  e0 92 7a 00 10 00 00 00  |..z.....|
+[    0.077959] CRIT: [appelfloader]  100017f780  48 bd 7b 00 10 00 00 00  |H.{.....|
+[    0.078596] CRIT: [appelfloader]  100017f788  90 f8 17 00 10 00 00 00  |........|
+[    0.079233] CRIT: [appelfloader]  100017f790  38 00 00 00 00 00 00 00  |8.......|
+[    0.079870] CRIT: [appelfloader]  100017f798  72 fc 41 00 10 00 00 00  |r.A.....|
+[    0.080504] CRIT: [appelfloader] Call Trace:
+[    0.080871] CRIT: [appelfloader]  [0x000000100041fdcb]
+[    0.081311] CRIT: [appelfloader]  Bad frame pointer
+
+It looks like the instance exited fatally.  To see more details about why, run:
+
+        kraft cloud instance get http-python312-hb7ij
+```
+
+Use the recommended command for detailed output.
+This yields output like:
+
+```ansi title=""
+             uuid: 988c3054-09c0-48ef-ac02-877f8352d93f
+             name: http-python312-hb7ij
+             fqdn:
+     private fqdn: http-python312-hb7ij.internal
+       private ip: 172.16.3.1
+            state: stopped
+          created: 2024-04-18T18:24:12Z
+          started: 2024-04-18T18:24:12Z
+          stopped: 2024-04-18T18:24:13Z
+      start count: 1
+    restart count: 0
+ restart attempts:
+     next restart:
+   restart policy: never
+      stop origin: initiated by kernel (----k)
+      stop reason: Out of memory. Try increasing instance's memory (see -M flag). (i127 PGFAULT ENOMEM)
+    app exit code:
+            image: http-python312@sha256:8b92ed612f8450de94355a0a5b8917a710fd6c902c4a7be80ffb3989b5a99023
+           memory: 128 MiB
+             args: /usr/bin/python3 /src/server.py
+              env:
+          volumes:
+          service:
+        boot time: 96.03 ms
+          up time: 166ms
+```
+
+This output shows the stop reason.
+Here the cause is insufficient memory.
+
+If the stop reason lacks detail, enable debug tracing for the instance.
+
+To do that, in your app of choice in the [examples repository](https://github.com/unikraft-cloud/examples/), or in an app directory you created, update the `runtime` entry in the `Kraftfile` to reference the debug build of the image you use by adding `-dbg` to the name of the runtime.
+For example, if you want to run the [http-go1.21 example](https://github.com/unikraft-cloud/examples/tree/main/http-go1.21) with debug output, update its `Kraftfile` as follows:
+
+```yaml title="Kraftfile"
+spec: v0.6
+
+runtime: base:latest-dbg
+
+rootfs: ./Dockerfile
+
+cmd: ["/server"]
+```
+
+That is, change `base:latest` to `base:latest-dbg`.
+Now Unikraft Cloud is ready to re-deploy:
+
+```bash title=""
+kraft cloud deploy --name http-go-strace -p 443:8080 .
+```
+
+You can now inspect the logs as before and view system call tracing:
+
+```bash title=""
+kraft cloud inst logs http-go-strace
+```
+
+```ansi title=""
+[    0.000000] Info: [libkvmplat] Unikraft Telesto (0.16.2~5b96d531)
+[    0.000000] Info: [libkvmplat] Architecture: x86_64
+[    0.000000] Info: [libkvmplat] Boot loader : unknown-lxboot
+[    0.000000] Info: [libkvmplat] Command line: unikraft netdev.ip="172.16.3.4/24:172.16.3.254:172.16.3.254::http-go-strace:internal" vfs.fstab="initrd0:/:extract::ramfs=2:" virtio_mmio.device=4K@0xd0001000:5 -- /server
+[...]
+epoll_ctl(0x4, 0x1, ...) = 0x0
+epoll_ctl(0x4, 0x1, ...) = 0x0
+getsockname(fd:3, <out>sockaddr:{sa_family=AF_0xffffffff901f0002, ...}, <ref:0xc000045a9c>10385019274329587824) = OK
+accept4(0x3, 0xc000045ad0, ...) = Resource temporarily unavailable (-11)
+nanosleep(0x100052f120, 0x0, ...) = 0x0
+clock_gettime(CLOCK_MONOTONIC, <out>timespec:{tv_sec=0, tv_nsec=187025020}) = OK
+clock_gettime(CLOCK_MONOTONIC, <out>timespec:{tv_sec=0, tv_nsec=187640540}) = OK
+set_robust_list(0x10005839a0, 0x18, ...) = Function not implemented (-38)
+rt_sigprocmask(0x2, 0x1000583fb0, ...) = 0x0
+mmap(va:0x1050000000, 67108864, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|0x4000, fd:-1, 0) = va:0x1050000000
+mprotect(va:0x1050000000, 135168, PROT_READ|PROT_WRITE) = OK
+sigaltstack(0x0, 0x1000583158, ...) = 0x0
+rt_sigprocmask(0x2, 0x1000583168, ...) = 0x0
+gettid() = pid:6
+epoll_pwait(0x4, 0x10001803c8, ...) = 0x0
+clock_gettime(CLOCK_MONOTONIC, <out>timespec:{tv_sec=0, tv_nsec=191570733}) = OK
+epoll_pwait(0x4, 0x100052eb28, ...) = 0x0
+nanosleep(0x100052f120, 0x0, ...) = 0x0
+clock_gettime(CLOCK_MONOTONIC, <out>timespec:{tv_sec=0, tv_nsec=192861008}) = OK
+clock_gettime(CLOCK_MONOTONIC, <out>timespec:{tv_sec=0, tv_nsec=193478343}) = OK
+```
+
+This mechanism works for all apps and runtimes.
+Contact Unikraft Cloud on the [Discord server](/discord) and include this output if you need more detail.
+
+:::tip
+
+While you debug an issue you can mitigate crashes by setting a restart policy.
+For example, use `kraft cloud deploy --restart on-failure` to have the platform restart the app if it crashes.
+Find more info on [restart policies here](/docs/api/v1/instances/#restart-policy).
+
+:::
+
+
+## Learn more
+
+* The `kraft cloud` [CLI reference](/docs/cli/)
+* Unikraft Cloud's [REST API reference](/docs/api/v1)
+* Many more guides [here](/docs/guides)
