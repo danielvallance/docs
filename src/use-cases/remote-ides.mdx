@@ -1,0 +1,103 @@
+---
+title: Remote IDEs
+navigation_icon: square-chevron-right
+---
+
+Remote Integrated Development Environments (IDEs) have become essential for cloud-native development, collaboration, and education.
+But traditional setups often suffer from **slow startup times, high idle costs, and complex resource management**.
+With **Unikraft Cloud**, remote IDEs gain the advantages of **unikernels**, making them **fast, secure, and truly serverless**.
+
+## Why run remote IDEs on Unikraft Cloud
+
+### ⚡ Instant developer environments
+
+Unikraft unikernels boot in milliseconds, enabling **instant spin-up of full-featured IDEs** on demand.
+Developers start coding immediately without waiting for heavy VMs or containers to initialise.
+
+
+### 🔒 Secure, isolated workspaces
+
+Each IDE runs as a **dedicated unikernel instance**, ensuring strong workload isolation and reducing the risk of cross-tenant data leaks.
+Sensitive code stays protected in a **minimal, hardened environment**.
+
+
+### 💰 Cost-effective scale-to-zero
+
+Idle IDE sessions automatically scale down to zero, eliminating wasteful spending on unused developer environments.
+Pay only for active usage, whether it’s a classroom full of students or a globally distributed engineering team.
+
+
+### 🌍 Seamless collaboration
+
+Unikraft Cloud integrates with serverless backends, databases, and API gateways—so IDEs can connect effortlessly to the developer’s toolchain.
+Perfect for **pair programming, CI/CD pipelines, or education platforms**.
+
+### 🚀 High performance with low overhead
+
+Unikernels run closer to bare metal than containers, providing developers with
+**snappy, low-latency environments** that feel as fast as local coding—without
+sacrificing portability or scalability.
+
+
+## Getting started
+
+This guide will show you how to run [Visual Studio Code](https://code.visualstudio.com/) as a serverless app on Unikraft Cloud.
+The [Code Server](https://code.visualstudio.com/docs/remote/vscode-server) allows you to run Visual Studio Code on a remote server and access it through a web browser or a local VS Code client.
+When not in use, the instance will [scale-to-zero](/docs/features/scale-to-zero) and resume in milliseconds depending on usage.
+
+
+To run it, follow these steps:
+
+1. Install the [`kraft` CLI tool](/install) and a container runtime engine (for example, Docker).
+
+1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/code-server/` directory:
+
+```bash
+git clone https://github.com/kraftcloud/examples
+cd examples/code-server/
+```
+
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra0` (Frankfurt, 🇩🇪):
+
+```bash
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra0
+```
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+```bash
+kraft cloud volume create \
+    --name code-workspace \
+    --size 1Gi
+
+kraft cloud deploy \
+    --scale-to-zero on \
+    --scale-to-zero-stateful \
+    --scale-to-zero-cooldown 4s \
+    -M 2048 \
+    --name code-server \
+    -p 443:8443 \
+    -v code-workspace:/workspace \
+    -e PGUID=0 \
+    -e PGID=0 \
+    -e PASSWORD=unikraft \
+    -e SUDO_PASSWORD=unikraft \
+    -e DEFAULT_WORKSPACE="/workspace" \
+    .
+```
+
+Now, you can access the Code Server in the browser, at the provided address.
+
+### Volume
+
+This deployment creates a volume for data persistence: `code-workspace`.
+Upon deleting the instance (for example, `kraft cloud instance rm code-server`), this volume will persist, allowing you to create another instance without losing data.
+To remove the volume, you can use:
+
+```bash
+kraft cloud volume rm code-workspace
+```

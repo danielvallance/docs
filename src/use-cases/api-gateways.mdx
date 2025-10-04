@@ -1,0 +1,107 @@
+---
+title: API Gateways
+navigation_icon: door-open
+---
+
+API Gateways are the critical entry point to your services.
+They manage authentication, routing, rate-limiting, observability, and security at the edge of your infrastructure.
+In modern architectures—especially microservices and serverless platforms—the API Gateway is the first line of defence and performance optimisation.
+
+With **Unikraft Cloud**, API Gateways gain advantage from a unikernel-based, scale-to-zero infrastructure that delivers the performance of specialised systems with the flexibility of serverless deployment.
+
+## Why run an API gateway on Unikraft Cloud
+
+### ⚡ Ultra-low latency
+
+Unikernels remove the overhead of general-purpose operating systems by compiling only the required OS components alongside the API Gateway app.
+This results in:
+
+* Sub-millisecond cold-start times (perfect for bursty API traffic).
+* Minimal memory footprint, allowing more requests per node.
+* Consistent, predictable response latency at scale.
+
+### 🛡️ Secure by design
+
+The open internet exposes API Gateways, making them often the most attacked component.
+Unikraft Cloud isolates each instance at the virtual machine level while keeping footprint minimal:
+
+* Immutable, single-purpose unikernel images reduce attack surface.
+* Strong VM-level isolation without container overhead.
+* Built-in memory safety and image signing to ensure trust at deployment.
+
+### 💸 Scale-to-zero economics
+
+Traffic to APIs often fluctuates—peaking during business hours, quiet overnight, and spiking during product launches.
+Traditional gateway clusters waste resources when idle.
+With Unikraft Cloud:
+
+* API Gateways use scale-to-zero when not in use, reducing idle costs to **zero**.
+* Instant cold-starts ensure gateways are ready in microseconds when traffic resumes.
+* Fine-grained billing: pay only for requests and runtime, not for idle VMs.
+
+### 🔄 Serverless-ready
+
+API Gateways are a natural control point for serverless workloads.
+Running them on Unikraft Cloud enables:
+
+* On-demand routing to serverless functions.
+* Dynamic policy enforcement per request without worrying about idle nodes.
+* Lightweight integration with edge compute for global distribution.
+
+
+## Getting started
+
+API Gateways on Unikraft Cloud combine VM-grade security with serverless agility.
+Ultra-fast, cost-efficient, and scale-to-zero—so your API edge is always ready, never idle.
+
+This guide shows you how to use [Tyk](https://tyk.io/), a universal API management tool for Representational State Transfer (REST), GraphQL, gRPC and async APIs.
+It offers open standards, scalability, governance, and AI-ready features for API development, security, and performance.
+
+To run it, follow these steps:
+
+1. Install the [`kraft` CLI tool](/install) and a container runtime engine (for example, Docker).
+
+1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/tyk/` directory:
+
+```bash title=""
+git clone https://github.com/kraftcloud/examples
+cd examples/tyk/
+```
+
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra0` (Frankfurt, 🇩🇪):
+
+```bash title=""
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra0
+```
+
+Then invoke:
+
+```bash title=""
+kraft cloud compose up
+```
+
+After deploying, you can query the service using the provided address.
+Use the `/hello` path after the address, such as below:
+
+```bash title=""
+curl https://<NAME>.<METRO>.kraft.host/hello | jq
+```
+```json title=""
+{
+  "status": "pass",
+  "version": "v5.3.0-dev",
+  "description": "Tyk GW",
+  "details": {
+    "redis": {
+      "status": "pass",
+      "componentType": "datastore",
+      "time": "2024-04-30T10:37:29Z"
+    }
+  }
+}
+```
+
