@@ -1,0 +1,4 @@
+# Vale packages
+.vale/styles/*
+!.vale/styles/Unikraft/*
+!.vale/styles/config/vocabularies/Unikraft/accept.txt

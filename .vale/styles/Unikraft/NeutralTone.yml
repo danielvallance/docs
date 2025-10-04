@@ -1,0 +1,18 @@
+# Flags condescending intensifiers that imply obviousness/ease.
+extends: existence
+message: "Use a neutral tone; avoid '%s'. Prefer precise, factual wording."
+level: error
+scope: sentence
+ignorecase: true
+nonword: false
+tokens:
+- obviously
+- clearly
+- of course
+- evidently
+- needless to say
+- simply
+- '\bjust(?!-)'
+- trivial(ly)?
+exceptions:
+- "just-in-time"

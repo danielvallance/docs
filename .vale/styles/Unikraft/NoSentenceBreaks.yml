@@ -1,0 +1,7 @@
+extends: existence
+message: "Only use one sentence per line."
+level: error
+scope: paragraph
+nonword: true
+tokens:
+  - '[.!?](?: |$)[A-Z]'

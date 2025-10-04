@@ -1,0 +1,41 @@
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: error
+ignorecase: false
+action:
+  name: replace
+swap:
+  UKC: Unikraft Cloud
+  unikraft cloud: Unikraft Cloud
+  Unikraft cloud: Unikraft Cloud
+  unikraft: Unikraft
+  s20: scale-to-zero
+  scale-to-0: scale-to-zero
+  scale to zero: scale-to-zero
+  scale to 0: scale-to-zero
+  scaled to 0: scaled to zero
+  auto scale: autoscale
+  docker file: Dockerfile
+  caddy file: Caddyfile
+  kraft file: Kraftfile
+  CLI: command-line tool
+  application: app
+  HTTPs: HTTPS
+  k8s: Kubernetes
+  K8s: Kubernetes
+  open-source: open source
+  check box: checkbox
+  uuid: UUID
+  fqdn: FQDN
+  ip: IP address
+  millis: milliseconds
+  nginx: NGINX
+  Nginx: NGINX
+  "unikraft.(io|org|cloud)": "unikraft.com"
+  sub-command: subcommand
+  sub command: subcommand
+  sub-commands: subcommands
+  sub commands: subcommands
+  JIT: just-in-time
+  Postgre: Postgres
+  PostgreSQL: Postgres
