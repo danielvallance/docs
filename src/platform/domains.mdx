@@ -1,0 +1,103 @@
+---
+title: Domains
+navigation_icon: globe
+---
+
+This guide shows how to deploy an app and link it to a domain you own (for example, `mydomain.com`).
+
+:::note
+Unikraft Cloud can take a few seconds before issuing the certificate.
+If there are misconfigurations or DNS changes that your external DNS provider hasn't propagated yet, this can take much longer.
+You can check the validation status of the certificate with `kraft cloud cert get` (more on this command below).
+The controller retries at these intervals: [1,5,10,30] minutes, then [1,6,12,24] hours, then it fails.
+:::
+
+The setup is complete.
+Test the deployment with `curl`.
+
+
+## Configuring your external DNS provider
+
+Before Unikraft Cloud can launch an app, you need to ensure that you have configured things correctly with your DNS provider:
+
+ALIAS (apex alias) and ANAME (authoritative alias) are DNS record types some providers support.
+
+* For a subdomain you own such as docs.mydomain.com, a CNAME is enough.
+  In this case, you can just add a `CNAME` record with your sub-domain (`docs`) as the host and point the record to Unikraft Cloud's metro (for example, `fra0.kraft.host`).
+
+* For an apex domain (for example, mydomain.com), add one of: ALIAS, ANAME, or a flattened CNAME record.
+  Depending on your provider, leave the host field empty or enter @.
+  Point the record to the metro (for example, `fra0.kraft.host`).
+  If the provider doesn't support these record types, add an A record pointing to the metro IP address.
+
+:::tip
+You can find information about the Unikraft Cloud metros available to you, as well as their IP addresses, via the cmd `kraft cloud metro ls`.
+:::
+
+:::note
+You can have many domains for the same service.
+Unikraft Cloud also supports wildcard domains.
+See the [certificates API](/docs/api/v1/certificates)) for details.
+:::
+
+## Launching your app
+
+Assume the goal is to use NGINX as an app:
+
+```bash title=""
+git clone https://github.com/unikraft-cloud/examples
+cd examples/nginx
+```
+
+Log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra0` (Frankfurt, 🇩🇪).
+Set the following:
+
+```bash title=""
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra0
+```
+
+With this in place, use the `kraft cloud deploy` command to create an instance of the web server and to link it to a custom name.
+Unikraft Cloud does this through the `-d` flag:
+
+```bash title=""
+kraft cloud deploy -p 443:8080 -d mydomain.com .
+```
+
+The resulting output of the `deploy` command should be like:
+
+```ansi title=""
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: nginx-67zbu
+ [90m├[0m[90m──────────[0m [90muuid[0m: 269019de-f7dc-4077-9568-012ad594ca87
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://mydomain.com
+ [90m├[0m[90m─────────[0m [90mimage[0m: nginx@sha256:6abb4f2ba4501068a84885d7b8b127adaf3d83c25fd43e79d5a142f6d8703c93
+ [90m├[0m[90m─────[0m [90mboot time[0m: 11.13ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: wispy-moon-dpg6d54i
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: nginx-67zbu.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.5
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
+```
+
+When you issue the `-d` flag, Unikraft Cloud requests a
+new certificate from the public certificate authority.
+
+:::note
+Issuing the certificate can take a few seconds.
+If there are misconfigurations or pending DNS changes, it can take longer.
+Check the validation status with `kraft cloud cert get` (more on this command below).
+The Unikraft Cloud controller retries at these intervals: [1,5,10,30] minutes, then [1,6,12,24] hours, then it fails.
+:::
+
+The setup is complete.
+Test the deployment with `curl`:
+
+```bash
+curl https://mydomain.com
+```

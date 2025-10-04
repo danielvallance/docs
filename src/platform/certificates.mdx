@@ -1,0 +1,67 @@
+---
+title: Certificates
+navigation_icon: shield-check
+---
+
+To use a custom certificate instead of the automatically generated one from the default public certificate authority, run the `create` command:
+
+```ansi title=""
+kraft cloud cert create \
+  --cn *.mydomain.com \
+  --name mydomain-cert \
+  --pkey /path/to/private.key \
+  --chain /path/to/chain.pem
+```
+
+The provided common name (CN) must match the one for which Unikraft Cloud issued the certificate.
+It can also be a wildcard domain.
+
+Use the `kraft cloud cert` command to view and manage certificates.
+For example, to list certificates, run:
+
+```bash title=""
+kraft cloud cert ls
+```
+
+You should see output like:
+
+```text title=""
+NAME                STATE  COMMON NAME     CREATED AT
+mydomain.com-sa4x9  valid  mydomain.com    5 days ago
+mydomain-cert       valid  *.mydomain.com  2 days ago
+```
+
+Retrieve full information about a certificate with:
+
+```bash title=""
+kraft cloud cert get mydomain.com-sa4x9
+```
+
+You should see output like:
+
+```ansi title=""
+        uuid: b8160db9-7cba-4b80-9107-c4fe27529bf5
+        name: mydomain.com-sa4x9
+        state: [92mvalid[0m
+  common name: mydomain.com
+      subject: CN=mydomain.com
+      issuer: CN=R3,O=Let's Encrypt,C=US
+serial number: 0455BBAEC140EACBA5FEEAE6D817E73EF266
+  not before: 2024-03-07T18:06:11Z
+    not after: 2024-06-05T18:06:10Z
+  created at: 2024-03-07T19:06:04Z
+    services: wispy-moon-dpg6d54i
+```
+
+To remove a certificate, first remove any instances from the relevant service and then remove the service.
+Remove the certificate with:
+
+```bash title=""
+kraft cloud cert rm mydomain.com-sa4x9
+```
+
+## Learn more
+
+* The `kraft cloud` [CLI reference](/docs/cli/)
+* Unikraft Cloud's [REST API reference](/docs/api/v1)
+* Many more guides [here](/docs/guides)

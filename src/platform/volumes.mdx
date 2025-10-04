@@ -1,0 +1,230 @@
+---
+title: Volumes
+navigation_icon: cylinder
+---
+
+A volume is a persistent storage device that keeps data across restarts.
+
+In this guide you will create a volume, attach it to a web server instance, and write to it.
+Then you will detach it, remove that instance, attach it to a new instance, and confirm the data persisted.
+Finally, the guide covers how to share volumes across instances (read-only at present).
+
+:::note
+
+You can also share a volume across many instances as a read-only mount (read-write sharing is in progress).
+
+:::
+
+## Setting up the volume
+
+To start, create the volume via `kraft cloud volume`, with size in MBs and name `my-volume`:
+
+```bash title=""
+kraft cloud volume create --size 100 --name my-volume
+```
+
+The command should return the volume's UUID, and you can check the operation
+worked via:
+
+```bash title=""
+kraft cloud volume list
+```
+
+which should output something like:
+
+```ansi  title=""
+NAME       CREATED AT      SIZE     ATTACHED TO  STATE      PERSISTENT
+my-volume  15 seconds ago  100 MiB               available  true
+```
+
+The `ATTACHED TO` field is empty because the platform hasn't attached it to any instance yet.
+
+## Populating the volume with local data (Optional)
+
+If you'd like to populate your empty volume with local data, you can use the `kraft cloud volume import` command.
+For example, assuming the volume's name is `my-volume` and that the data you want to import are in your `my-data` directory, you would run:
+
+```bash title=""
+kraft cloud volume import --volume my-volume --source my-data
+```
+
+You should see output like:
+
+```ansi title=""
+[+] Packaging source as a CPIO archive... done!                             [0.0s]
+[+] Spawning temporary volume data import instance... done!                 [0.1s]
+[+] Importing data (256 B) ••••••••••••••••••••••••••••••••••••••••••• 100% [0.1s]
+
+[●] Import complete
+ │
+ ├─── volume: my-volume
+ ├─ imported: 256 B
+ └─ capacity: 100 MiB
+```
+
+## Setting up the web server
+
+Use a Flask web server to write to the volume:
+
+```bash title=""
+git clone https://github.com/unikraft-cloud/examples
+cd examples/http-python3.12-flask3.0
+```
+
+Replace the contents of `server.py`with:
+
+```py title="server.py"
+from flask import Flask, send_from_directory
+from datetime import datetime
+import os
+
+app = Flask(__name__)
+
+file_path = "/mnt/log.txt"
+
+def initialize_file():
+  if not os.path.exists(file_path):
+      with open(file_path, 'w') as log_file:
+          log_file.write("Log file created.\n")
+
+@app.route('/')
+def write_to_file():
+  initialize_file()
+
+  current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+  # Write to file
+  with open(file_path, 'a') as log_file:
+      log_file.write(f"{current_datetime}\n")
+
+  # Read contents of the file
+  with open(file_path, 'r') as log_file:
+      file_contents = log_file.read()
+
+  return file_contents
+
+if __name__ == '__main__':
+  app.run(host='0.0.0.0', port=8080)
+```
+
+On every request, this simple server will write a timestamp to a file on the
+mounted persistent volume and print out the current contents of the file.
+
+Start the Flask web server, create a
+[service](/docs/platform/services) for it via the `-p` flag, and mount the `my-volume` volume at `/mnt`:
+
+```bash title=""
+kraft cloud deploy -M 512 -p 443:8080 --volume my-volume:/mnt .
+```
+
+You should see output like:
+
+```ansi title=""
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: http-python312-flask30-2h608
+ [90m├[0m[90m──────────[0m [90muuid[0m: dcaf899e-6831-4641-86a6-e2b39e9f0d98
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://holy-bonobo-px345skl.fra0.kraft.host
+ [90m├[0m[90m─────────[0m [90mimage[0m: http-python312-flask30@sha256:3ca3e773d5bc76e1231347e5345e19d0293ba05e502e387956ecba39a4c9372c
+ [90m├[0m[90m─────[0m [90mboot time[0m: 219.61 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: holy-bonobo-px345skl
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: http-python312-flask30-2h608.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.4
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/python3 /app/server.py
+```
+
+To confirm that the platform attached the volume, run:
+
+```bash title=""
+kraft cloud volume get my-volume
+```
+
+You should see output like:
+
+```text title=""
+NAME       CREATED AT      SIZE     ATTACHED TO                   STATE    PERSISTENT
+my-volume  34 minutes ago  100 MiB  http-python312-flask30-2h608  mounted  true
+```
+
+## Testing it
+
+The Flask server writes the time and date to `/mnt/log.txt` for each request.
+Test it by running `curl` several times.
+Example output:
+
+```bash title=""
+$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+Log file created.
+2024-02-24 08:15:32
+
+$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+Log file created.
+2024-02-24 08:15:32
+2024-02-24 08:15:34
+
+$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+Log file created.
+2024-02-24 08:15:32
+2024-02-24 08:15:34
+2024-02-24 08:15:35
+```
+
+To test data persistence, first stop the instance, detach the volume, and remove the instance:
+
+```bash title=""
+kraft cloud instance stop http-python312-flask30-2h608
+kraft cloud volumes detach my-volume
+kraft cloud instance rm http-python312-flask30-2h608
+```
+
+Now start another instance and, like before, mount the same volume:
+
+```bash title=""
+kraft cloud deploy -M 512 -p 443:8080 --volume my-volume:/mnt .
+```
+
+This should output something like:
+
+```ansi title=""
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: http-python312-flask30-0s9c7
+ [90m├[0m[90m──────────[0m [90muuid[0m: 59d06415-84b8-4bf5-85c7-997960382011
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://winter-field-v6m37jgs.fra0.kraft.host
+ [90m├[0m[90m─────────[0m [90mimage[0m: http-python312-flask30@sha256:9f441af88df8968b368e7b658737c804fc8be87c864fc2d695e6adcda9a56acf
+ [90m├[0m[90m─────[0m [90mboot time[0m: 202.11 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: winter-field-v6m37jgs
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: http-python312-flask30-0s9c7.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.7
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/python3 /app/server.py
+```
+
+Run one final `curl` to this new address.
+You should see the previous contents plus a new entry at the bottom:
+
+```bash title=""
+$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+Log file created.
+2024-02-24 08:15:32
+2024-02-24 08:15:34
+2024-02-24 08:15:35
+2024-02-24 08:20:58
+```
+
+## Cleaning up
+
+To clean up, first detach the volume from all instances and then remove it:
+
+```bash title=""
+kraft cloud volume detach <volume-name>
+kraft cloud volume remove <volume-name>
+```
+
+## Learn more
+
+* The `kraft cloud` [CLI reference](/docs/cli/), in particular the [deploy](/docs/cli/deploy) and [volumes](/docs/cli/volume) subcommands
+* Unikraft Cloud's [REST API reference](/docs/api/v1), in particular the section on [volumes](/docs/api/v1/volumes)

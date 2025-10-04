@@ -1,0 +1,97 @@
+---
+title: Services
+navigation_icon: group
+---
+
+On creation, Unikraft Cloud assigns each instance a private IP address and private FQDN for internal connectivity.
+It connects them to the Internet through a *service*: create a service and attach instances to it.
+
+:::note
+
+A service defines how to reach a group of instances from the outside world.
+It maps an external FQDN port to an internal port common to all instances.
+The platform [load balances](/docs/guides/features/lb/) incoming connections across instances.
+Avoid placing apps that expose different ports in the same service.
+:::
+
+
+If you use the `kraft cloud deploy` command, part of the output lists a service, for example:
+
+```ansi title=""
+ [90m├[0m[90m─[0m [90mservice[0m: frosty-sky-vz8kwsm
+ ```
+
+Because `kraft cloud deploy` is a single command to deploy a service, it automatically creates a service and attaches the new instance to it.
+The rest of this guide shows how to create a service first, then use `kraft cloud deploy` to create and attach instances to it.
+
+First, create a new service with the `kraft cloud service` command:
+
+```bash title=""
+kraft cloud service create --name my-service 443:8080/http+tls
+```
+
+This creates a new service named `my-service` listening on port 443.
+Unikraft Cloud terminates TLS and sends HTTP to port 8080.
+This example assumes that the app opens port 8080.
+
+Now use `kraft cloud deploy` with the `--service` flag to attach the instance to the `my-service` service.
+For example, from the [Go web server guide](/docs/guides/go) (see all guides [here](/docs/guides/)):
+
+```bash title=""
+git clone https://github.com/unikraft-cloud/examples
+cd examples/http-go1.21/
+kraft cloud deploy --service my-service .
+```
+
+This creates a new Go web server instance and immediately attaches it to the `my-service` service.
+The output shows the instance address and other details:
+
+```ansi title=""
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: http-go121-fkt1x
+ [90m├[0m[90m──────────[0m [90muuid[0m: 858da707-1851-46cb-9667-05b951471222
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://my-service-rrtckyyi.fra0.kraft.host
+ [90m├[0m[90m─────────[0m [90mimage[0m: http-go121@sha256:4d536236d226781874c3ad930dbc936c4f407aa3483a1f8e961ba63a7a72c78d
+ [90m├[0m[90m─────[0m [90mboot time[0m: 17.14 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 128 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: my-service
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: http-go121-fkt1x.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.6
+ [90m└[0m[90m──────────[0m [90margs[0m: /server
+```
+
+In this case, the instance name is `http-go121-fkt1x`.
+The address is `https://my-service-rrtckyyi.fra0.kraft.host`.
+These values differ for each run.
+
+Use `curl` to query the Go web server:
+
+```bash title=""
+curl https://my-service-rrtckyyi.fra0.kraft.host
+```
+
+```text title=""
+hello, world!
+```
+
+:::tip
+
+If you specify a port with the `-p` option when using `kraft cloud deploy`, the command creates a service automatically.
+In that case the platform deletes the service when the instance ends, and you can't define the service name.
+
+:::
+
+That's it.
+
+In the end, if you want to remove a service, use:
+
+```bash title=""
+kraft cloud service remove my-service
+```
+
+## Learn more
+
+* The `kraft cloud` [CLI reference](/docs/cli/), in particular the services subcommand
+* Unikraft Cloud's [REST API reference](/docs/api/v1), in particular the section on services
