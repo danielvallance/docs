@@ -46,6 +46,7 @@ UTC
 WASI
 YAML
 Unikraft Cloud
+POSIX
 
 # ==============================================================================
 # NAMES OF THINGS
