@@ -22,16 +22,29 @@
 ALIAS
 ANAME
 CNAME
+COPY
 DCO
+EOF
+FROM
 HIPPA
 IATA
 ISO
+LLM
 LSB
 OCI
+OLAP
 OOM
+PORT
+REST
+RUN
+SNI
 SOC
 SRE
+TOML
 USA
+UTC
+WASI
+YAML
 
 # ==============================================================================
 # NAMES OF THINGS
