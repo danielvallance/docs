@@ -47,6 +47,8 @@ WASI
 YAML
 Unikraft Cloud
 POSIX
+PV
+PVC
 
 # ==============================================================================
 # NAMES OF THINGS
