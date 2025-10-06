@@ -1,0 +1,209 @@
+---
+title: FAQ
+navigation_icon: circle-question-mark
+---
+
+#### What's Unikraft?
+
+Unikraft is the company behind Unikraft Cloud, a next-generation compute platform that leverages unikernel technology.
+It delivers millisecond cold boots and scale-to-zero autoscaling so you never pay for idle resources.
+
+
+#### Can you do cloud-prem, or on-prem deployments?
+
+Yes.
+Please [get in touch](https://unikraft.com/contact) to discuss dedicated hosting.
+
+
+#### What's a unikernel?
+
+A unikernel is a specialized virtual machine.
+Each target app gets a distro and kernel containing only the code it needs.
+Everything builds at compile time, before deployment.
+If an app doesn't need a line of code to run, it doesn't get deployed.
+This packages as any other virtual machine, with strong, hardware-level isolation.
+Unikraft packages unikernels as OCI images.
+
+
+#### Aren't virtual machines heavyweight?
+
+They need not be!
+Unikraft unikernels are proof you can have strong, hardware-level isolation.
+This isolation is the workhorse of public cloud deployments.
+It combines with the lightweight characteristics of containers or processes, such as millisecond cold boot times.
+
+
+#### How much smaller are Unikraft images?
+
+The answer depends on the app, but with Unikraft most (up to ~90%) of an image's size is due to the app itself.
+For example, an NGINX Unikraft image is under 2MBs in size.
+
+
+#### Why can't you just use a container?
+
+When you deploy a container on the public cloud, it gets deployed on top of a virtual machine to have strong, hardware-level isolation.
+The container thus adds yet another layer of overhead between your app and the hardware.
+At Unikraft, `Dockerfile`s create the filesystem at build time.
+Then, a lean unikernel provides the best efficiency at deploy time.
+
+
+#### Do Unikraft unikernels come with security benefits?
+
+Yes, especially stemming from the fact that they have a minimal Trusted Computing Base (TCB), and everything is off by default (services, ports, etc).
+
+
+#### Can a service and a database run with Unikraft Cloud?
+
+Definitely.
+Every instance on Unikraft Cloud has a private IP and DNS name.
+You can plug instances together.
+Follow this [guide](/docs/guides/features/idns/) for instructions.
+
+
+#### With an access token and an app, what should you do?
+
+You'll need a Dockerfile and Kraftfile.
+See any of the apps/langs guides (here)[/docs/guides/] to see examples.
+
+
+#### What's `kraft`?
+
+`kraft` is Unikraft Cloud's [open source CLI tool written in Go](https://github.com/unikraft/kraftkit).
+You can control Unikraft Cloud with it as well as build unikernels and try things out locally.
+
+
+#### How does Unikraft differ from Linux, and what about debugging?
+
+Unikraft implements the Linux API so apps and languages run unmodified.
+A common concern is that unikernels are hard to debug.
+Unikraft includes a full GDB server, tracing, and other facilities, so debugging feels like Linux (see [here](https://unikraft.org/docs/internals/debugging)).
+For observability, Unikraft ships a Prometheus library so a unikernel can export metrics to Grafana dashboards.
+
+
+#### How's millisecond scale-to-zero achieved?
+
+Magic 🪄
+Kidding, it's the combination of using Unikraft unikernels to run workloads and a custom node ingress controller.
+This controller can be reactive in milliseconds and scale to thousands of instances.
+Other optimizations to the underlying host also help.
+When traffic dies, your app will stop, consume no resources, and get charged $0.
+When the next request from your user comes, the instance will wake in milliseconds and reply.
+Your user will be none the wiser.
+
+
+#### Do you have cold boots on Unikraft Cloud?
+
+By definition, meaning starting an instance up from zero, yes, cold boots exist.
+People often mean a *slow* cold boot: seconds or minutes.
+On Unikraft Cloud, cold boot times happen in milliseconds.
+
+
+#### How do you achieve millisecond autoscale?
+
+By leveraging fast cold boot times, and by coupling that with a reactive and scalable controller and proxy infrastructure.
+Autoscale like you've never seen it before.
+
+
+#### Millisecond snapshots?
+
+Yep.
+Instances on Unikraft Cloud are lean.
+Your app determines size, so snapshots are quick.
+Stateful scale-to-zero in milliseconds anyone?
+
+
+#### What do you need to get started?
+
+[Sign up](https://console.unikraft.cloud/signup) to get an access token.
+If you're interested in an enterprise solution please [write to us](/contact).
+
+
+#### What about usability?
+
+Unikraft puts great care and effort into providing seamless integration with major tools and frameworks like Docker, Kubernetes, Terraform, and Prometheus/Grafana.
+
+
+#### Why Unikraft and what's wrong with current cloud offerings?
+
+Current cloud stacks and offerings are over-bloated and over-priced.
+With Unikraft you can be sure that the resources you're consuming and paying for are going to your app, and your app only.
+When your app is idle, so is your bill.
+For Unikraft Cloud Enterprise, imagine running 1000s of instances with a couple of servers.
+
+
+#### Does Unikraft provide cost savings?
+
+Absolutely!
+Unikraft can provide cost savings in many ways:
+
+1. Scale-to-Zero: don't ever pay for idle again;
+2. Autoscale: don't ever pay for warm instances to cope with peaks;
+3. Fewer instances: higher, more efficient I/O means fewer instances for similar workloads; and,
+4. Server density: 1000s of instances on a single server mean fewer servers, and higher savings.
+
+
+#### What's the relationship between the Unikraft open source project and Unikraft Cloud?
+
+Unikraft OSS allows you to build and run unikernels locally via `kraft run` (and even hack the Unikraft OS itself if you like tinkering!).
+When you're ready to deploy, switch to `kraft cloud deploy`.
+
+
+#### Are you a replacement for Docker?
+
+Definitely not!
+Docker is great for dev environments and for building images.
+In fact, Unikraft relies on `Dockerfile` to specify the filesystem of images on Unikraft Cloud.
+Having said that, when it's time to deploy, Unikraft places the resulting filesystem on a lean unikernel.
+It's ready to run with hardware-level isolation and extreme efficiency.
+
+
+#### Are you a competing technology to WASM?
+
+No.
+You can read more about [how Unikraft and WASM complement each other in our dedicated blog post on the matter](/blog/unikernels-and-wasm/).
+In short, WASM provides language-level isolation, whereas Unikraft provides hardware-level.
+When you deploy WASM to the public cloud, there will be a VM underneath for isolation.
+Maybe even a container runtime.
+The most efficient way to deploy WASM workloads on the public cloud is on Unikraft Cloud.
+The VM (the unikernel) itself has only the minimal code needed to run the WASM runtime.
+
+
+#### Can you deploy within hyperscaler infra and connect to their services with Unikraft Cloud?
+
+Yes.
+Unikraft supports [metros](/docs/metros) / regions within existing hyperscaler infra, and also connectivity to their services.
+For example, you could run an API server on Unikraft Cloud and connect to S3 as a storage back end.
+Contact information is available for more details.
+
+
+#### Can you try Unikraft open source first?
+
+Yes.
+Head on over to [unikraft.org](http://www.unikraft.org/), install the `kraft` tool with the one-liner there, and use `kraft run` to build, package and run your app locally.
+When you're ready to deploy to cloud, set your Unikraft Cloud token and deploy via `kraft cloud deploy`.
+
+
+#### Does Unikraft Cloud work on Mac/Windows/Linux?
+
+Yes, the kraft tool can run on Mac, Windows or Linux.
+
+
+#### How can you track instances on Unikraft Cloud?
+
+Unikraft provides full log support for all users.
+Paying customers get access to Prometheus metrics.
+
+
+#### Are there other unikernel cloud platforms?
+
+Other unikernel projects exist, but most are research efforts, unmaintained, or limited to a single app or language and aren't POSIX (Portable Operating System Interface) compliant.
+
+
+#### Do you have a Kubernetes integration?
+
+[Yes!](/docs/integrations/kubernetes/)
+
+
+#### Do you have a Terraform integration?
+
+[Yes!](/docs/integrations/terraform/)
