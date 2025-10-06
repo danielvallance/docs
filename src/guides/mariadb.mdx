@@ -1,0 +1,146 @@
+---
+title: MariaDB
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide shows you how to use [MariaDB](https://mariadb.org), one of the most popular open source relational databases.
+To run it, follow these steps:
+
+1. Install the [`kraft` CLI tool](/install) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+
+1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/mariadb/` directory:
+
+```bash
+git clone https://github.com/kraftcloud/examples
+cd examples/mariadb
+```
+
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+```bash
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+```bash
+kraft cloud deploy -p 3306:3306/tls -M 1024 .
+```
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: mariadb-w2g2z
+ [90m├[0m[90m──────────[0m [90muuid[0m: ba696c22-adff-4fba-88b9-d1b790ca2357
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m──────────[0m [90mfqdn[0m: twilight-sun-82lt4ddk.fra.unikraft.app
+ [90m├[0m[90m─────────[0m [90mimage[0m: mariadb@sha256:6e31d28b351eb12a070e3074f0a500532d0a494332947e9d8dbfa093d2d551fd
+ [90m├[0m[90m─────[0m [90mboot time[0m: 159.06 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: twilight-sun-82lt4ddk
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: mariadb-w2g2z.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.3
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/sbin/mariadbd --user=root --log-bin
+```
+
+In this case, the instance name is `mariadb-w2g2z` which is different for each run.
+
+To test the deployment, first forward the port with the `kraft cloud tunnel` command.
+
+```bash
+kraft cloud tunnel 3306:mariadb-w2g2z:3306
+```
+
+You can now, on a separate console, use the `mysql` command line tool to test that the set up works:
+
+```bash
+mysql -h 127.0.0.1 --ssl-mode=DISABLED -u root -punikraft mysql <<< "select count(*) from user"
+```
+
+Or use the `mariadb` client command line tool:
+
+```bash
+mariadb -h 127.0.0.1 --ssl=OFF -u root -punikraft mysql <<< "select count(*) from user"
+```
+
+You should see output such as:
+
+```ansi
+count(*)
+6
+```
+
+To disconnect, kill the `tunnel` command using `Ctrl+c`.
+
+:::note
+This guide uses `kraft cloud tunnel` only when a service doesn't support TLS and isn't HTTP-based (TLS/SNI determines the correct instance to send traffic to).
+Also note that the `tunnel` command isn't needed when connecting via an instance's private IP/FQDN.
+For example when the MariaDB instance serves as a database server to another instance that acts as a frontend and which **does** support TLS.
+:::
+
+You can list information about the instance by running:
+
+```bash
+kraft cloud instance list
+```
+```text
+NAME            FQDN                               STATE    CREATED AT    IMAGE         MEMORY   ARGS                             BOOT TIME
+mariadb-w2g2z   twilight-sun-82lt4ddk.fra0.kra...  running  1 minute ago  mariadb@s...  1.0 GiB  /usr/sbin/mariadbd --user=ro...  159065us
+```
+
+When done, you can remove the instance:
+
+```bash
+kraft cloud instance remove mariadb-w2g2z
+```
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification, including command-line arguments
+* `Dockerfile`: In case you need to add files to your instance's rootfs
+
+<Tabs defaultValue="kraftfile">
+  <TabsContent  value="Kraftfile">
+    ```yaml
+spec: v0.6
+
+runtime: mariadb:latest
+
+rootfs: ./Dockerfile
+
+cmd: ["/usr/sbin/mariadbd", "--user=root", "--log-bin"]
+    ```
+  </TabsContent>
+  <TabsContent  value="Dockerfile">
+```Dockerfile
+FROM debian:bookworm AS build
+
+RUN set -xe \
+    echo "Your code here"
+
+FROM scratch
+
+# Your files here
+# COPY --from=build / /
+```
+  </TabsContent>
+</Tabs>
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+```bash
+kraft cloud --help
+```
+
+Or visit the [CLI Reference](/docs/cli).

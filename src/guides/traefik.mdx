@@ -1,0 +1,101 @@
+---
+title: Traefik
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This example uses the [`Traefik`](https://traefik.io/traefik/) cloud native app proxy.
+
+To run this example, follow these steps:
+
+1. Install the [`kraft` CLI tool](/install) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+
+1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/traefik/` directory:
+
+```bash
+git clone https://github.com/kraftcloud/examples
+cd examples/traefik/
+```
+
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+```bash
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+```bash
+kraft cloud deploy -M 512 -p 443:80/tls+http -p 8080:8080/tls .
+```
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: traefik-wqe7e
+ [90m├[0m[90m──────────[0m [90muuid[0m: 69d25b0b-1813-4a3f-88e6-64abbc78b359
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://holy-cherry-rye39b1x.fra.unikraft.app
+ [90m├[0m[90m─────────[0m [90mimage[0m: traefik@sha256:f6dd913a81f6a057ceb9db7844222d7287b2a83f668cca88c73c2e85554cb526
+ [90m├[0m[90m─────[0m [90mboot time[0m: 53.66 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: holy-cherry-rye39b1x
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: traefik-wqe7e.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.28.16
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/traefik -configFile /etc/traefik/default.toml
+```
+
+In this case, the instance name is `traefik-wqe7e` and the address is `https://holy-cherry-rye39b1x.fra.unikraft.app`.
+They're different for each run.
+
+Use `curl` to query the Unikraft Cloud instance of Traefik.
+
+```bash
+curl https://holy-cherry-rye39b1x.fra.unikraft.app:8080/dashboard
+```
+```text
+<!DOCTYPE html><html><head><title>Traefik</title><meta charset=utf-8><meta name=description content="Traefik UI"> ...
+```
+
+Or better yet, point a browser at the dashboard.
+
+:::danger
+This set up exposes the dashboard on port 8080 without authentication.
+Please change default.toml as needed.
+:::
+
+You can list information about the instance by running:
+
+```bash
+kraft cloud instance list
+```
+```text
+NAME              FQDN                                    STATE    CREATED AT     IMAGE                           MEMORY   ARGS                                           BOOT TIME
+traefik-wqe7e     holy-cherry-rye39b1x.fra.unikraft.app   running  8 minutes ago  traefik@sha256:f6dd913a8...     512 MiB  /usr/bin/traefik -configFile /etc/traefik/...  53661us
+```
+
+When done, you can remove the instance:
+
+```bash
+kraft cloud instance remove traefik-wqe7e
+```
+
+## Customize your app
+
+To customize Traefik app you can change the `default.toml` configuration file.
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+```bash
+kraft cloud --help
+```
+
+Or visit the [CLI Reference](/docs/cli).

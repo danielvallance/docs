@@ -1,0 +1,127 @@
+---
+title: Grafana
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide shows you how to use [Grafana](https://grafana.com), the open source analytics & monitoring solution for every database.
+
+To run it, follow these steps:
+
+1. Install the [`kraft` CLI tool](/install) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+
+1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/grafana/` directory:
+
+```bash
+git clone https://github.com/kraftcloud/examples
+cd examples/grafana/
+```
+
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+```bash
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+```bash
+kraft cloud deploy -p 443:3000 -M 1024 .
+```
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: grafana-sikrv
+ [90m├[0m[90m──────────[0m [90muuid[0m: 1d8f0b36-39ff-45a2-8baa-664640c60885
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://icy-sea-i6m5fwyk.fra.unikraft.app
+ [90m├[0m[90m─────────[0m [90mimage[0m: grafana@sha256:484d6f98cdc321443188b8f2900035182dffdb45069f3cd087dcb6851ddff3bc
+ [90m├[0m[90m─────[0m [90mboot time[0m: 502.65 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: dawn-water-4jlnvgpy
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: grafana-mgby4.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.6
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/share/grafana/bin/grafana server -homepath /usr/share/grafana/
+```
+
+In this case, the instance name is `grafana-sikrv` and the address is `https://icy-sea-i6m5fwyk.fra.unikraft.app`.
+They're different for each run.
+
+To test, point your browser at the address.
+The default account/password are `admin/admin` (the system will prompt you to change the password).
+
+You can list information about the instance by running:
+
+```bash
+kraft cloud instance list
+```
+```text
+NAME             FQDN                               STATE    CREATED AT      IMAGE                            MEMORY   ARGS                             BOOT TIME
+memcached-arkv7  weathered-smoke-hehsdinv.fra0....  running  11 minutes ago  memcached@sha256:f53cdbce4...    256 MiB  /usr/bin/memcached -u root       19266us
+```
+
+When done, you can remove the instance:
+
+```bash
+kraft cloud instance remove grafana-sikrv
+```
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification, including command-line arguments
+* `Dockerfile`: In case you need to add files to your instance's rootfs
+
+<Tabs defaultValue="kraftfile">
+  <TabsContent  value="Kraftfile">
+    ```yaml
+spec: v0.6
+
+runtime: grafana:latest
+
+rootfs: ./Dockerfile
+
+cmd: ["/usr/share/grafana/bin/grafana", "server", "-homepath", "/usr/share/grafana/"]
+    ```
+  </TabsContent>
+  <TabsContent  value="Dockerfile">
+```Dockerfile
+FROM debian:bookworm AS build
+
+RUN set -xe; \
+    echo "Your code here"
+
+FROM scratch
+
+# Your files here
+# COPY --from=build / /
+```
+  </TabsContent>
+</Tabs>
+
+The following options are available for customizing the app:
+
+* If you create any new source files, copy them into the app filesystem by using the `COPY` command in the `Dockerfile`.
+  See the commented out `COPY` command in the `Dockerfile`.
+
+* If you use a new executable, update the `cmd` line in the `Kraftfile` and replace `/usr/share/grafana/bin/grafana` with the path to the new executable.
+
+* More extensive changes may require extending the `Dockerfile` ([see `Dockerfile` syntax reference](https://docs.docker.com/engine/reference/builder/)).
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+```bash
+kraft cloud --help
+```
+
+Or visit the [CLI Reference](/docs/cli).
