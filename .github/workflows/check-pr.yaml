@@ -1,15 +1,16 @@
 name: check/pr
 
 on:
-  pull_request_target:
+  pull_request:
     types:
     - opened
-    - edited
     - synchronize
+    - reopened
+    branches:
+    - prod-staging
 
 permissions:
   pull-requests: write
-  statuses: write
   contents: read
 
 jobs:
