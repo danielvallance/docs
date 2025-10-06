@@ -1,0 +1,127 @@
+---
+title: Minio
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide shows you how to use [MinIO](https://min.io), a High Performance Object Storage which is
+Open Source, Amazon S3 compatible, Kubernetes Native and works for cloud native workloads like AI.
+
+To run it, follow these steps:
+
+1. Install the [`kraft` CLI tool](/install) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+
+1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/minio/` directory:
+
+```bash
+git clone https://github.com/kraftcloud/examples
+cd examples/minio/
+```
+
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+```bash
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+```bash
+kraft cloud deploy -p 443:9001/http+tls -p 9000:9000/tls -M 512 .
+```
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: minio-w2my8
+ [90m├[0m[90m──────────[0m [90muuid[0m: 31e691ad-05a0-48b6-ad49-7f79da8e1754
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://icy-bird-tregaga9.fra.unikraft.app
+ [90m├[0m[90m─────────[0m [90mimage[0m: minio@sha256:ba4657c607495326b0e29b512fb33a4179cd1b2a15fbfdd3ccc6e66209a701dd
+ [90m├[0m[90m─────[0m [90mboot time[0m: 73.65 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: icy-bird-tregaga9
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: minio-w2my8.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.4
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/minio server --address 0.0.0.0:9000 --console-address 0.0.0.0:9001 /data
+```
+
+In this case, the instance name is `minio-w2my8` and the address is `https://icy-bird-tregaga9.fra.unikraft.app`.
+They're different for each run.
+
+To test, point your browser at the address.
+The default account/password are `minioadmin/minioadmin`.
+
+You can list information about the instance by running:
+
+```bash
+kraft cloud instance list
+```
+```text
+NAME           FQDN                               STATE    CREATED AT      IMAGE                                     MEMORY   ARGS                               BOOT TIME
+minio-w2my8    icy-bird-tregaga9.fra0.kraft.c...  running  1 minute ago    minio@sha256:ba4657c607495326b0e29b51...  512 MiB  /usr/bin/minio server --addres...  73651us
+```
+
+When done, you can remove the instance:
+
+```bash
+kraft cloud instance remove minio-w2my8
+```
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification, including command-line arguments
+* `Dockerfile`: In case you need to add files to your instance's rootfs
+
+<Tabs defaultValue="kraftfile">
+  <TabsContent  value="Kraftfile">
+    ```yaml
+spec: v0.6
+
+runtime: minio:latest
+
+rootfs: ./Dockerfile
+
+cmd: [
+  "/usr/bin/minio",
+  "server",
+  "--address", "0.0.0.0:9000",
+  "--console-address", "0.0.0.0:9001",
+  "/data"
+]
+    ```
+  </TabsContent>
+  <TabsContent  value="Dockerfile">
+```Dockerfile
+FROM debian:bookworm AS build
+
+RUN set -xe; \
+    echo "Your code here";
+
+FROM scratch
+
+# Copy your files here
+# COPY --from=build / /
+```
+  </TabsContent>
+</Tabs>
+
+
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+```bash
+kraft cloud --help
+```
+
+Or visit the [CLI Reference](/docs/cli).
