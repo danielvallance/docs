@@ -1,35 +1,24 @@
 ---
 title: Kubernetes
+navigation_icon: ship-wheel
 ---
 
-**Kraftlet** is a virtual kubelet implementation that enables running Unikraft unikernels via Kubernetes on the **Unikraft Cloud**.
+Unikraft Cloud integrates seamlessly with any Kubernetes cluster through a virtual [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/) known as **Kraftlet**.
+This is a lightweight Kubernetes node implementation which connects your cluster to Unikraft Cloud's high-performance compute instead of running real pods locally.
+This enables developers to deploy and manage Unikraft unikernels as if they were native Kubernetes pods.
 
-Kraftlet is running in a Kubernetes cluster as a Deployment.
-Upon startup, it will register itself as a worker node with the Kubernetes API.
+This integration extends Kubernetes' scheduling and orchestration capabilities to the Unikraft Cloud platform.
+This allows workloads to take advantage of unikernel-level I/O performance, security, cold start and transparent scale-to-zero efficiency while retaining full compatibility with existing Kubernetes tooling.
+
+Upon startup, Kraftlet will register itself as a worker node with the Kubernetes API.
 Once Kraftlet registers itself as a node, Kubernetes can schedule Pods onto it.
 
-Any Pod scheduled to the Kraftlet node won't run as a container within the cluster, but instead, it will run as an instance on Unikraft Cloud.
+Any Pod scheduled to the Kraftlet node won't run as a container within the cluster.
+Instead, it will run a highly optimized, ultra lightweight unikernel VM instance on Unikraft Cloud.
 Kraftlet will manage the Pod lifecycle to make sure the apps are up and running.
 
-## Supported
 
-### [UKC instances](https://unikraft.cloud/docs/api/v1/instances/)
-
-For each Pod scheduled on Kraftlet, Kraftlet runs its containers as separate Unikraft Cloud instances rather than running them as containers.
-Kraftlet ensures it assigns instances to the correct Unikraft Cloud services and attaches them to the corresponding Unikraft Cloud volumes.
-
-### [UKC services](https://unikraft.cloud/docs/api/v1/services/)
-
-When a Pod gets scheduled on the Kraftlet node, Kraftlet fetches the existing Kubernetes service that the given Pod is backing and **creates a corresponding Unikraft Cloud Service**.
-Kraftlet allows cluster admins to manage Unikraft Cloud Services by defining a Kubernetes service backed by Pods running on Kraftlet.
-
-### [UKC volumes](https://unikraft.cloud/docs/api/v1/volumes/)
-
-Kraftlet listens for changes on [PersistentVolumeClaim objects](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) with storageClass `ukc-volume`.
-For each creation of such Persistent Volume Claim (PVC) object, the Kraftlet will create a corresponding Unikraft Cloud volume and a `PersistentVolume` object to bind the PVC object to.
-Kraftlet allows for volume management through Kubernetes clusters.
-
-## Installation
+## Getting started
 
 You can install Kraftlet into a Kubernetes cluster using its Helm chart:
 ```bash title=""
@@ -59,14 +48,17 @@ $ kubectl get nodes
 Which should, among other nodes, return Kraftlet.
 ```
 NAME        STATUS   ROLES    AGE     VERSION
-kraftlet    Ready    agent    58s     No version provided
+Kraftlet    Ready    agent    58s     No version provided
 ```
 
 ## Examples
 
 Below are examples of Kubernetes configurations that define Unikraft Cloud apps through Kubernetes concepts.
 You will notice that each workload object defines `tolerations` and `nodeSelector` so Pods get scheduled on the Kraftlet node.
-⚠️ Make sure Kraftlet is up and running before trying out examples below. ⚠️
+
+:::warning
+Make sure Kraftlet is up and running before trying out examples below.
+:::
 
 ### Simple app
 
@@ -161,13 +153,13 @@ my-service  my-service-orjlyrac.fra0.kraft.host  443:8080/tls+http  my-app-78c76
 
 You can now manage your app running in Unikraft Cloud via Kubernetes resources!
 
-### Stateful app
+### Stateful apps
 
 The example below deploys a stateful app on the Unikraft Cloud that has access to a volume.
 
-To support provisioning Unikraft Cloud volumes through Kubernetes, Kraftlet listens for changes on [PersistentVolumeClaim (PVC)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)  objects with storage class `ukc-volume`.
-Creating a new `PVC` object with the specified storage class triggers Kraftlet to create a Unikraft Cloud volume and create a `PV` object to mark the `PVC` as `Bound`.
-Below is an example PVC with the Unikraft storage class you can apply to your cluster.
+To support provisioning Unikraft Cloud volumes through Kubernetes, Kraftlet listens for changes on [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) (PVC) objects with storage class `ukc-volume`.
+Creating a new PVC object with the specified storage class triggers Kraftlet to create a Unikraft Cloud volume and create a PV object to mark the PVC as `Bound`.
+Below is an example PVC with the Unikraft Cloud storage class you can apply to your cluster.
 
 ```yaml
 apiVersion: v1
@@ -245,5 +237,25 @@ NAME      CREATED AT     SIZE    ATTACHED TO      MOUNTED BY       STATE    PERS
 my-claim  8 minutes ago  10 MiB  nginx-pod-nginx  nginx-pod-nginx  mounted  true
 ```
 
+## Notes
+
+* [**Instances**](https://unikraft.cloud/docs/api/v1/instances/)
+
+  For each Pod scheduled on Kraftlet, Kraftlet runs its containers as separate Unikraft Cloud instances rather than running them as containers.
+  Kraftlet ensures it assigns instances to the correct Unikraft Cloud services and attaches them to the corresponding Unikraft Cloud volumes.
+
+* [**Services**](https://unikraft.cloud/docs/api/v1/services/)
+
+  When a Pod gets scheduled on the Kraftlet node, Kraftlet fetches the existing Kubernetes service that the given Pod is backing and **creates a corresponding Unikraft Cloud Service**.
+  Kraftlet allows cluster admins to manage Unikraft Cloud Services by defining a Kubernetes service backed by Pods running on Kraftlet.
+
+* [**Volumes**](https://unikraft.cloud/docs/api/v1/volumes/)
+
+  Kraftlet listens for changes on [PersistentVolumeClaim objects](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) with storageClass `ukc-volume`.
+  For each creation of such Persistent Volume Claim (PVC) object, the Kraftlet will create a corresponding Unikraft Cloud volume and a `PersistentVolume` object to bind the PVC object to.
+  Kraftlet allows for volume management through Kubernetes clusters.
+
+
 ## Resources
+
 - See [Unikraft public roadmap](https://roadmap.unikraft.com) for planned features or to suggest use cases and ideas.
