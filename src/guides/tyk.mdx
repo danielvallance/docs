@@ -55,20 +55,20 @@ To list information about the instances, use:
 kraft cloud compose ps
 ```
 ```text
-NAME       FQDN                                      STATE    STATUS        IMAGE                                         MEMORY   ARGS                                         BOOT TIME
-tyk-tyk    funky-pond-45usfkxx.fra0-test.kraft.host  running  since 45secs  tyk-tyk@sha256:06f8ba3...                     128 MiB  /usr/bin/tyk start --conf /etc/tyk.conf      38.12 ms
-tyk-redis                                            running  since 45secs  redis@sha256:d4604c6d80e7d57590f2c46659f2...  512 MiB  /usr/bin/redis-server /etc/redis/redis.conf  18.69 ms
+NAME       FQDN                                  STATE    STATUS        IMAGE                                         MEMORY   ARGS                                         BOOT TIME
+tyk-tyk    funky-pond-45usfkxx.fra.unikraft.app  running  since 45secs  tyk-tyk@sha256:06f8ba3...                     128 MiB  /usr/bin/tyk start --conf /etc/tyk.conf      38.12 ms
+tyk-redis                                        running  since 45secs  redis@sha256:d4604c6d80e7d57590f2c46659f2...  512 MiB  /usr/bin/redis-server /etc/redis/redis.conf  18.69 ms
 ```
 
 The Tyk and Redis instances are named `tyk-tyk` and `tyk-redis` (as defined in the `compose.yaml` file).
 Only the Tyk instance is available as a public service.
-Its address is `https://funky-pond-45usfkxx.fra0-test.kraft.host`.
+Its address is `https://funky-pond-45usfkxx.fra.unikraft.app`.
 It's different for each run.
 
 Use `curl` to query the Tyk instance on KraftCloud on the available address:
 
 ```bash
-curl https://funky-pond-45usfkxx.fra0-test.kraft.host/hello
+curl https://funky-pond-45usfkxx.fra-test.unikraft.app/hello
 ```
 ```text
 {"status":"pass","version":"v5.3.0-dev","description":"Tyk GW","details":{"redis":{"status":"pass","componentType":"datastore","time":"2024-07-12T05:57:44Z"}}}

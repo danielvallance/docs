@@ -74,8 +74,8 @@ You can list information about the instance by running:
 kraft cloud instance list
 ```
 ```text
-NAME           FQDN                               STATE    CREATED AT     IMAGE                                                 MEMORY     ARGS                                 BOOT TIME
-hugo-zpabu     morning-rain-jikpfy3t.fra0.kra...  running  1 minute ago   hugo@sha256:68d20fdb707076b1cd0f2848b17cc75670d8a...  512 MiB    /usr/bin/hugo server --bind=...      77166us
+NAME        FQDN                                    STATE    CREATED AT     IMAGE                                                 MEMORY     ARGS                                 BOOT TIME
+hugo-zpabu  morning-rain-jikpfy3t.fra.unikraft.app  running  1 minute ago   hugo@sha256:68d20fdb707076b1cd0f2848b17cc75670d8a...  512 MiB    /usr/bin/hugo server --bind=...      77166us
 ```
 
 When done, you can remove the instance:
@@ -116,7 +116,7 @@ FROM scratch
 COPY site /site
     ```
   </TabsContent>
- 
+
 </Tabs>
 
 Update the contents of the `site/` directory to serve different static web content.

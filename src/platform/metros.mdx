@@ -69,14 +69,14 @@ If you require running solutions in-house or on-premise, either for SOC/ISO/HIPP
 
 When using `kraft`, you can set the metro you wish to use by either setting the CLI flag `--metro` in any `kraft cloud` subcommand or by setting the environmental variable `UKC_METRO`.
 Use the IATA code descriptor to target the specific metro.
-For example with `fra0`:
+For example with `fra`:
 
 ```bash title=""
 # Via CLI flag
-kraft cloud --metro fra0 run -p 443:8080 nginx:latest
+kraft cloud --metro fra run -p 443:8080 nginx:latest
 
 # or via environmental variable
-export UKC_METRO=fra0
+export UKC_METRO=fra
 kraft cloud run -p 443:8080 nginx:latest
 ```
 
