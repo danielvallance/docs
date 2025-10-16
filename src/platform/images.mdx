@@ -91,7 +91,7 @@ The output should look like:
  [90m├[0m[90m──────────[0m [90mname[0m: http-python312-ma2i9
  [90m├[0m[90m──────────[0m [90muuid[0m: e7389eee-9808-4152-b2ec-1f3c0541fd05
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://young-night-5fpf0jj8.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://young-night-5fpf0jj8.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: [username]]/http-python312@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472
  [90m├[0m[90m─────[0m [90mboot time[0m: 15.09 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
@@ -145,7 +145,7 @@ kraft cloud deploy -p 443:8080 -M 512 -R 2 .
  [90m├[0m[90m──────────[0m [90mname[0m: http-python312-8mxq5
  [90m├[0m[90m──────────[0m [90muuid[0m: 37f5b23c-0996-45fa-8d7f-e6b2942eb6fb
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://small-darkness-4t9y8n5s.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://small-darkness-4t9y8n5s.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: http-python312@sha256:5b922dfa1632af38c476b98fdd9f4314fb9c5e587d3d31255e6479108c057e88
  [90m├[0m[90m─────[0m [90mboot time[0m: 153.65 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
@@ -162,10 +162,10 @@ kraft cloud instance list
 ```
 
 ```text title=""
-NAME                  FQDN                                     STATE    CREATED AT      IMAGE                     MEMORY   ARGS                             BOOT TIME
-http-python312-w4bcp  sparkling-surf-qphxdk0j.fra0.kraft.host  running  45 seconds ago  http-python312@sha256...  512 MiB  /usr/bin/python3 /src/server.py  153794us
-http-python312-juvv4  old-brook-v3bf7h7z.fra0.kraft.host       running  45 seconds ago  http-python312@sha256...  512 MiB  /usr/bin/python3 /src/server.py  154744us
-http-python312-8mxq5  small-darkness-4t9y8n5s.kraft.host       running  45 seconds ago  http-python312@sha256...  512 MiB  /usr/bin/python3 /src/server.py  153646us
+NAME                  FQDN                                      STATE    CREATED AT      IMAGE                     MEMORY   ARGS                             BOOT TIME
+http-python312-w4bcp  sparkling-surf-qphxdk0j.fra.unikraft.app  running  45 seconds ago  http-python312@sha256...  512 MiB  /usr/bin/python3 /src/server.py  153794us
+http-python312-juvv4  old-brook-v3bf7h7z.fra.unikraft.app       running  45 seconds ago  http-python312@sha256...  512 MiB  /usr/bin/python3 /src/server.py  154744us
+http-python312-8mxq5  small-darkness-4t9y8n5s.kraft.host        running  45 seconds ago  http-python312@sha256...  512 MiB  /usr/bin/python3 /src/server.py  153646us
 ```
 
 Three instances run: the original plus two replicas.

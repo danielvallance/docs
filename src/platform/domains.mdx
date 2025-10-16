@@ -23,11 +23,11 @@ Before Unikraft Cloud can launch an app, you need to ensure that you have config
 ALIAS (apex alias) and ANAME (authoritative alias) are DNS record types some providers support.
 
 * For a subdomain you own such as docs.mydomain.com, a CNAME is enough.
-  In this case, you can just add a `CNAME` record with your sub-domain (`docs`) as the host and point the record to Unikraft Cloud's metro (for example, `fra0.kraft.host`).
+  In this case, you can just add a `CNAME` record with your sub-domain (`docs`) as the host and point the record to Unikraft Cloud's metro (for example, `fra.unikraft.app`).
 
 * For an apex domain (for example, mydomain.com), add one of: ALIAS, ANAME, or a flattened CNAME record.
   Depending on your provider, leave the host field empty or enter @.
-  Point the record to the metro (for example, `fra0.kraft.host`).
+  Point the record to the metro (for example, `fra.unikraft.app`).
   If the provider doesn't support these record types, add an A record pointing to the metro IP address.
 
 :::tip

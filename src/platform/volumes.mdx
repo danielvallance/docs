@@ -125,7 +125,7 @@ You should see output like:
  [90m├[0m[90m──────────[0m [90mname[0m: http-python312-flask30-2h608
  [90m├[0m[90m──────────[0m [90muuid[0m: dcaf899e-6831-4641-86a6-e2b39e9f0d98
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://holy-bonobo-px345skl.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://holy-bonobo-px345skl.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: http-python312-flask30@sha256:3ca3e773d5bc76e1231347e5345e19d0293ba05e502e387956ecba39a4c9372c
  [90m├[0m[90m─────[0m [90mboot time[0m: 219.61 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
@@ -155,16 +155,16 @@ Test it by running `curl` several times.
 Example output:
 
 ```bash title=""
-$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+$ curl https://holy-bonobo-px345skl.fra.unikraft.app
 Log file created.
 2024-02-24 08:15:32
 
-$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+$ curl https://holy-bonobo-px345skl.fra.unikraft.app
 Log file created.
 2024-02-24 08:15:32
 2024-02-24 08:15:34
 
-$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+$ curl https://holy-bonobo-px345skl.fra.unikraft.app
 Log file created.
 2024-02-24 08:15:32
 2024-02-24 08:15:34
@@ -193,7 +193,7 @@ This should output something like:
  [90m├[0m[90m──────────[0m [90mname[0m: http-python312-flask30-0s9c7
  [90m├[0m[90m──────────[0m [90muuid[0m: 59d06415-84b8-4bf5-85c7-997960382011
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://winter-field-v6m37jgs.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://winter-field-v6m37jgs.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: http-python312-flask30@sha256:9f441af88df8968b368e7b658737c804fc8be87c864fc2d695e6adcda9a56acf
  [90m├[0m[90m─────[0m [90mboot time[0m: 202.11 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
@@ -207,7 +207,7 @@ Run one final `curl` to this new address.
 You should see the previous contents plus a new entry at the bottom:
 
 ```bash title=""
-$ curl https://holy-bonobo-px345skl.fra0.kraft.host
+$ curl https://holy-bonobo-px345skl.fra.unikraft.app
 Log file created.
 2024-02-24 08:15:32
 2024-02-24 08:15:34

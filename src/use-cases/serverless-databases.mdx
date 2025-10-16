@@ -80,7 +80,7 @@ The output shows the instance address and other details:
  [90m├[0m[90m──────────[0m [90mname[0m: postgres-saan9
  [90m├[0m[90m──────────[0m [90muuid[0m: 3a1371f2-68c6-4187-84f8-c080f2b028ca
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mstarting[0m
- [90m├[0m[90m──────────[0m [90mfqdn[0m: young-thunder-fbafrsxj.fra0.kraft.host
+ [90m├[0m[90m──────────[0m [90mfqdn[0m: young-thunder-fbafrsxj.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: postgres@sha256:2476c0373d663d7604def7c35ffcb4ed4de8ab231309b4f20104b84f31570766
  [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
  [90m├[0m[90m───────[0m [90mservice[0m: young-thunder-fbafrsxj
@@ -95,7 +95,7 @@ They're different for each run.
 If you use port 5432/tls according to the example above you can now directly connect to postgres:
 
 ```console
-psql -U postgres -h young-thunder-fbafrsxj.fra0.kraft.host
+psql -U postgres -h young-thunder-fbafrsxj.fra.unikraft.app
 ```
 
 Use the `unikraft` password at the password prompt.
@@ -139,8 +139,8 @@ kraft cloud instance list
 ```
 
 ```text
-NAME              FQDN                                         STATE    CREATED AT     IMAGE                                   MEMORY   ARGS                                      BOOT TIME
-postgres-saan9    young-thunder-fbafrsxj.fra0.kraft.host       running  6 minutes ago  postgres@sha256:2476c0373d663d7604d...  1.0 GiB  wrapper.sh docker-entrypoint.sh postgres  603.42 ms
+NAME              FQDN                                     STATE    CREATED AT     IMAGE                                   MEMORY   ARGS                                      BOOT TIME
+postgres-saan9    young-thunder-fbafrsxj.fra.unikraft.app  running  6 minutes ago  postgres@sha256:2476c0373d663d7604d...  1.0 GiB  wrapper.sh docker-entrypoint.sh postgres  603.42 ms
 ```
 
 When done, you can remove the instance:

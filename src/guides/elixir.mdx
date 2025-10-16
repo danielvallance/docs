@@ -40,7 +40,7 @@ The output shows the instance address and other details:
  [90m├[0m[90m──────────[0m [90mname[0m: elixir-qo9k3
  [90m├[0m[90m──────────[0m [90muuid[0m: e5fbf089-b000-4b2d-a827-44a1f5d28f24
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m────────[0m [90mdomain[0m: https://small-water-tl8lr8am.dal0.kraft.host
+ [90m├[0m[90m────────[0m [90mdomain[0m: https://small-water-tl8lr8am.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: sha256:67f5df003758a1180932e931727f8cb7006bbbf6fdd84058e27fe05e4829bba0
  [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
  [90m├[0m[90m───────[0m [90mservice[0m: small-water-tl8lr8am
@@ -49,13 +49,13 @@ The output shows the instance address and other details:
  [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/wrapper.sh /usr/local/bin/mix run --no-halt
 ```
 
-In this case, the instance name is `elixir-qo9k3` and the address is `https://small-water-tl8lr8am.dal0.kraft.host`.
+In this case, the instance name is `elixir-qo9k3` and the address is `https://small-water-tl8lr8am.fra.unikraft.app`.
 They're different for each run.
 
 Use `curl` to query the Unikraft Cloud instance of the Elixir-based HTTP web server:
 
 ```bash
-curl https://small-water-tl8lr8am.dal0.kraft.host
+curl https://small-water-tl8lr8am.fra.unikraft.app
 ```
 
 ```text
@@ -69,8 +69,8 @@ kraft cloud instance list
 ```
 
 ```text
-NAME          FQDN                                  STATE    STATUS       IMAGE              MEMORY   ARGS                                         BOOT TIME
-elixir-qo9k3  small-water-tl8lr8am.dal0.kraft.host  running  since 9mins  sha256:67f5df0...  1.0 GiB  /usr/bin/wrapper.sh /usr/local/bin/mix r...  437.43 ms
+NAME          FQDN                                   STATE    STATUS       IMAGE              MEMORY   ARGS                                         BOOT TIME
+elixir-qo9k3  small-water-tl8lr8am.fra.unikraft.app  running  since 9mins  sha256:67f5df0...  1.0 GiB  /usr/bin/wrapper.sh /usr/local/bin/mix r...  437.43 ms
 ```
 
 When done, you can remove the instance:
