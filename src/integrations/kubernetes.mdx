@@ -134,10 +134,10 @@ $ kraft cloud instance list
 Which will return a list of instances created from pods above:
 
 ```
-NAME                           FQDN                                 STATE    STATUS        IMAGE                                 MEMORY   VCPUS  ARGS                                  BOOT TIME
-my-app-78c766fb67-k2dgk-nginx  my-service-orjlyrac.fra0.kraft.host  running  since 24secs  nginx@sha256:49d8fb7a9934a87e93f9...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/ngin...  14.06 ms
-my-app-78c766fb67-tkkxq-nginx  my-service-orjlyrac.fra0.kraft.host  running  since 24secs  nginx@sha256:49d8fb7a9934a87e93f9...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/ngin...  14.43 ms
-my-app-78c766fb67-mfp77-nginx  my-service-orjlyrac.fra0.kraft.host  running  since 25secs  nginx@sha256:49d8fb7a9934a87e93f9...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/ngin...  15.12 ms
+NAME                           FQDN                                  STATE    STATUS        IMAGE                                 MEMORY   VCPUS  ARGS                                  BOOT TIME
+my-app-78c766fb67-k2dgk-nginx  my-service-orjlyrac.fra.unikraft.app  running  since 24secs  nginx@sha256:49d8fb7a9934a87e93f9...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/ngin...  14.06 ms
+my-app-78c766fb67-tkkxq-nginx  my-service-orjlyrac.fra.unikraft.app  running  since 24secs  nginx@sha256:49d8fb7a9934a87e93f9...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/ngin...  14.43 ms
+my-app-78c766fb67-mfp77-nginx  my-service-orjlyrac.fra.unikraft.app  running  since 25secs  nginx@sha256:49d8fb7a9934a87e93f9...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/ngin...  15.12 ms
 
 ```
 
@@ -147,8 +147,8 @@ You can check the created service with the following command:
 
 ```
 $ kraft cloud service list
-NAME        FQDN                                 SERVICES           INSTANCES                                                            CREATED AT     PERSISTENT
-my-service  my-service-orjlyrac.fra0.kraft.host  443:8080/tls+http  my-app-78c766fb67-k2dgk-nginx my-app-78c766fb67-tkkxq-nginx my-a...  6 minutes ago  true
+NAME        FQDN                                  SERVICES           INSTANCES                                                            CREATED AT     PERSISTENT
+my-service  my-service-orjlyrac.fra.unikraft.app  443:8080/tls+http  my-app-78c766fb67-k2dgk-nginx my-app-78c766fb67-tkkxq-nginx my-a...  6 minutes ago  true
 ```
 
 You can now manage your app running in Unikraft Cloud via Kubernetes resources!
@@ -225,8 +225,8 @@ If you check the instances again, you will see a new instance created from the P
 
 ```
 $ kraft cloud instance list
-NAME             FQDN                                      STATE    STATUS      IMAGE                                      MEMORY   VCPUS  ARGS                                     BOOT TIME
-nginx-pod-nginx  fragrant-breeze-llesxdta.fra0.kraft.host  running  since 1min  nginx@sha256:49d8fb7a9934a87e93f9eb326...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/nginx.conf  15.14 ms
+NAME             FQDN                                       STATE    STATUS      IMAGE                                      MEMORY   VCPUS  ARGS                                     BOOT TIME
+nginx-pod-nginx  fragrant-breeze-llesxdta.fra.unikraft.app  running  since 1min  nginx@sha256:49d8fb7a9934a87e93f9eb326...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/nginx.conf  15.14 ms
 ```
 
 And if you check the volume now, you will see it's attached and mounted by the created instance:

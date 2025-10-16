@@ -48,7 +48,7 @@ kraft cloud deploy -p 443:8080 .
  [90m├[0m[90m──────────[0m [90mname[0m: nginx-4d7u3
  [90m├[0m[90m──────────[0m [90muuid[0m: 8fda2a70-6a32-4b5e-8900-4395b33d02d7
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://small-leaf-rafirkw7.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://small-leaf-rafirkw7.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: nginx@sha256:389bfa6be6455c92b61cfe429b50491373731dbdd8bd8dc79c08f985d6114758
  [90m├[0m[90m─────[0m [90mboot time[0m: 20.36 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 128 MiB
@@ -170,7 +170,7 @@ You should see output like:
 ```ansi title=""
           uuid: f840ac12-f485-4f02-9f33-6a0a7de46f1f
           name: nginx-9mbf2
-          fqdn: restless-resonance-0oo7m7s8.fra0.kraft.host
+          fqdn: restless-resonance-0oo7m7s8.fra.unikraft.app
     private ip: 172.16.6.4
          state: standby
     created at: 30 minutes ago
@@ -187,7 +187,7 @@ Note the value of the `state` field.
 Now to make sure the service is up, `curl` the service address:
 
 ```bash
-curl https://small-leaf-rafirkw7.fra0.kraft.host
+curl https://small-leaf-rafirkw7.fra.unikraft.app
 ```
 
 You should get an immediate response, even though the instance was on `standby`.

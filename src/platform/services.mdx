@@ -52,7 +52,7 @@ The output shows the instance address and other details:
  [90m├[0m[90m──────────[0m [90mname[0m: http-go121-fkt1x
  [90m├[0m[90m──────────[0m [90muuid[0m: 858da707-1851-46cb-9667-05b951471222
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://my-service-rrtckyyi.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://my-service-rrtckyyi.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: http-go121@sha256:4d536236d226781874c3ad930dbc936c4f407aa3483a1f8e961ba63a7a72c78d
  [90m├[0m[90m─────[0m [90mboot time[0m: 17.14 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 128 MiB
@@ -63,13 +63,13 @@ The output shows the instance address and other details:
 ```
 
 In this case, the instance name is `http-go121-fkt1x`.
-The address is `https://my-service-rrtckyyi.fra0.kraft.host`.
+The address is `https://my-service-rrtckyyi.fra.unikraft.app`.
 These values differ for each run.
 
 Use `curl` to query the Go web server:
 
 ```bash title=""
-curl https://my-service-rrtckyyi.fra0.kraft.host
+curl https://my-service-rrtckyyi.fra.unikraft.app
 ```
 
 ```text title=""

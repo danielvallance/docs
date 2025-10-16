@@ -159,7 +159,7 @@ This command will create the NGINX instance with scale-to-zero enabled:
  [90m├[0m[90m──────────[0m [90mname[0m: nginx-1a747
  [90m├[0m[90m──────────[0m [90muuid[0m: 66d05e09-1436-4d1f-bbe6-6dc03ae48d7a
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://twilight-gorilla-ui5b6kwt.fra0.kraft.host
+ [90m├[0m[90m───────────[0m [90murl[0m: https://twilight-gorilla-ui5b6kwt.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: nginx@sha256:19854a12fe97f138313cb9b4806828cae9cecf2d050077a0268d98129863f954
  [90m├[0m[90m─────[0m [90mboot time[0m: 19.81 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 128 MiB
@@ -179,8 +179,8 @@ kraft cloud instances list
 You should see output like:
 
 ```ansi title=""
-NAME         FQDN                                       STATE
-nginx-1a747  twilight-gorilla-ui5b6kwt.fra0.kraft.host  [94mstandby[0m
+NAME         FQDN                                        STATE
+nginx-1a747  twilight-gorilla-ui5b6kwt.fra.unikraft.app  [94mstandby[0m
 ```
 
 Notice the state is now set to `standby`?
@@ -222,7 +222,7 @@ Note the `min size` (0) and `max size` (1) fields -- these mean that the service
 Try using `curl` or your browser to see scale-to-zero (well, scale to 1 in this case!) in action:
 
 ```bash title=""
-curl https://twilight-gorilla-ui5b6kwt.fra0.kraft.host
+curl https://twilight-gorilla-ui5b6kwt.fra.unikraft.app
 ```
 
 You should get an NGINX response with no noticeable delay.
@@ -236,8 +236,8 @@ If you `curl` enough, you should see the `STATE` turn to a green `running` from
 time to time:
 
 ```ansi title=""
-NAME           FQDN                                         STATE
-nginx-1a747    twilight-gorilla-ui5b6kwt.fra0.kraft.host    [92mrunning[0m
+NAME         FQDN                                        STATE
+nginx-1a747  twilight-gorilla-ui5b6kwt.fra.unikraft.app  [92mrunning[0m
 ```
 
 :::note
