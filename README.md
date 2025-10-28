@@ -2,28 +2,28 @@
 
 This repository contains the markdown contents of the documentation site at https://unikraft.com/docs.
 
-# Contributing to the docs
+## Contributing to the docs
 
 Contributions to the documentation are welcome!
 If you're looking to file an issue or bug report for anything other than these documentations, please [visit the roadmap](https://roadmap.unikraft.com/).
 
-## Table of contents
+### Table of contents
 
 - [Unikraft Cloud Documentation](#unikraft-cloud-documentation)
-- [Contributing to the docs](#contributing-to-the-docs)
-  - [Table of contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Code contribution guidelines](#code-contribution-guidelines)
-  - [Git commit message guidelines](#git-commit-message-guidelines)
-  - [Copyright and license](#copyright-and-license)
+  - [Contributing to the docs](#contributing-to-the-docs)
+    - [Table of contents](#table-of-contents)
+    - [Introduction](#introduction)
+    - [Code contribution guidelines](#code-contribution-guidelines)
+    - [Git commit message guidelines](#git-commit-message-guidelines)
+    - [Copyright and license](#copyright-and-license)
 
-## Introduction
+### Introduction
 
 The [`src/`](./src) directory contains all the [markdown](https://www.markdownguide.org/) files for Unikraft Cloud's documentation.
 
 To maintain consistency and accuracy across all documentation pages, [vale](https://vale.sh/) lints all written prose.
 
-## Code contribution guidelines
+### Code contribution guidelines
 
 To make the contribution process as seamless as possible, please follow these requirements:
 
@@ -35,7 +35,7 @@ To make the contribution process as seamless as possible, please follow these re
   * Follow the **Git Commit Message Guidelines** below.
 * All commits must be signed off (`git commit -s`) by all authors in order to certify that the contributions are published under the [Developer Certificate of Origin (DCO)](https://wiki.linuxfoundation.org/dco).
 
-## Git commit message guidelines
+### Git commit message guidelines
 
 This project follows a modified version of the [AngularJS Commit Guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#-git-commit-guidelines).
 A commit message should take the following form:
@@ -73,7 +73,7 @@ GitHub-Fixes: #30
 Signed-off-by: Bobo Monkey <monkey@unikraft.com>
 ```
 
-## Copyright and license
+### Copyright and license
 
 Copyright Unikraft GmbH © 2025.
 All rights reserved.
