@@ -19,7 +19,7 @@ If you're looking to file an issue or bug report for anything other than these d
 
 ### Introduction
 
-The [`src/`](./src) directory contains all the [markdown](https://www.markdownguide.org/) files for Unikraft Cloud's documentation.
+The [`pages/`](./pages) directory contains all the [markdown](https://www.markdownguide.org/) files for Unikraft Cloud's documentation.
 
 To maintain consistency and accuracy across all documentation pages, [vale](https://vale.sh/) lints all written prose.
 

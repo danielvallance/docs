@@ -40,7 +40,7 @@ jobs:
     - name: Show diff
       shell: bash
       run: |
-        git diff src/guides/
+        git diff pages/guides/
 
     - name: Generate branch ID
       id: id
@@ -58,14 +58,14 @@ jobs:
         body: |
           Automated sync of example READMEs from [`unikraft/examples@${{ inputs.examples_branch }}`](https://github.com/unikraft/examples/tree/${{ inputs.examples_branch }}).
 
-          This PR updates the guides in `src/guides/` with the latest content from the examples repository.
+          This PR updates the guides in `pages/guides/` with the latest content from the examples repository.
 
           **Branch:** `${{ inputs.examples_branch }}`
           **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
         branch: ${{ steps.id.outputs.name }}
         committer: Unikraft Bot <monkey@unikraft.io>
         author: Unikraft Bot <monkey@unikraft.io>
-        add-paths: src/guides
+        add-paths: pages/guides
         signoff: true
         labels: |
           automated
