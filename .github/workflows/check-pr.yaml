@@ -96,5 +96,5 @@ jobs:
       with:
         reporter: github-pr-review
         token: ${{secrets.GH_PAT}}
-        files: src
+        files: pages
         fail_on_error: true

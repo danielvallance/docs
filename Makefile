@@ -14,12 +14,12 @@ CURL    ?= curl
 # Sync configuration
 EXAMPLES_REPO     ?= unikraft-cloud/examples
 EXAMPLES_BRANCH   ?= main
-GUIDES_DIR        ?= $(WORKDIR)/src/guides
+GUIDES_DIR        ?= $(WORKDIR)/pages/guides
 
 .PHONY: lint
 lint: $(VALE)
 	$(VALE) sync
-	$(VALE) $(WORKDIR)/src
+	$(VALE) $(WORKDIR)/pages
 
 .PHONY: $(VALE)
 $(VALE):
