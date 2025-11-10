@@ -72,7 +72,7 @@ There is no service on this URL.
 ```
 
 This happens when you connect with an HTTPS client (port `443`) and the app doesn't expose that port.
-Database services such as [MongoDB](/docs/guides/mongodb) or [MariaDB](/docs/guides/mariadb) use different ports (for example, `27017`, `3306`).
+Database services such as [MongoDB](/guides/mongodb) or [MariaDB](/guides/mariadb) use different ports (for example, `27017`, `3306`).
 
 Use the correct exposed port.
 You may need a TLS tunnel (see below).
@@ -81,9 +81,9 @@ You may need a TLS tunnel (see below).
 ## Connect to a non-TLS app
 
 Unikraft Cloud uses TLS to expose services to the outside world.
-Some apps (such as [MongoDB](/docs/guides/mongodb) or [MariaDB](/docs/guides/mariadb)) don't use TLS.
+Some apps (such as [MongoDB](/guides/mongodb) or [MariaDB](/guides/mariadb)) don't use TLS.
 Create a TLS tunnel via `kraft cloud tunnel`, which opens a local endpoint (`localhost` / `127.0.0.1`) and forwards traffic over TLS.
-See the [MariaDB guide](/docs/guides/mariadb) for an example.
+See the [MariaDB guide](/guides/mariadb) for an example.
 
 
 ## "No such file or directory" when building or deploying an image
@@ -350,13 +350,13 @@ Contact Unikraft Cloud on the [Discord server](/discord) and include this output
 
 While you debug an issue you can mitigate crashes by setting a restart policy.
 For example, use `kraft cloud deploy --restart on-failure` to have the platform restart the app if it crashes.
-Find more info on [restart policies here](/docs/api/v1/instances/#restart-policy).
+Find more info on [restart policies here](/cli/deploy#options).
 
 :::
 
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/docs/cli/)
-* Unikraft Cloud's [REST API reference](/docs/api/v1)
-* Many more guides [here](/docs/guides)
+* The `kraft cloud` [CLI reference](/cli/)
+* Unikraft Cloud's [REST API reference](/api/platform/v1)
+* Many more guides [here](/guides/bun)

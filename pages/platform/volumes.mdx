@@ -111,7 +111,7 @@ On every request, this simple server will write a timestamp to a file on the
 mounted persistent volume and print out the current contents of the file.
 
 Start the Flask web server, create a
-[service](/docs/platform/services) for it via the `-p` flag, and mount the `my-volume` volume at `/mnt`:
+[service](/platform/services) for it via the `-p` flag, and mount the `my-volume` volume at `/mnt`:
 
 ```bash title=""
 kraft cloud deploy -M 512 -p 443:8080 --volume my-volume:/mnt .
@@ -226,5 +226,5 @@ kraft cloud volume remove <volume-name>
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/docs/cli/), in particular the [deploy](/docs/cli/deploy) and [volumes](/docs/cli/volume) subcommands
-* Unikraft Cloud's [REST API reference](/docs/api/v1), in particular the section on [volumes](/docs/api/v1/volumes)
+* The `kraft cloud` [CLI reference](/cli/), in particular the [deploy](/cli/deploy) and [volume](/cli/volume) subcommands
+* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [volumes](/api/platform/v1/volumes)

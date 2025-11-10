@@ -57,13 +57,13 @@ Yes, especially stemming from the fact that they have a minimal Trusted Computin
 Definitely.
 Every instance on Unikraft Cloud has a private IP and DNS name.
 You can plug instances together.
-Follow this [guide](/docs/guides/features/idns/) for instructions.
+Follow this [guide](/platform/services) for instructions.
 
 
 #### With an access token and an app, what should you do?
 
 You'll need a Dockerfile and Kraftfile.
-See any of the apps/langs guides (here)[/docs/guides/] to see examples.
+See any of the apps/langs guides [here](/guides/bun) to see examples.
 
 
 #### What's `kraft`?
@@ -82,7 +82,7 @@ For observability, Unikraft ships a Prometheus library so a unikernel can export
 
 #### How's millisecond scale-to-zero achieved?
 
-Magic 🪄
+Magic 🪄.
 Kidding, it's the combination of using Unikraft unikernels to run workloads and a custom node ingress controller.
 This controller can be reactive in milliseconds and scale to thousands of instances.
 Other optimizations to the underlying host also help.
@@ -115,7 +115,7 @@ Stateful scale-to-zero in milliseconds anyone?
 #### What do you need to get started?
 
 [Sign up](https://console.unikraft.cloud/signup) to get an access token.
-If you're interested in an enterprise solution please [write to us](/contact).
+If you're interested in an enterprise solution please [write to us](https://unikraft.com/contact).
 
 
 #### What about usability?
@@ -160,7 +160,7 @@ It's ready to run with hardware-level isolation and extreme efficiency.
 #### Are you a competing technology to WASM?
 
 No.
-You can read more about [how Unikraft and WASM complement each other in our dedicated blog post on the matter](/blog/unikernels-and-wasm/).
+You can read more about [how Unikraft and WASM complement each other in our dedicated blog post on the matter](https://unikraft.com/blog/unikernels-and-wasm/).
 In short, WASM provides language-level isolation, whereas Unikraft provides hardware-level.
 When you deploy WASM to the public cloud, there will be a VM underneath for isolation.
 Maybe even a container runtime.
@@ -171,7 +171,7 @@ The VM (the unikernel) itself has only the minimal code needed to run the WASM r
 #### Can you deploy within hyperscaler infra and connect to their services with Unikraft Cloud?
 
 Yes.
-Unikraft supports [metros](/docs/metros) / regions within existing hyperscaler infra, and also connectivity to their services.
+Unikraft supports [metros](/platform/metros) (regions) within existing hyperscaler infra, and also connectivity to their services.
 For example, you could run an API server on Unikraft Cloud and connect to S3 as a storage back end.
 Contact information is available for more details.
 
@@ -179,7 +179,7 @@ Contact information is available for more details.
 #### Can you try Unikraft open source first?
 
 Yes.
-Head on over to [unikraft.org](http://www.unikraft.org/), install the `kraft` tool with the one-liner there, and use `kraft run` to build, package and run your app locally.
+Head on over to [unikraft.org](https://unikraft.org/docs/cli/install), install the `kraft` tool with the one-liner there, and use `kraft run` to build, package and run your app locally.
 When you're ready to deploy to cloud, set your Unikraft Cloud token and deploy via `kraft cloud deploy`.
 
 
@@ -201,9 +201,9 @@ Other unikernel projects exist, but most are research efforts, unmaintained, or 
 
 #### Do you have a Kubernetes integration?
 
-[Yes!](/docs/integrations/kubernetes/)
+[Yes!](/integrations/kubernetes/)
 
 
 #### Do you have a Terraform integration?
 
-[Yes!](/docs/integrations/terraform/)
+[Yes!](https://github.com/unikraft-cloud/terraform-provider-ukc)

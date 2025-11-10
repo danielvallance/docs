@@ -14,7 +14,7 @@ At a high level, you use `kraft` to build and push an image to the registry, and
 The simplest way to run this workflow is to use `kraft cloud deploy`, which combines all steps into one command.
 Internally, the deploy command calls other subcommands.
 The service in the diagram is the mechanism to connect apps to the Internet.
-Read more in the [services guide](/docs/guides/features/service).
+Read more in the [services guide](/platform/services).
 
 
 ## `Dockerfiles`, `Kraftfiles` and runtimes
@@ -56,7 +56,7 @@ COPY ./server.py /src/server.py
 If you're familiar with `Dockerfiles` there is nothing unusual here, other than that by default Unikraft Cloud uses `FROM scratch` to keep images lean.
 To add your app's code to the build, change the `COPY` commands as needed.
 
-All [guides](/docs/guides/) on Unikraft Cloud, and the [examples](https://github.com/unikraft-cloud/examples) they rely on underneath come with `Kraftfile`s and `Dockerfile`s for you to get started.
+All [guides](/guides/bun) on Unikraft Cloud, and the [examples](https://github.com/unikraft-cloud/examples) they rely on underneath come with `Kraftfile`s and `Dockerfile`s for you to get started.
 
 :::tip
 You can also try a standard base image (for example, `FROM python:alpine`).
@@ -66,16 +66,16 @@ This choice may increase image size, memory use, and boot time.
 
 ## Example workflows
 
-This guide uses a Python [app](/docs/guides/python) as an example to show three workflows:
+This guide uses a Python [app](/guides/python) as an example to show three workflows:
 
 1. How to create an image and launch an instance from it.
-1. How to create an image and launch many instances from it.
-1. How to launch instances from an existing image.
+2. How to create an image and launch many instances from it.
+3. How to launch instances from an existing image.
 
 
 ### Create an image and an instance from it
 
-Start with the simplest workflow: create an image from a Python app (following the Python app [guide](/docs/guides/python)) and start an instance from it with a single `kraft cloud deploy` command:
+Start with the simplest workflow: create an image from a Python app (following the Python app [guide](/guides/python)) and start an instance from it with a single `kraft cloud deploy` command:
 
 ```bash title=""
 git clone https://github.com/unikraft-cloud/examples
@@ -187,5 +187,5 @@ You now have a new instance created from the existing image.
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/docs/cli/)
-* Unikraft Cloud's [REST API reference](/docs/api/v1)
+* The `kraft cloud` [CLI reference](/cli/)
+* Unikraft Cloud's [REST API reference](/api/platform/v1)

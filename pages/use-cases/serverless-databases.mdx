@@ -6,7 +6,7 @@ navigation_icon: database-zap
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
 Databases are central to modern apps, but they're notoriously resource-hungry, slow to scale, and costly to operate at low utilisation.
-Traditional VM- or container-based solutions keep idle resources running, resulting in waste and inefficiency.
+Traditional VM or container-based solutions keep idle resources running, resulting in waste and inefficiency.
 With **Unikraft Cloud**, serverless databases gain the advantages of **unikernels**, combining **extreme performance** with **true scale-to-zero efficiency**.
 
 ## Why run serverless databases on Unikraft Cloud
@@ -18,7 +18,7 @@ This ensures the system uses resources **only when needed**, without cold-start 
 
 ### 🔒 Stronger security by design
 
-Each database instance runs as a **specialised, single-process unikernel**, drastically reducing the attack surface compared to general-purpose OSes.
+Each database instance runs as a **specialised, single-process unikernel**, drastically reducing the attack surface compared to general-purpose operating systems.
 This isolation protects customer data with **built-in, lightweight security**.
 
 ### 💰 Cost-efficient scale-to-zero
@@ -40,22 +40,22 @@ These instances optimise both Online Transaction Processing (OLTP) and Online An
 ## Getting started
 
 This guide shows you how to use [PostgreSQL](https://www.postgresql.org/), a powerful, open source object-relational database system, in a serverless fashion.
-With Unikraft Cloud, you can run PostgreSQL in a lightweight virtual machine, with minimal overhead and millisecond fast startup times.
-The instance will [scale-to-zero](/docs/features/scale-to-zero) when not in use.
+With Unikraft Cloud, you can run PostgreSQL in a lightweight virtual machine, with minimal overhead and millisecond-fast startup times.
+The instance will [scale-to-zero](/features/scale-to-zero) when not in use.
 
 To run it, follow these steps:
 
-1. Install the [`kraft` CLI tool](/install) and a container runtime engine (for example, Docker).
+1. Install the [`kraft` CLI tool](https://unikraft.org/docs/cli/install) and a container runtime engine (for example, Docker).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and
+1. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and
    `cd` into the `examples/postgres/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/postgres/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
 ```bash
@@ -75,12 +75,12 @@ kraft cloud deploy -e POSTGRES_PASSWORD=unikraft -p 5432:5432/tls -M 1024 .
 The output shows the instance address and other details:
 
 ```ansi
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: postgres-saan9
- [90m├[0m[90m──────────[0m [90muuid[0m: 3a1371f2-68c6-4187-84f8-c080f2b028ca
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mstarting[0m
- [90m├[0m[90m──────────[0m [90mfqdn[0m: young-thunder-fbafrsxj.fra.unikraft.app
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: postgres-saan9
+ [90m├[0m[90m──────────[0m [90muuid[0m: 3a1371f2-68c6-4187-84f8-c080f2b028ca
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mstarting[0m
+ [90m├[0m[90m──────────[0m [90mfqdn[0m: young-thunder-fbafrsxj.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: postgres@sha256:2476c0373d663d7604def7c35ffcb4ed4de8ab231309b4f20104b84f31570766
  [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
  [90m├[0m[90m───────[0m [90mservice[0m: young-thunder-fbafrsxj
@@ -92,7 +92,7 @@ The output shows the instance address and other details:
 In this case, the instance name is `postgres-saan9` and the service `young-thunder-fbafrsxj`.
 They're different for each run.
 
-If you use port 5432/tls according to the example above you can now directly connect to postgres:
+If you use port `5432/tls`, according to the example above, you can now directly connect to postgres:
 
 ```console
 psql -U postgres -h young-thunder-fbafrsxj.fra.unikraft.app
@@ -114,19 +114,18 @@ postgres=#
 Use SQL and `psql` commands for your work.
 
 :::tip[Idle scale-to-zero]
-This example uses the [`idle` scale-to-zero policy](/docs/api/v1/instances#scaletozero_policy) by default (see the `labels` section in the `Kraftfile`).
+This example uses the [`idle` scale-to-zero policy](/features/scale-to-zero) by default (see the `labels` section in the `Kraftfile`).
 This means that the instance will use scale-to-zero even in the presence of `psql` connections.
 
 The PostgreSQL example makes use of scale-to-zero app support.
 This ensures that the instance isn't put into standby even for long running queries (during which the connections are also idle).
-To this end, the [`pg_ukc_scaletozero`](https://github.com/kraftcloud/pg_ukc_scaletozero) module is loaded into Postgres.
+To this end, the [`pg_ukc_scaletozero`](https://github.com/unikraft-cloud/pg_ukc_scaletozero) module is loaded into Postgres.
 This module suspends scale-to-zero during query processing.
 You can see this in action by running `SELECT pg_sleep(10);` and verifying that the instance keeps on running.
 :::
 
 :::note
-If you'd like to use a port other than `5432/tls` you'll need to use the `kraft cloud tunnel` command to connect to Postgres.
-See [the tunneling guide](/docs/guides/features/tunnel) for more information.
+If you'd like to use a port other than `5432/tls`, you'll need to use the [`kraft cloud tunnel`](/cli/tunnel) command to connect to Postgres.
 
 You need to explicitly disable scale-to-zero.
 You can do this by either changing the label in the `Kraftfile` or by using `--scale-to-zero off` in the deploy command.
@@ -151,7 +150,7 @@ kraft cloud instance remove postgres-saan9
 
 ### Using volumes
 
-You can use [volumes](/docs/guides/features/volumes) for data persistence for your PostgreSQL instance.
+You can use [volumes](/platform/volumes) for data persistence for your PostgreSQL instance.
 
 For that you would first create a volume:
 
@@ -175,7 +174,7 @@ For that you use a different `POSTGRES_PASSWORD` environment variable when start
 
 You could also use a different location to mount your volume or set more configuration options.
 
-And, you can use the PostgreSQL instance in conjunction with a frontend service, [see the guide here](/docs/guides/features/idns).
+And, you can use the PostgreSQL instance in conjunction with a frontend service, [see the guide here](/platform/services).
 But, in that case make sure to disable scale-to-zero if you plan to use the DB internally.
 
 :::note
@@ -193,4 +192,4 @@ Use the `--help` option for detailed information on using Unikraft Cloud:
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+Or visit the [CLI Reference](/cli).

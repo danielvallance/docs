@@ -3,7 +3,7 @@ title: Load Balancing
 navigation_icon: split
 ---
 
-Load balancing in Unikraft Cloud is easy: as soon as you attach more than one instance to a [service](/docs/guides/features/service), Unikraft Cloud will automatically start balancing traffic between many instances.
+Load balancing in Unikraft Cloud is easy: as soon as you attach more than one instance to a [service](/platform/services), Unikraft Cloud will automatically start balancing traffic between many instances.
 The load balancing happens based on the number of connections (in TCP mode) or requests (in HTTP mode).
 More on that below.
 
@@ -11,15 +11,15 @@ Because of load balancing, instances in a service must be of the same kind (for 
 You can remove instances from a service at any time, and, when you do, Unikraft Cloud will immediately take the instance out of the load balancing service.
 
 
-## Soft-/hard-limits
+## Soft and hard limits
 
-[Services](/docs/platform/services) have soft and hard limits for the number of concurrent requests and connections.
+[Services](/platform/services) have soft and hard limits for the number of concurrent requests and connections.
 The limits apply **per instance**.
-For HTTP services (that is, using the `http` [handler](#handlers)) the system checks each individual in-flight request against the limit, but not the underlying TCP connection.
+For HTTP services (that is, using the `http` [handler](/platform/services#handlers)) the system checks each individual in-flight request against the limit, but not the underlying TCP connection.
 For TCP services the individual open connections get counted.
 In the following, the term request refers to both requests and connections.
 
-The load balancer uses the soft limit to decide when to wake up another [standby](/docs/api/v1/instances#states) instance.
+The load balancer uses the soft limit to decide when to wake up another [standby](/platform/instances#instance-states) instance.
 For example, if you set the soft limit to 5 and the service consists of 2 standby instances, one of the instances receives up to 5 concurrent requests.
 The 6th parallel request wakes up the second instance.
 If there are no more standby instances to wake up, the number of requests assigned to each instance will exceed the soft limit.
@@ -116,7 +116,7 @@ You're now load balancing across 2 NGINX instances!
 
 Currently it's impossible to set the service's name via `kraft cloud deploy`.
 If you'd like to set the service's name, first use the `kraft cloud service` command to create the service.
-You can use the `--service` flag of `kraft cloud deploy` to attach the instance to the service, as outlined in this [guide](/docs/guides/features/service)
+You can use the `--service` flag of `kraft cloud deploy` to attach the instance to the service, as outlined in this [guide](/platform/services).
 
 :::
 
@@ -129,7 +129,7 @@ If you want to ensure that no existing connections get dropped when stopping an 
 ## Load balancing algorithm
 
 The load balancing algorithm is a variant of `least_conn`.
-For every instance, the number of current in-flight TCP connections (if in `tcp` [mode](/docs/cli/service/create)) or requests (if in `http` [mode](/docs/cli/service/create)).
+For every instance, the number of current in-flight TCP connections (if in `tcp` [mode](/platform/services#handlers)) or requests (if in `http` [mode](/platform/services#handlers)).
 
 To select an instance, the system goes over all instances in the service.
 It finds the set of instances that have the least amount of in-flight requests/connections, and picks from that set.
@@ -150,5 +150,5 @@ This is because it would now be the only instance with only 1 connection (assumi
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/docs/cli/), and in particular the services subcommand.
-* Unikraft Cloud's [REST API reference](/docs/api/v1), and in particular the section on services.
+* The `kraft cloud` [command-line tool reference](/cli/), and in particular the services subcommand.
+* Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the section on services.

@@ -17,11 +17,11 @@ All within a negligible amount of time for Internet round-trip times and so unbe
 By default, Unikraft Cloud reduces network and cloud stack cold start time to a min time.
 Some apps take a while to initialize (for example, Spring Boot, Puppeteer, etc).
 If you need to deploy such an app and still want millisecond cold starts, Unikraft Cloud provides a *stateful* feature.
-Please check out [this guide](/docs/guides/features/stateful/) for more information on how to set this up.
+Please check out [this guide](/features/scale-to-zero#stateful-scale-to-zero) for more information on how to set this up.
 
 :::tip
-If you add instances to a [service](/docs/guides/features/service), the service will load balance traffic across all them and Unikraft Cloud will ensure each instance gets woken up as needed.
-This differs from [autoscale](/docs/guides/features/autoscale), in which you *don't* specify the number of instances.
+If you add instances to a [service](/platform/services), the service will load balance traffic across all them and Unikraft Cloud will ensure each instance gets woken up as needed.
+This differs from [autoscale](/features/autoscale), in which you *don't* specify the number of instances.
 The platform does this for you based on traffic load.
 :::
 
@@ -36,7 +36,7 @@ Unikraft Cloud currently supports the following scale-to-zero policies:
 |--------|-------------|
 | `off`  | Scale-to-zero isn't enabled. The instance keeps on running until manually stopped. |
 | `on`   | Enables scale-to-zero. When there are no TCP connections or HTTP requests during the cool-down time, the instance goes into standby. |
-| `idle` | Same as `on`, but also puts the instance into standby when there are TCP connections established that have been inactive during the cool-down time. The connections remain established and incoming packets wake up the instance. Scale-to-zero doesn't happen while there are active HTTP requests (that is, traffic on ports, which use the `http` [handler](/docs/api/v1/services#handlers)). |
+| `idle` | Same as `on`, but also puts the instance into standby when there are TCP connections established that have been inactive during the cool-down time. The connections remain established and incoming packets wake up the instance. Scale-to-zero doesn't happen while there are active HTTP requests (that is, traffic on ports, which use the `http` [handler](/platform/services#handlers)). |
 
 :::note
 Unikraft Cloud only considers network traffic that's going through its proxy to control scale-to-zero.
@@ -71,7 +71,7 @@ To control scale-to-zero from within your app, instances on Unikraft Cloud provi
 |`/uk/libukp/scale_to_zero_disable` | Allows to temporarily disable scale-to-zero. |
 
 The `scale_to_zero_disable` pseudo file keeps track of the count of concurrent disable requests.
-If the count is `0`, scale-to-zero remains active[^1].
+If the count is `0`, scale-to-zero remains active[^2].
 Any number larger than `0` means scale-to-zero is temporarily inactive.
 Using a count instead of a boolean value helps many independent workers.
 Your app workers can disable scale-to-zero individually by incrementing and decrementing the count without having to synchronize.
@@ -106,7 +106,7 @@ For example, to run just-in-time compilation and fill caches.
 Using stateful scale-to-zero can dramatically reduce the response time of your service.
 With stateful scale-to-zero Unikraft Cloud takes a snapshot of the instance state before putting it into standby.
 When incoming network traffic triggers a wake-up, the snapshot gets loaded.
-The instance resumes execution where it left off - with caches already warm.
+The instance resumes execution where it left off—with caches already warm.
 
 Stateful scale-to-zero can also enable scale-to-zero for apps that need to keep state for functional correctness.
 This works even if cold boot times are no concern.
@@ -244,16 +244,16 @@ nginx-1a747  twilight-gorilla-ui5b6kwt.fra.unikraft.app  [92mrunning[0m
 You can use scale-to-zero *in conjunction with* autoscale.
 This ensures that as you scale back down, if traffic dies, your last instance gets removed.
 You're not charged for the service.
-For more on autoscale please see the autoscale [guide](/docs/guides/features/autoscale)
+For more on autoscale please see the autoscale [guide](/features/autoscale)
 :::
 
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/docs/cli/), and in particular the services and scale subcommands
-* Unikraft Cloud's [REST API reference](/docs/api/v1), and in particular the section [on scale-to-zero](/docs/api/v1/instances/#scaletozero).
+* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) and [instance create](/cli/instance/create) subcommands.
+* Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the [scale-to-zero schema](/api/platform/v1/~schemas#instance-scale-to-zero).
 
 
 
-[^1]: This is never the case for ports of your service that have the `http` handler set.
-[^2]: If it's actually enabled depends on the instance configuration.
+[^1]: This is never the case for ports of your service that have the `http` [handler](/platform/services#handlers) set.
+[^2]: If it's actually enabled, depends on the instance configuration.
