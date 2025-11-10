@@ -3,6 +3,8 @@ title: Services
 navigation_icon: group
 ---
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
 On creation, Unikraft Cloud assigns each instance a private IP address and private FQDN for internal connectivity.
 It connects them to the Internet through a *service*: create a service and attach instances to it.
 
@@ -89,6 +91,52 @@ In the end, if you want to remove a service, use:
 
 ```bash title=""
 kraft cloud service remove my-service
+```
+
+## Handlers
+
+Handlers define how the service will handle incoming connections and forward traffic from the Internet to your app.
+For example, you can configure a service to terminate TLS connections, redirect HTTP traffic, or enable HTTP mode for load balancing.
+You configure the handlers for every published service port individually.
+
+Currently, there are 3 supported handlers:
+
+<Tabs defaultValue="tls">
+  <TabsList>
+    <TabsTrigger value="tls">tls</TabsTrigger>
+    <TabsTrigger value="http">http</TabsTrigger>
+    <TabsTrigger value="redirect">redirect</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tls">
+    Terminate the TLS connection at the Unikraft Cloud gateway using the wildcard certificate issued for the `unikraft.cloud` domain.
+    The gateway forwards the unencrypted traffic to your app.
+  </TabsContent>
+  <TabsContent value="http">
+    Enable HTTP mode on the load balancer to load balance on the level of individual HTTP requests.
+    In this mode, only HTTP connections are accepted.
+    If this option is not set, the load balancer works in TCP mode and distributes TCP connections.
+  </TabsContent>
+  <TabsContent value="redirect">
+    Redirect traffic from the source port to the destination port.
+  </TabsContent>
+</Tabs>
+
+:::note
+The following set of constraints apply when publishing ports:
+- Port 80: **must** have `http` and **must not** have `tls` set.
+- Port 443: **must** have `http` and `tls` set.
+- The `redirect` handler can only be set on port 80 (HTTP) to redirect to
+  port 443 (HTTPS).
+- All other ports **must** have `tls` and **must not** have `http` set.
+:::
+
+For example, the following creates the service `my-service` with three published ports:
+- Port 443 with both `http` and `tls` handlers (HTTP mode).
+- Port 80 with the `http` and `redirect` handlers (HTTP mode).
+- Port 10000 with only the `tls` handler (TCP mode).
+
+```bash title=""
+kraft cloud service create --name my-service 443:8080/http+tls 80:8080/http+redirect 10000:10000/tls
 ```
 
 ## Learn more
