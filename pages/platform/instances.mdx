@@ -41,7 +41,7 @@ For example, the `stop_reason` has the following values in these scenarios:
 | `28`  | `11100`/`FUP--` | Forced user-initiated shutdown. |
 | `15`  | `01111`/`-UPAK` | Regular user-initiated shutdown. The app and kernel have exited. The `exit_code` and `stop_code` show if the app and kernel shut down cleanly. |
 | `13`  | `01101`/`-UP-K` | The user initiated a shutdown but the app was forcefully killed by the kernel during shutdown. This can be the case if the image doesn't support a clean app exit or the app crashed after receiving a termination signal. Unikraft Cloud ignores the `exit_code` in this scenario. |
-| `7`   | `00111`/`--PAK` | Unikraft Cloud initiated the shutdown (for example, due to [scale-to-zero](/docs/api/v1/autoscale#scaletozero)). The app and kernel have exited. The `exit_code` and `stop_code` show if the app and kernel shut down cleanly. |
+| `7`   | `00111`/`--PAK` | Unikraft Cloud initiated the shutdown (for example, due to [scale-to-zero](/features/scale-to-zero)). The app and kernel have exited. The `exit_code` and `stop_code` show if the app and kernel shut down cleanly. |
 | `3`   | `00011`/`---AK` | The app exited. The `exit_code` and `stop_code` show if the app and kernel shut down cleanly. |
 | `1`   | `00001`/`----K` | The instance likely experienced a fatal crash and the `stop_code` contains more information about the cause of the crash. |
 | `0`   | `00000`/`-----` | The stop reason is unknown. |

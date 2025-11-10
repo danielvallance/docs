@@ -239,17 +239,17 @@ my-claim  8 minutes ago  10 MiB  nginx-pod-nginx  nginx-pod-nginx  mounted  true
 
 ## Notes
 
-* [**Instances**](https://unikraft.cloud/docs/api/v1/instances/)
+* [**Instances**](/platform/instances)
 
   For each Pod scheduled on Kraftlet, Kraftlet runs its containers as separate Unikraft Cloud instances rather than running them as containers.
   Kraftlet ensures it assigns instances to the correct Unikraft Cloud services and attaches them to the corresponding Unikraft Cloud volumes.
 
-* [**Services**](https://unikraft.cloud/docs/api/v1/services/)
+* [**Services**](/platform/services)
 
   When a Pod gets scheduled on the Kraftlet node, Kraftlet fetches the existing Kubernetes service that the given Pod is backing and **creates a corresponding Unikraft Cloud Service**.
   Kraftlet allows cluster admins to manage Unikraft Cloud Services by defining a Kubernetes service backed by Pods running on Kraftlet.
 
-* [**Volumes**](https://unikraft.cloud/docs/api/v1/volumes/)
+* [**Volumes**](/platform/volumes)
 
   Kraftlet listens for changes on [PersistentVolumeClaim objects](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) with storageClass `ukc-volume`.
   For each creation of such Persistent Volume Claim (PVC) object, the Kraftlet will create a corresponding Unikraft Cloud volume and a `PersistentVolume` object to bind the PVC object to.

@@ -10,7 +10,7 @@ It connects them to the Internet through a *service*: create a service and attac
 
 A service defines how to reach a group of instances from the outside world.
 It maps an external FQDN port to an internal port common to all instances.
-The platform [load balances](/docs/guides/features/lb/) incoming connections across instances.
+The platform [load balances](/features/load-balancing) incoming connections across instances.
 Avoid placing apps that expose different ports in the same service.
 :::
 
@@ -35,7 +35,7 @@ Unikraft Cloud terminates TLS and sends HTTP to port 8080.
 This example assumes that the app opens port 8080.
 
 Now use `kraft cloud deploy` with the `--service` flag to attach the instance to the `my-service` service.
-For example, from the [Go web server guide](/docs/guides/go) (see all guides [here](/docs/guides/)):
+For example, from the [Go web server guide](/guides/go):
 
 ```bash title=""
 git clone https://github.com/unikraft-cloud/examples
@@ -93,5 +93,5 @@ kraft cloud service remove my-service
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/docs/cli/), in particular the services subcommand
-* Unikraft Cloud's [REST API reference](/docs/api/v1), in particular the section on services
+* The `kraft cloud` [CLI reference](/cli/), in particular the [service](/cli/service) subcommand
+* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [service groups](/api/platform/v1/service-groups)

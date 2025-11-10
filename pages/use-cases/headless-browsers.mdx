@@ -16,7 +16,7 @@ They're resource-intensive, security-sensitive, and often run in short bursts—
 Instances on Unikraft Cloud boot in microseconds, so browsers spin up only when needed:
 
 * Perfect for on-demand scraping and CI/CD testing.
-* No idle costs when browsers aren’t running.
+* No idle costs when browsers aren't running.
 
 ### 🔒 Strong security
 
@@ -52,16 +52,16 @@ option to run them headless (no UI).
 
 To run it, follow these steps:
 
-1. Install the [`kraft` CLI tool](/install) and a container runtime engine (for example, Docker).
+1. Install the [`kraft` CLI tool](https://unikraft.org/docs/cli/install) and a container runtime engine (for example, Docker).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/node-express-puppeteer/` directory:
+1. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/node-express-puppeteer/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/node-express-puppeteer/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
 ```bash
@@ -107,7 +107,7 @@ They're different for each run.
 Use a browser to access the landing page of the Puppeteer (that uses [ExpressJS](https://expressjs.com/)).
 The app and the landing page are part of [this repository](https://github.com/christopher-talke/node-express-puppeteer-pdf-example).
 
-In the example run above, the landing page is at the address https://nameless-fog-0tvh1uov.fra.unikraft.app
+In the example run above, the landing page is at the address `https://nameless-fog-0tvh1uov.fra.unikraft.app`.
 You can use the landing page to generate the PDF version of a remote page.
 
 At any time, you can list information about the instance:
@@ -141,4 +141,4 @@ Use the `--help` option for detailed information on using Unikraft Cloud:
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+Or visit the [CLI Reference](/cli).
