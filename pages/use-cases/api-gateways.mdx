@@ -16,7 +16,7 @@ With **Unikraft Cloud**, API Gateways gain advantage from a unikernel-based, sca
 Unikernels remove the overhead of general-purpose operating systems by compiling only the required OS components alongside the API Gateway app.
 This results in:
 
-* Sub-millisecond cold-start times (perfect for bursty API traffic).
+* Single-digit-millisecond cold-start times (perfect for bursty API traffic).
 * Minimal memory footprint, allowing more requests per node.
 * Consistent, predictable response latency at scale.
 
@@ -35,8 +35,8 @@ Traffic to APIs often fluctuates—peaking during business hours, quiet overnigh
 Traditional gateway clusters waste resources when idle.
 With Unikraft Cloud:
 
-* API Gateways use scale-to-zero when not in use, reducing idle costs to **zero**.
-* Instant cold-starts ensure gateways are ready in microseconds when traffic resumes.
+* API Gateways scale-to-zero when not in use, reducing idle costs to **zero**.
+* Instant cold-starts ensure gateways are ready in milliseconds when traffic resumes.
 * Fine-grained billing: pay only for requests and runtime, not for idle VMs.
 
 ### 🔄 Serverless-ready
