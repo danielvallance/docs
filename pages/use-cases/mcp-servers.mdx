@@ -101,6 +101,8 @@ You can find similar instructions for [Claude Code](https://code.claude.com/docs
 
 Example query that will trigger a tool call:
 
+{/* vale off */}
+
 > **Q:** *Could you download the original Unikraft paper for me?*
 >
 > **A:** The original Unikraft paper (“Unikraft: Fast, Specialized Unikernels the Easy Way”) is being downloaded and converted. I will notify you as soon as it is ready for reading or further actions.
@@ -115,10 +117,13 @@ Example query that will trigger a tool call:
 > Even in the hardware domain, and especially with the demise of Moore’s law, manufacturers are increasingly leaning towards hardware specialization to achieve ever better performance; the machine learning field is a primary exponent of this.
 > ...
 
+{/* vale on */}
+
 ### Example 2: Custom MCP server
 
 This example demonstrates how to build a minimal custom MCP server from scratch.
-It provides weather information and time utilities—showing the core patterns for building your own MCP tools.
+It provides weather information and time utilities.
+This shows the core patterns for building your own MCP tools.
 
 To run it, follow these steps:
 
@@ -159,10 +164,14 @@ You can find similar instructions for [Claude Code](https://code.claude.com/docs
 
 Example query that will trigger a tool call:
 
+{/* vale off */}
+
 > **Q**: What is the current weather in Paris, and what time is it there?
-> 
+>
 > **A**: The current weather in Paris is 21°C, partly cloudy, with 62% humidity.
 > The local time in Paris is 23:21 (11:21 PM), Tuesday, December 2, 2025 (UTC+1).
+
+{/* vale on */}
 
 ## Building your own MCP server
 
@@ -175,7 +184,7 @@ MCP servers follow a simple pattern:
 Common use cases for custom MCP servers:
 
 * **Database access**: Query internal databases, data warehouses, or analytics platforms.
-* **API integration**: Connect AI assistants to third-party services (CRM, ticketing, monitoring).
+* **API integration**: Connect AI assistants to third-party services (customer relationship management, ticketing, monitoring).
 * **Custom business logic**: Integrate company-specific calculations, validations, or workflows.
 * **Document retrieval**: Search and retrieve from internal knowledge bases or document stores.
 
