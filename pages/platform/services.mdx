@@ -96,7 +96,7 @@ kraft cloud service remove my-service
 ## Handlers
 
 Handlers define how the service will handle incoming connections and forward traffic from the Internet to your app.
-For example, you can configure a service to terminate TLS connections, redirect HTTP traffic, or enable HTTP mode for load balancing.
+For example, you can configure a service to end TLS connections, redirect HTTP traffic, or enable HTTP mode for load balancing.
 You configure the handlers for every published service port individually.
 
 Currently, there are 3 supported handlers:
@@ -113,8 +113,8 @@ Currently, there are 3 supported handlers:
   </TabsContent>
   <TabsContent value="http">
     Enable HTTP mode on the load balancer to load balance on the level of individual HTTP requests.
-    In this mode, only HTTP connections are accepted.
-    If this option is not set, the load balancer works in TCP mode and distributes TCP connections.
+    In this mode, the load balancer accepts only HTTP connections.
+    If you don't set this option, the load balancer works in TCP mode and distributes TCP connections.
   </TabsContent>
   <TabsContent value="redirect">
     Redirect traffic from the source port to the destination port.
@@ -125,7 +125,7 @@ Currently, there are 3 supported handlers:
 The following set of constraints apply when publishing ports:
 - Port 80: **must** have `http` and **must not** have `tls` set.
 - Port 443: **must** have `http` and `tls` set.
-- The `redirect` handler can only be set on port 80 (HTTP) to redirect to
+- You can only set the `redirect` handler on port 80 (HTTP) to redirect to
   port 443 (HTTPS).
 - All other ports **must** have `tls` and **must not** have `http` set.
 :::

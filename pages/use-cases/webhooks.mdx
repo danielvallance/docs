@@ -4,7 +4,8 @@ navigation_icon: plug
 ---
 
 Webhooks, also known as reverse APIs, enable real-time, event-driven communication between services.
-Instead of constantly polling for updates, webhooks allow services to push data to your app the moment something happens—a commit is pushed, a payment is processed, or an issue is created.
+Instead of constantly polling for updates, webhooks allow services to push data to your app the moment something happens.
+This could be when someone pushes a commit, processes a payment, or creates an issue.
 This makes webhooks essential for building reactive, event-driven architectures.
 
 With **Unikraft Cloud**, you can deploy webhook receivers that combine instant availability with scale-to-zero economics—paying only when events arrive, while maintaining millisecond-level response times.
@@ -36,7 +37,7 @@ Why pay for idle servers when webhooks only fire occasionally?
 With Unikraft Cloud:
 
 * Webhook receivers scale-to-zero when not processing events, costing nothing.
-* Instant wake-up ensures events are processed immediately upon arrival.
+* Instant wake-up ensures the system processes events immediately upon arrival.
 * Fine-grained billing means you only pay for actual event processing.
 
 
@@ -86,8 +87,8 @@ The example includes:
 * **Scale-to-zero configuration** in the `Kraftfile`.
 
 To customize for other webhook sources ([Stripe](https://docs.stripe.com/webhooks), [Slack](https://docs.slack.dev/tools/node-slack-sdk/webhook/), [GitLab](https://docs.gitlab.com/user/project/integrations/webhooks/), etc.), it's best to refer to their specific libraries and signature validation methods.
-Unfortunately, webhooks are not a standardized protocol, so each service has its own conventions.
-We recommend to also follow [Webhooks.fyi](https://webhooks.fyi/) for best practices.
+Webhooks aren't a standardized protocol, so each service has its own conventions.
+Also follow [Webhooks.fyi](https://webhooks.fyi/) for best practices.
 
 ## Learn more
 
