@@ -1,0 +1,425 @@
+---
+title: ROMs
+navigation_icon: hard-drive
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+:::caution[Disclaimer]
+The ROM feature isn't currently enabled for the public Unikraft Cloud offering.
+As such, the [KraftKit CLI tool](/cli/) can't entirely leverage this feature.
+For boxes where it's enabled, use it via the [Unikraft Cloud API](/api/platform/v1).
+:::
+
+Unikraft Cloud supports the ability to attach **Read-Only Memory (ROM)** blobs to instances.
+It allows you to create a general-purpose base image and then customize individual instances by attaching code or data as separate ROM blobs.
+This enables quick deployment of custom functionality to preexisting language environments without rebuilding the entire image.
+
+
+## Overview
+
+With ROMs, you can:
+
+- Deploy variations of an app from a single base image.
+- Update app code without rebuilding the base image.
+- Reduce image size and deployment time.
+
+The ROM workflow consists of two main components:
+
+1. **Base Image**: A general-purpose image containing the runtime environment (for example, Python interpreter, Node.js, etc.).
+1. **ROM Blobs**: Separate, lightweight images containing your app code or any other data you want to customize.
+
+This separation allows you to maintain one base image while deploying many different instances with different data.
+
+:::note
+The app running inside the base image is responsible to read the data from the attached ROM devices.
+ROM blobs appear as block devices at paths like `/dev/ukp_rom<rom_name>`, where `<rom_name>` is the ROM name you specify when creating the instance.
+:::
+
+
+## Setup
+
+This example shows how to deploy Python functions using ROMs on Unikraft Cloud.
+Ensure you have the `kraft` CLI installed and configured with your Unikraft Cloud account.
+Set the following environment variables:
+
+```bash title=""
+export UKC_USER="<your-username>"
+export UKC_TOKEN="<your-api-token>"
+export UKC_METRO="fra" # or your preferred metro
+```
+
+### Base Image
+
+First, create a base image with a Python HTTP server that loads and executes custom Python programs from a ROM.
+
+<Tabs defaultValue="dockerfile">
+  <TabsList>
+    <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
+    <TabsTrigger value="kraftfile">Kraftfile</TabsTrigger>
+    <TabsTrigger value="server">server.py</TabsTrigger>
+    <TabsTrigger value="wrapper">wrapper.sh</TabsTrigger>
+  </TabsList>
+  <TabsContent value="dockerfile">
+```dockerfile title="Dockerfile"
+FROM python:3.12 AS build
+
+RUN set -xe; \
+    /usr/sbin/ldconfig /usr/local/lib
+
+FROM scratch
+
+# Python binary
+COPY --from=build /usr/local/bin/python3 /usr/bin/python3
+
+# System binaries
+COPY --from=build /usr/bin/mount /usr/bin/mount
+COPY --from=build /usr/bin/sh /usr/bin/sh
+COPY --from=build /usr/bin/mkdir /usr/bin/mkdir
+
+# System Libraries
+COPY --from=build /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
+COPY --from=build /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libm.so.6
+COPY --from=build /lib/x86_64-linux-gnu/libmount.so.1 /lib/x86_64-linux-gnu/libmount.so.1
+COPY --from=build /lib/x86_64-linux-gnu/libselinux.so.1 /lib/x86_64-linux-gnu/libselinux.so.1
+COPY --from=build /lib/x86_64-linux-gnu/libblkid.so.1 /lib/x86_64-linux-gnu/libblkid.so.1
+COPY --from=build /lib/x86_64-linux-gnu/libpcre2-8.so.0 /lib/x86_64-linux-gnu/libpcre2-8.so.0
+COPY --from=build /usr/lib/x86_64-linux-gnu/libz.so.1 /usr/lib/x86_64-linux-gnu/libz.so.1
+COPY --from=build /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+
+# Dynamic linker / loader
+COPY --from=build /lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
+COPY --from=build /etc/ld.so.cache /etc/ld.so.cache
+
+# Python (and other) libraries
+COPY --from=build /usr/local/lib /usr/local/lib
+
+# Python application
+COPY ./wrapper.sh /wrapper.sh
+COPY ./server.py /src/server.py
+```
+  </TabsContent>
+  <TabsContent value="kraftfile">
+```yaml title="Kraftfile"
+spec: v0.6
+
+runtime: base-compat:latest
+
+rootfs: ./Dockerfile
+
+cmd: [ "/wrapper.sh", "/usr/bin/python3", "/src/server.py" ]
+```
+  </TabsContent>
+  <TabsContent value="server">
+```python title="server.py"
+import argparse
+import importlib.util
+import sys
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+rom_module = None
+
+def load_rom_module():
+    global rom_module
+    module_name = 'rom'
+    module_path = '/tmp/rom.py'
+
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    rom_module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = rom_module
+    spec.loader.exec_module(rom_module)
+
+class MyServer(BaseHTTPRequestHandler):
+    global rom_module
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        msg = rom_module.function()
+        self.wfile.write(bytes(msg, "utf-8"))
+
+def main(args):
+    load_rom_module()
+    server = HTTPServer((args.host, args.port), MyServer)
+
+    print("starting server at %s:%s" % (args.host, args.port))
+
+    try:
+        server.serve_forever()
+
+    except KeyboardInterrupt:
+        pass
+
+    print("server stopped")
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", type=str, default="0.0.0.0")
+    parser.add_argument("--port", type=int, default=8080)
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    main(parse_args())
+```
+  </TabsContent>
+  <TabsContent value="wrapper">
+```bash title="wrapper.sh"
+#!/usr/bin/sh
+
+/usr/bin/mkdir -p /tmp/
+/usr/bin/mount -t erofs /dev/ukp_rom_python_function.py /tmp/
+exec "$@"
+```
+  </TabsContent>
+</Tabs>
+
+Ensure that the `wrapper.sh` script is executable:
+
+```bash title=""
+chmod a+x wrapper.sh
+```
+
+Package and push the base image:
+
+```bash title=""
+kraft pkg \
+  --plat kraftcloud \
+  --arch x86_64 \
+  --name index.unikraft.io/"$UKC_USER"/http-python:latest \
+  --rootfs-type erofs \
+  --push .
+```
+
+Wait a few seconds for propagation and check that the image is present:
+
+```bash title=""
+kraft cloud image ls
+```
+
+{/* vale off */}
+### ROM files
+{/* vale on */}
+
+To showcase the benefits of using ROMs, create two files, each containing a Python function that the base image will load and execute.
+Create a separate directory for each of the ROMs:
+
+```bash title=""
+mkdir -p rom1/fs rom2/fs
+```
+
+<Tabs defaultValue="function1">
+  <TabsList>
+    <TabsTrigger value="function1">rom 1</TabsTrigger>
+    <TabsTrigger value="kraftfile1">Kraftfile 1</TabsTrigger>
+    <TabsTrigger value="function2">rom 2</TabsTrigger>
+    <TabsTrigger value="kraftfile2">Kraftfile 2</TabsTrigger>
+  </TabsList>
+  <TabsContent value="function1">
+```python title="rom1/fs/rom.py"
+def function():
+    return "Hi from 1st ROM!\n"
+```
+  </TabsContent>
+  <TabsContent value="kraftfile1">
+```yaml title="rom1/Kraftfile"
+spec: v0.6
+
+roms:
+  - ./fs
+```
+  </TabsContent>
+  <TabsContent value="function2">
+```python title="rom2/fs/rom.py"
+def function():
+    return "Hi from 2nd ROM!\n"
+```
+  </TabsContent>
+  <TabsContent value="kraftfile2">
+```yaml title="rom2/Kraftfile"
+spec: v0.6
+
+roms:
+  - ./fs
+```
+  </TabsContent>
+</Tabs>
+
+Package and push the ROMs:
+
+```bash title=""
+cd rom1/
+kraft pkg \
+  --no-kernel \
+  --plat kraftcloud \
+  --arch x86_64 \
+  --name index.unikraft.io/"$UKC_USER"/my-rom1:latest \
+  --rootfs-type erofs \
+  --push .
+
+cd ../rom2/
+kraft pkg \
+  --no-kernel \
+  --plat kraftcloud \
+  --arch x86_64 \
+  --name index.unikraft.io/"$UKC_USER"/my-rom2:latest \
+  --rootfs-type erofs \
+  --push .
+```
+
+Wait a few seconds for propagation and check that the ROMs are present:
+
+```bash title=""
+kraft cloud image ls
+```
+
+:::tip
+The `--no-kernel` flag tells `kraft` to package only the ROM files, without the kernel, since this is data that will get attached to another image.
+:::
+
+:::caution
+This example packages the ROMs as EROFS filesystems.
+If packaging the ROMs as a cpio archives (that is, `--rootfs-type cpio`), or as standalone files, you must align their size to 4096 bytes.
+:::
+
+### Services
+
+Create two services to expose your instances:
+
+```bash title=""
+curl -X POST \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
+  -H "Content-Type: application/json" \
+  "${UKC_METRO}/services" \
+  -d "[
+        {
+          'name': 'test-http-python-rom1',
+          'services': [
+            {
+              'port': 443,
+              'destination_port': 8080,
+              'handlers': ['tls', 'http']
+            }
+          ],
+          'domains': [
+            {
+              'name': 'test-http-python-rom1'
+            }
+          ]
+        },
+        {
+          'name': 'test-http-python-rom2',
+          'services': [
+            {
+              'port': 443,
+              'destination_port': 8080,
+              'handlers': ['tls', 'http']
+            }
+          ],
+          'domains': [
+            {
+              'name': 'test-http-python-rom2'
+            }
+          ]
+        }
+      ]"
+```
+
+Check that the services are up:
+
+```bash title=""
+kraft cloud service get test-http-python-rom1
+kraft cloud service get test-http-python-rom2
+```
+
+### Instances
+
+Create two instances from the same base image and attach different ROMs:
+
+```bash title=""
+curl -X POST \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
+  -H "Content-Type: application/json" \
+  "${UKC_METRO}/instances" \
+  -d "[
+        {
+          'name': 'test-http-python-rom1',
+          'image': '${UKC_USER}/http-python:latest',
+          'service_group': {
+            'name': 'test-http-python-rom1'
+          },
+          'memory_mb': 512,
+          'scale_to_zero': {
+            'policy': 'on',
+            'stateful': false,
+            'cooldown_time_ms': 1000
+          },
+          'autostart': true,
+          'roms': [
+            {
+              'name': 'python_function.py',
+              'image': '$UKC_USER/my-rom1:latest'
+            }
+          ]
+        },
+        {
+          'name': 'test-http-python-rom2',
+          'image': '${UKC_USER}/http-python:latest',
+          'service_group': {
+            'name': 'test-http-python-rom2'
+          },
+          'memory_mb': 512,
+          'scale_to_zero': {
+            'policy': 'on',
+            'stateful': false,
+            'cooldown_time_ms': 1000
+          },
+          'autostart': true,
+          'roms': [
+            {
+              'name': 'python_function.py',
+              'image': '$UKC_USER/my-rom2:latest'
+            }
+          ]
+        }
+      ]"
+```
+
+Check that the instances are up:
+
+```bash title=""
+kraft cloud instance get test-http-python-rom1
+kraft cloud instance get test-http-python-rom2
+```
+
+Note the `roms` array in the instances configurations.
+Each ROM is available as a readable device at `/dev/ukp_rom_python_function.py` (in the form of an EROFS filesystem in this case), which the server program mounts at `/tmp/rom.py` and executes.
+
+### Testing
+
+Query the instances to call the Python function from the ROM.
+You should see different responses:
+
+```console title=""
+$ curl https://test-http-python-rom1.fra.kraft.cloud
+Hi from 1st ROM!
+```
+
+```console title=""
+$ curl https://test-http-python-rom2.fra.kraft.cloud
+Hi from 2nd ROM!
+```
+
+### Cleanup
+
+When done, remove the instances and services:
+
+```bash title=""
+kraft cloud instance rm test-http-python-rom1 test-http-python-rom2
+kraft cloud service rm test-http-python-rom1 test-http-python-rom2
+```
+
+## Learn more
+
+* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [instance create](/cli/instance/create) subcommand.
+* Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the [instances API](/api/platform/v1/instances).
+* The `kraft pkg` [command reference](https://unikraft.org/docs/cli/reference/kraft/pkg) for packaging images and ROMs.
