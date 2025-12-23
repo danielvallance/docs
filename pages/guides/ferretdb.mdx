@@ -35,14 +35,14 @@ For that, follow these steps:
 
    ```bash
    cd postgres16.2/
-   kraft cloud deploy -M 1024 -e POSTGRES_PASSWORD=unikraft --name postgres .
+   kraft cloud deploy -M 1Gi -e POSTGRES_PASSWORD=unikraft --name postgres .
    ```
 
 1. Run an instance of FerretDB:
 
    ```bash
    cd ../ferretdb/
-   kraft cloud deploy -M 512 -p 27017:27017/tls -e FERRETDB_HANDLER=pg -e FERRETDB_POSTGRESQL_address=postgres://postgres.internal:5432 -e FERRETDB_LISTEN_ADDR=0.0.0.0:27017 .
+   kraft cloud deploy -p 27017:27017/tls -M 512 -e FERRETDB_HANDLER=pg -e FERRETDB_POSTGRESQL_address=postgres://postgres.internal:5432 -e FERRETDB_LISTEN_ADDR=0.0.0.0:27017 .
    ```
 
 ```ansi
@@ -112,9 +112,9 @@ kraft cloud instance list
 ```
 
 ```text
-NAME                          FQDN                                         STATE    CREATED AT      IMAGE                               MEMORY   ARGS                                         BOOT TIME
-ferretdb-rdj6z                restless-resonance-jcc4ulc3.fra.unikraft.app  running  11 minutes ago  ferretdb@sha256:27c59539fa3b6b7...  512 MiB  /usr/bin/ferretdb                            37.11 ms
-postgres                                                                   running  14 minutes ago  postgres@sha256:c1f1100176be97f...  1.0 GiB  wrapper.sh docker-entrypoint.sh postgres     593.15 ms
+NAME            FQDN                                          STATE    CREATED AT      IMAGE                               MEMORY   ARGS                                      BOOT TIME
+ferretdb-rdj6z  restless-resonance-jcc4ulc3.fra.unikraft.app  running  11 minutes ago  ferretdb@sha256:27c59539fa3b6b7...  512 MiB  /usr/bin/ferretdb                         37.11 ms
+postgres                                                      running  14 minutes ago  postgres@sha256:c1f1100176be97f...  1.0 GiB  wrapper.sh docker-entrypoint.sh postgres  593.15 ms
 ```
 
 When done, you can remove the FerretDB and the Postgres instances:
@@ -136,7 +136,7 @@ kraft cloud volume create --name ferret-postgres --size 200
 And then, when, starting the PostgreSQL instance, you would attach the volume to a mount point:
 
 ```bash
-kraft cloud deploy -M 1024 -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres --name postgres -v ferret-postgres:/volume .
+kraft cloud deploy -M 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres --name postgres -v ferret-postgres:/volume .
 ```
 
 ## Learn more
