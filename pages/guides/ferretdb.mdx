@@ -8,17 +8,17 @@ This guide shows you how to use [FerretDB](https://www.ferretdb.com/) an open so
 
 To run it, follow these steps:
 
-1. Install the [`kraft` CLI tool](/install) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the [`kraft` CLI tool](/cli/install) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples).
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples).
 
    ```bash
-   git clone https://github.com/kraftcloud/examples
+   git clone https://github.com/unikraft-cloud/examples
    ```
 
    This guide uses both the `postgres16.2/` example and the `ferretdb/` example.
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud by setting your token and a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
 ```bash
@@ -28,7 +28,7 @@ export UKC_TOKEN=token
 export UKC_METRO=fra
 ```
 
-This guide deploys FerretDB as a frontend and PostgreSQL as a database server, running them together inside a [service](/docs/guides/features/idns).
+This guide deploys FerretDB as a frontend and PostgreSQL as a database server, running them together inside a [service](/platform/services).
 For that, follow these steps:
 
 1. Run an instance of PostgreSQL using the `postgres16.2/` example:
@@ -46,19 +46,19 @@ For that, follow these steps:
    ```
 
 ```ansi
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: ferretdb-rdj6z
- [90m├[0m[90m──────────[0m [90muuid[0m: 0b18a36d-9d43-4907-833d-7242f0e75f78
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m──────────[0m [90mfqdn[0m: restless-resonance-jcc4ulc3.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: ferretdb@sha256:27c59539fa3b6b7d2948ee4ceb2ceb75309328a9055a394bf949bede96aa7e27
- [90m├[0m[90m─────[0m [90mboot time[0m: 37.11 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: restless-resonance-jcc4ulc3
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: ferretdb-rdj6z.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.3.5
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/ferretdb
+[●] Deployed successfully!
+ │
+ ├────────── name: ferretdb-rdj6z
+ ├────────── uuid: 0b18a36d-9d43-4907-833d-7242f0e75f78
+ ├───────── state: running
+ ├────────── fqdn: restless-resonance-jcc4ulc3.fra.unikraft.app
+ ├───────── image: ferretdb@sha256:27c59539fa3b6b7d2948ee4ceb2ceb75309328a9055a394bf949bede96aa7e27
+ ├───── boot time: 37.11 ms
+ ├──────── memory: 512 MiB
+ ├─────── service: restless-resonance-jcc4ulc3
+ ├── private fqdn: ferretdb-rdj6z.internal
+ ├──── private ip: 172.16.3.5
+ └────────── args: /usr/bin/ferretdb
 ```
 
 In this case, the instance name is `ferretdb-rdj6z` which is different for each run.
@@ -126,7 +126,7 @@ kraft cloud instance remove postgres
 
 ## Customize your deployment
 
-One example customization is to use [volumes](/docs/guides/features/volumes) with PostgreSQL for persistence.
+One example customization is to use [volumes](/platform/volumes) with PostgreSQL for persistence.
 For that, you would first create a volume:
 
 ```bash
@@ -147,4 +147,4 @@ Use the `--help` option for detailed information on using Unikraft Cloud:
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+Or visit the [CLI Reference](/cli).

@@ -49,9 +49,14 @@ sync:
 		name=$$(basename "$$example"); \
 		readme="$$example/README.md"; \
 		if [ -f "$$readme" ]; then \
-			guide="$(GUIDES_DIR)/$$name.mdx"; \
-			echo "  📄 $$name -> $$(basename $$guide)"; \
-			$(WORKDIR)/scripts/transform-readme.sh "$$readme" "$$guide" "$$name"; \
+			# TODO: remove - Only transform updated READMEs \
+			if grep -q "# Set metro to Frankfurt, DE" "$$readme" ; then \
+				guide="$(GUIDES_DIR)/$$name.mdx" ;\
+				echo "  📄 $$name -> $$(basename $$guide)" ;\
+				$(WORKDIR)/scripts/transform_readme.py "$$readme" "$$guide" "$$name" ;\
+			else \
+				echo "⏭ Skipping $$name (metro line not present)" ;\
+			fi ;\
 		fi; \
 	done
 
