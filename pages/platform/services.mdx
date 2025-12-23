@@ -42,7 +42,7 @@ For example, from the [Go web server guide](/guides/go):
 ```bash title=""
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-go1.21/
-kraft cloud deploy --service my-service .
+kraft cloud deploy --service my-service -M 256 .
 ```
 
 This creates a new Go web server instance and immediately attaches it to the `my-service` service.
@@ -57,7 +57,7 @@ The output shows the instance address and other details:
  [90m├[0m[90m───────────[0m [90murl[0m: https://my-service-rrtckyyi.fra.unikraft.app
  [90m├[0m[90m─────────[0m [90mimage[0m: http-go121@sha256:4d536236d226781874c3ad930dbc936c4f407aa3483a1f8e961ba63a7a72c78d
  [90m├[0m[90m─────[0m [90mboot time[0m: 17.14 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 128 MiB
+ [90m├[0m[90m────────[0m [90mmemory[0m: 256 MiB
  [90m├[0m[90m───────[0m [90mservice[0m: my-service
  [90m├[0m[90m──[0m [90mprivate fqdn[0m: http-go121-fkt1x.internal
  [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.6

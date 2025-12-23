@@ -7,46 +7,44 @@ Unikraft Cloud supports the ability to deploy **stateful** apps.
 These apps can keep state across different [scale-to-zero](/features/scale-to-zero) incarnations.
 This mechanism also reduces app init time.
 Heavy-weight apps take a while to get started when cold started (for example, Spring Boot, Ruby on Rails, etc.).
-Taking a snapshot of the app memory and restoring it when the app starts again does this.
+You can reduce this initialization time by taking a snapshot of the app memory and restoring it when the app starts again.
 
 ## Setting it up
 
 The quickest way to set this up is via the `--scale-to-zero-stateful` flag of
 the `kraft cloud deploy` or `kraft cloud instance create` commands, for example:
 
-```bash
+```bash title=""
 kraft cloud deploy --metro fra --scale-to-zero-stateful .
 ```
 
 As an alternative, you can add a `label` to your example's `Kraftfile` as follows:
 
-```yaml
+```yaml title=""
 labels:
   cloud.unikraft.v1.instances/scale_to_zero.stateful: "true"
 ```
 
-You can see an example of such a `Kraftfile` and label in the [Spring Boot
-example](/guides/springboot).
+You can see an example of such a `Kraftfile` and label in the [Spring Boot example](/guides/springboot).
 
-Once deployed, you can check that this mechanism is actually enabled for your
-app via the `kraft cloud instance get <instance name>` command:
+Once deployed, you can check whether this mechanism works for your app via the `kraft cloud instance get <instance name>` command:
 
-```ansi
+```ansi title=""
 stateful: [92menabled[0m
 ```
 
 
 ## How it works
 
-With stateful enabled, when you first deploy your app Unikraft Cloud will bring it up
-normally and let it fully initialize (which may be fast, or take seconds or
-minutes, depending on your app's init time). Unikraft Cloud will wait until the app's port
-gets up, and then start the scale-to-zero process (assuming no traffic is coming
-to that port). At this point, Unikraft Cloud will save the state of your app, and set the
+When you enable stateful mode and first deploy your app, Unikraft Cloud brings it up
+normally and lets it fully initialize (which may be fast, or take seconds or
+minutes, depending on your app's init time). Unikraft Cloud waits until the app's exposed port
+becomes available, and then starts the scale-to-zero process (assuming no traffic is coming
+to that port). At this point, Unikraft Cloud saves the state of your app, and sets the
 app to standby (consuming no resources).
 
-Next, when traffic arrives, Unikraft Cloud will bring up the app including its saved state,
-ensuring statefulness across different scale-to-zero and scale to one cycles,
+Next, when traffic arrives, Unikraft Cloud brings up the app including its saved state,
+ensuring statefulness across different scale-to-zero and scale-to-one cycles,
 but also eliminating any long initialization times from heavyweight apps.
 
 
