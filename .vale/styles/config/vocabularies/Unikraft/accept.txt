@@ -12,6 +12,7 @@
 (?i)minimum
 (?i)namespaced?
 (?i)performant
+(?i)ROM(s)?
 (?i)rootfs
 (?i)tokenizer
 (?i)unikraft
@@ -49,6 +50,7 @@ Unikraft Cloud
 POSIX
 PV
 PVC
+EROFS
 
 # ==============================================================================
 # NAMES OF THINGS
