@@ -60,10 +60,11 @@ Below are two attempts at creating and starting an instance from the same [image
 ### EROFS deployment
 
 ```bash
-kraft cloud instance create \
+kraft cloud deploy \
     -p 443:8080 \
     -M 900Mi \
-    --start \
+    --rootfs-type erofs \
+    --keep-file-owners \
     demo/node-playwright-chromium
 ```
 
@@ -86,10 +87,10 @@ kraft cloud instance create \
 ### CPIO deployment
 
 ```bash
-kraft cloud instance create \
+kraft cloud deploy \
     -p 443:8080 \
     -M 900Mi \
-    --start \
+    --rootfs-type cpio \
     demo/node-playwright-chromium
 ```
 
