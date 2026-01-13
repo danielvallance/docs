@@ -1,0 +1,106 @@
+---
+title: Rootless Instances
+navigation_icon: user-lock
+---
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+Unikraft Cloud instances use the `root` user by default when nothing specific sets it.
+Because Unikraft Cloud images assume a single user, and set ownership accordingly, there can be inconsistencies between the expected result and the actual result permission-wise.
+
+## Getting started
+
+:::caution[Disclaimer]
+This tutorial assumes that you need/want to create your own user inside the Unikraft Cloud instance.
+If you are actually looking to convert a Docker image to run inside Unikraft Cloud, please refer to the [Docker to Unikraft Cloud tutorial](/tutorials/docker-to-unikraft-cloud) instead.
+:::
+
+To get different users to work inside Unikraft Cloud instances you need to do some configuration changes to your deployment process.
+The usual flow is to package your rootfs using either a `Dockerfile` or some other sources (for example, a file, a directory or an OCI image).
+Thus, you would either create your user inside the `Dockerfile` or use a wrapper script that would create the user before starting your main app.
+The workflow would be as follows:
+
+1. Create the user and register it:
+
+   <Tabs defaultValue="dockerfile">
+      <TabsList>
+        <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
+        <TabsTrigger value="script">Script</TabsTrigger>
+      </TabsList>
+      <TabsContent value="dockerfile">
+      ```dockerfile
+      # ...
+
+      ARG USER_ID=1000
+      ARG GROUP_ID=1000
+      ARG USERNAME=appuser
+
+      # Create group and user
+      RUN groupadd --gid $GROUP_ID $USERNAME \
+         && useradd --uid $USER_ID --gid $GROUP_ID -m -s /bin/bash $USERNAME
+
+      # Copy files and set ownership
+      COPY --chown=$USERNAME:$USERNAME . /app
+
+      # Switch to the non-root user before doing other operations
+      USER $USERNAME
+
+      # ...
+      ```
+      </TabsContent>
+      <TabsContent value="script">
+      ```bash
+      #!/bin/bash
+
+      set -e
+
+      USER_ID=1000
+      GROUP_ID=1000
+      USERNAME=appuser
+
+      # Create group and user
+      groupadd --gid $GROUP_ID $USERNAME
+      useradd --uid $USER_ID --gid $GROUP_ID -m -s /bin/bash $USERNAME
+
+      # Change ownership of app files
+      chown -R $USERNAME:$USERNAME /app
+
+      # ...
+      ```
+      </TabsContent>
+   </Tabs>
+
+   Keep in mind that `useradd` and `groupadd` might not be available in all base images.
+   For example, if you are using `alpine` as a base image (which comes with BusyBox), you would need to use `adduser` and `addgroup` instead.
+
+1. Depending on how you [package your rootfs](/tutorials/rootfs-formats), you might need specific options:
+
+   * (EROFS) Use the `--keep-file-owners` when packaging the rootfs as EROFS (that is, `kraft pkg ... --rootfs-type erofs --keep-file-owners ...`).
+
+   * (CPIO) You shouldn't use CPIO as the rootfs type if you need user support.
+   You **can't** preserve user IDs when packaging as CPIO.
+
+1. Before running the app, switch to the new user and make sure to preserve the environment in your entrypoint script:
+
+   ```bash
+   su -m appuser
+   ```
+
+If your environment variables are correctly set, after doing the steps above you should be running things as a different user.
+You can check this by running the following command before starting your main app:
+
+```bash
+whoami
+```
+
+## Conclusion
+
+Users are a consacrated way of reducing capabilities and for Unikraft Cloud this is no different.
+You can already enhance security of your deployments with the reduced attack surface of unikernels, as well as isolation through virtualization.
+You can further reduce the impact of a potential compromise by running as a non-root user.
+Furthermore, for quick deployments (for example, converting an existing Docker image to Unikraft Cloud), running as a non-root user is often expected from the original image.
+
+## Learn more
+
+* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) subcommand.
+* The `kraft pkg` [command reference](https://unikraft.org/docs/cli/reference/kraft/pkg) for packaging images.
