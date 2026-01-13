@@ -220,6 +220,7 @@ There's also a chance that Kraft staging contains changes available only on non-
 
 This is the current list of ignored keywords: `EXPOSE`, `HEALTHCHECK`, `ONBUILD`, `SHELL`, `STOPSIGNAL`, `VOLUME`.
 
+Currently, `kraft` parses the `ENV` keyword, but the platform discards the result in the current stable version.
 
 #### How does the image size and memory relate to boot times?
 
@@ -278,4 +279,4 @@ docker inspect library/node --format='{{json .Config.Env}}' | jq
 
 If you are using the Unikraft OS, you need to specify those in the command like with `--env`.
 
-Note: `ENV` and `ENTRYPOINT` are recognised keywords in the Dockerfile so they should propagate up into the image.
+Note: `ENTRYPOINT` is a recognised keyword in the Dockerfile so it should propagate up into the image.
