@@ -207,3 +207,17 @@ Other unikernel projects exist, but most are research efforts, unmaintained, or 
 #### Do you have a Terraform integration?
 
 [Yes!](https://github.com/unikraft-cloud/terraform-provider-ukc)
+
+
+#### When should you use Kraftkit stable and/or staging?
+
+You should use stable versions when initially trying out the Unikraft Platform and its features.
+Any time you encounter a problem, it's good to first try out the latest staging version before forwarding the problem as it might have been already fixed.
+There's also a chance that Kraft staging contains changes available only on non-stable nodes.
+
+
+#### What keywords does Kraftkit ignore from a Dockerfile?
+
+{/* vale off */}
+This is the current list of ignored keywords: EXPOSE, HEALTHCHECK, ONBUILD, SHELL, STOPSIGNAL, VOLUME.
+{/* vale on */}

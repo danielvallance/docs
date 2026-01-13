@@ -221,6 +221,7 @@ kraft cloud inst logs <instance_name>
 
 In case of a crash, you'll see a full crash output:
 
+{/* vale off */}
 ```text title=""
 Powered by Unikraft Telesto (0.16.2~9c264902)
 [    0.066949] CRIT: [libukvmem] Cannot handle write page fault at 0x1000bb8024 (ec: 0x2): -12
@@ -252,6 +253,7 @@ It looks like the instance exited fatally.  To see more details about why, run:
 
         kraft cloud instance get http-python312-hb7ij
 ```
+{/* vale on */}
 
 Use the recommended command for detailed output.
 This yields output like:
