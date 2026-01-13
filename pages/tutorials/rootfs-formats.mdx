@@ -1,0 +1,103 @@
+---
+title: Rootfs Formats
+navigation_icon: book
+---
+
+Every virtual machine consists of at least two components: a kernel, and a root file system.
+This tutorial focuses on the latter, the rootfs (also known as initrd).
+
+Currently, on the Unikraft Cloud platform, two types of file systems are usable: `CPIO` (Copy In, Copy Out) and `EROFS` (Enhanced Read-Only File System).
+`CPIO` (Copy In, Copy Out) and `EROFS` are packaging formats used by the Kernel to load a simple file system right before finishing setting up.
+They contain the same files and result in the same file contents upon unpacking.
+They consist mainly of metadata and file content without any advanced formatting to keep them as simple as possible.
+
+The CLI tool offers both formats for direct usage when packaging.
+Already packaged archives with external tools are also usable (for example `mkfs.erofs`, `cpio`, `bsdcpio`).
+If provided as a file, the CLI tool passes the file in as is, without any extra formatting.
+Right now the default for the CLI tool is `cpio` with `erofs` being an alternative, as the former is simpler, widely adoped, and better tested.
+
+Main difference between the two is performance-wise.
+`CPIO` is a simple format which translates in the need to read and unpack the archive first into memory.
+This extra step means more time spent booting, and more memory used.
+`EROFS` mitigates this behaviour if correctly formatted.
+It allows kernels to directly map the archive contents into memory.
+This behaviour, called `DAX` (Direct Access), is especially beneficial if the platform enables the feature to share rootfs memory (not on public metros).
+
+These two features combined lead to less memory used (use only what you need, and when you need it).
+They also decrease used memory (100 instances will unpack their rootfs only once).
+Boot time also goes down as the instance spends less time on unpacking images.
+
+After unpacking there is no content difference between the two, but metadata stored is different.
+It also differs from implementation to implementation, though the only downside to less space-efficient implementations is the time it takes to push the image.
+Below there are four different methods of packing the rootfs:
+```console title="Filesystem Packing Formats"
+$ du -hs *
+755M    initrd      # Directory unpacked
+751M    kraft_cpio  # CPIO  packed with kraft
+757M    kraft_erofs # EROFS packed with kraft
+751M    mkfs_cpio   # CPIO  packed with cpio
+754M    mkfs_erofs  # EROFS packed with mkfs.erofs
+```
+
+All packing methods slightly decrease the size.
+The kraft implementation is almost identical to the cpio reference one, `CPIO` wise.
+For `EROFS`, kraft generates images that are slightly bigger, but makes up with its ease of use.
+Also, all `EROFS` images are slightly larger as they contain more metadata for each file and files must align.
+All images result in the same files after unpacking, with the advantages mentioned earlier.
+
+Below are two attempts at starting the same image.
+The kraft tool packs the first one in the `EROFS` format, the latter in the `CPIO` format.
+```console title="Create Instance EROFS"
+$ kraft cloud instance create \
+    -p 443:8080 \
+    -M 900Mi \
+    --start \
+    demo/node-playwright-chromium
+[●] Deployed successfully!
+ │
+ ├────── name: node-playwright-chromium-q9ynl
+ ├────── uuid: cb7a1770-6d6a-4f53-a98a-f021ae796313
+ ├───── metro: fra
+ ├───── state: running
+ ├──── domain: https://proud-dream-udqhbav3.fra.unikraft.app
+ ├───── image: demo/node-playwright-chromium@sha256:056d5daa3e0f8a91ac18930a9a7714203515a6fae1244b1ecea831f64f593e79
+ ├─ boot time: 191.55 ms
+ ├──── memory: 900 MiB
+ ├─── service: proud-dream-udqhbav3
+ ├ private ip: 10.0.3.133
+ └────── args: /usr/bin/wrapper.sh /usr/bin/node /app/server.js
+
+$ curl https://proud-dream-udqhbav3.fra.unikraft.app
+Nothing to do.
+```
+
+```console title="Create Instance CPIO"
+$ kraft cloud instance create \
+    -p 443:8080 \
+    -M 2400Mi \
+    --start \
+    demo/node-playwright-chromium
+[●] Deployed successfully!
+ │
+ ├─────── name: node-playwright-chromium-4rrxr
+ ├─────── uuid: aeff2d28-d718-4068-9e24-4e2bb203022c
+ ├────── metro: fra
+ ├────── state: starting
+ ├───── domain: https://dry-fire-vhmh9z8u.fra.unikraft.app
+ ├────── image: demo/node-playwright-chromium@sha256:57d1773398bc6d4ff94f063d6e9b7400dca66171d04ce78cd8a45789ba0a7d93
+ ├───── memory: 2400 MiB
+ ├──── service: dry-fire-vhmh9z8u
+ ├─ private ip: 10.0.3.133
+ └─────── args: /usr/bin/wrapper.sh /usr/bin/node /app/server.js
+
+$ curl https://dry-fire-vhmh9z8u.fra.unikraft.app
+Nothing to do.
+```
+The `EROFS` case requires at least 900MiB to work, and the `CPIO` case requires 2400MiB.
+This makes sense and you can derive this mathematically.
+In the `CPIO` case the kernel needs to first map the archive in memory and then unarchive it.
+In this case the `CPIO` has around 750MiB which means the instance needs at least 1500MiB more RAM compared to `EROFS`.
+Adding 1500MiB to the 900MiB gives 2400MiB which is exactly the amount of memory needed in order for the instance to respond.
+Finally, related to boot times, both cases have similar warm boot times, but the extra copies mentioned increase the cold boot time in the `CPIO` case.
+
+All in all, using `EROFS` is recommended in every case where possible, as the upsides definitely outweigh the small downsides.
