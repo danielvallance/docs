@@ -3,11 +3,13 @@ title: Scale To Zero Triggers
 navigation_icon: arrow-down-1-0
 ---
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
 Unikraft Cloud supports scaling instances to zero based on different triggers.
 This allows you to optimize resource usage and costs by automatically setting instances to standby when they're not needed.
 They will automatically resume when required with minimal delay.
 The platform can scale down instances automatically, or you can scale them down manually.
-To read more about Scale To Zero, check the [Scale To Zero](/features/scale-to-zero) page.
+You can read more about Scale To Zero [here](/features/scale-to-zero).
 
 ## Automatic triggers
 
@@ -138,4 +140,4 @@ Once your app is ready to serve requests, you can write '-' to the file to re-en
 ## Learn more
 
 * The [Scale To Zero](/features/scale-to-zero) feature page.
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) subcommand.
+* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [instance create](/cli/instance/create) subcommand.
