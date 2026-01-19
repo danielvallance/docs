@@ -280,3 +280,17 @@ docker inspect library/node --format='{{json .Config.Env}}' | jq
 If you are using the Unikraft OS, you need to specify those in the command like with `--env`.
 
 Note: `ENTRYPOINT` is a recognised keyword in the Dockerfile so it should propagate up into the image.
+
+#### How to tell if an app can run in the Unikraft kernel or TinyX?
+
+No exact suite can determine if your app can run on one or another.
+
+Tinyx is a slimmed down Linux Kernel, which means that most cloud-compatible apps work out of the box as long as it has all files available.
+Some virtual devices and virtual file system entries are missing, but you can contact a Unikraft staff member to look into adding them.
+
+If your app successfully runs on TinyX and Unikraft Cloud, you have the option to also try running it on the Unikraft operating system.
+This kernel removes even more unused features so the chance that the app isn't compatible increases, but the performance and boot times are better.
+For example, if your app uses extensive process cloning, it has a low chance to work on the Unikraft kernel, as it supports running a single process at a time.
+Other examples of unsupported formats are 32bit executables and non-`PIE` (Position Independent Executable) executables, as the Unikraft kernel can't load them in memory at the moment.
+
+Other small differences exist, which you should report to the Unikraft Team for fixing, as the Unikraft kernel tries to follow Linux and the POSIX format.
