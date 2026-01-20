@@ -129,6 +129,7 @@ CPIO
 (?i)GraphQL
 (?i)gui
 (?i)haproxy
+(?i)HDD(s)?
 (?i)Heroku
 (?i)Hightouch
 (?i)href
@@ -226,6 +227,7 @@ CPIO
 (?i)Singleline
 (?i)Spring
 (?i)sql
+(?i)SSD(s)?
 (?i)ssh
 (?i)ssl
 (?i)stderr
