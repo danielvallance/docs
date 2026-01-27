@@ -280,3 +280,30 @@ docker inspect library/node --format='{{json .Config.Env}}' | jq
 If you are using the Unikraft OS, you need to specify those in the command like with `--env`.
 
 Note: `ENTRYPOINT` is a recognised keyword in the Dockerfile so it should propagate up into the image.
+
+#### How to tell if an app can run in the Unikraft kernel or TinyX?
+
+No exact suite can determine if your app can run on one or another.
+
+TinyX is a slimmed down Linux Kernel, which means that most cloud-compatible apps work out of the box as long as it has all files available.
+Some virtual devices and virtual file system entries are missing, but you can contact a Unikraft staff member to look into adding them.
+
+If your app successfully runs on TinyX and Unikraft Cloud, you have the option to also try running it on the Unikraft kernel.
+This kernel removes even more unused features so the chance that the app isn't compatible increases, but the performance and boot times are better.
+For example, if your app uses extensive process cloning, it has a low chance to work on the Unikraft kernel, as it supports running a single process at a time.
+Other examples of unsupported formats are 32bit executables and non-PIE (Position Independent Executable) executables, as the Unikraft kernel can't load them in memory at the moment.
+
+Other small differences exist, which you should report to the Unikraft Team for fixing, as the Unikraft kernel tries to follow Linux and the POSIX format.
+
+#### How does the [rootfs format](/tutorials/rootfs-formats) and size equate to the memory used?
+
+When using the `CPIO` file system, the memory allocated to the instance needs to be at least twice as big as the image size.
+This is because the system must load and unpack the `CPIO` rootfs format in memory before using it.
+This is a bare minimum and to this you need to add also the memory your app needs to run.
+
+When using `EROFS`, there is no direct correlation between the image size and the memory needed.
+Ideally, the memory should be at least the image size to make sure the system can load all files in memory before using.
+The system loads files on demand and maps them directly from disk, ensuring lower memory usage and overhead.
+If you have files that you know are never used, it's better to remove them from the image to slim it down.
+Thus, in theory, `EROFS` uses only the allocated pages, but it's also highly dependent on the workload.
+An instance with a 3GB image might use 128MB of RAM at one point, whilst an instance with a 300MB image might use 1GB of RAM at some point.
