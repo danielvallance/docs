@@ -109,6 +109,7 @@ The instance resumes execution where it left off—with caches already warm.
 
 Stateful scale-to-zero can also enable scale-to-zero for apps that need to keep state for functional correctness.
 This works even if cold boot times are no concern.
+If your app doesn't require maintaining state and has a satisfactorily short boot time, you might prefer to disable stateful scale-to-zero to save disk space.
 
 :::note
 The time to load an instance snapshot is constant and in the order of a few milliseconds.
@@ -119,6 +120,41 @@ This means that the first few requests might take longer until all required memo
 
 The time to take an instance snapshot during scale-to-zero depends on the amount of memory touched by the app since the last start.
 :::
+
+
+## Best practices
+
+### Cooldown configuration
+
+Choosing the optimal cooldown period depends on your app's start-up time and traffic patterns.
+The default cooldown is 1 second, which works well for simple apps.
+For larger apps with longer boot times, start with a conservative cooldown (for example, 5-10 seconds) and gradually lower it while monitoring behavior.
+
+If your app takes a long time to initialize, you might encounter issues where it scales down before serving the first request if the cooldown is too short.
+Strategies to mitigate this include:
+1.  **Stateful Scale-to-Zero**: [Enabling stateful mode](#stateful-scale-to-zero) saves memory to disk, reducing wake-up time for complex apps.
+2.  **Startup Protection**: Use the [manual disable mechanism](#application-support-for-scale-to-zero) to temporarily turn off scale-to-zero during your app's boot sequence, then re-enable it once ready to serve.
+
+### Managing connectivity and state
+
+#### Continuous connections
+
+Apps using long-lived connections with frequent keep-alive messages (for example, WebSockets, HTTP/2, HMR) may prevent the instance from scaling to zero.
+To allow the instance to sleep:
+*   Increase the interval between keep-alive messages.
+*   Use a more aggressive cooldown period if appropriate.
+*   If requiring continuous connectivity, consider disabling scale-to-zero for these workloads.
+
+#### Internal communication
+
+:::info
+This feature is currently under active development and may change in future releases.
+:::
+
+Currently, internal traffic via Private FQDNs doesn't trigger the scale-to-zero wake-up mechanism.
+Services attempting to reach a standby instance via its Private FQDN will fail to wake it.
+To ensure wake-on-request behavior for creating service-to-service communication, use the instance's **Public FQDN**.
+Note that this also applies to [`kraft cloud tunnel`](/cli/tunnel), which relies on internal connectivity.
 
 
 ## Getting started
