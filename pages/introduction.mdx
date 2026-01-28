@@ -5,9 +5,9 @@ navigation_icon: book-check
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
-Unikraft is a from-first-principles virtualization solution and cloud platform based on **MicroVMs** which provides best-in-class performance, security, and scalability.
+Unikraft Cloud is a from-first-principles virtualization solution and cloud platform based on **MicroVMs** which provides best-in-class performance, security, and scalability.
 
-Running your app on Unikraft is like running a container but with hardware isolation, millisecond cold starts, and stateful scale-to-zero.
+Running your app on Unikraft Cloud is like running a container but with hardware isolation, millisecond cold starts, and stateful scale-to-zero.
 
 Expect higher server density, cost-savings, I/O performance boosts, active vCPU pricing and _much more_.
 
@@ -17,7 +17,8 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
 
 1. [Create a free account](https://console.unikraft.cloud/signup).
 
-1. Install the `kraft` CLI.
+1. Install the `kraft` CLI:
+
     <Tabs defaultValue="shell">
       <TabsList>
         <TabsTrigger value="shell">Shell 1-liner</TabsTrigger>
@@ -70,14 +71,51 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
 
    See [alternative installation instructions](https://unikraft.org/docs/cli/install) for other platforms.
 
-1. Login to your account by setting your access token (received via email):
+1. Set a metro you want to use, e.g. `fra`:
+
    ```bash
-   export UKC_TOKEN=
+   export UKC_METRO=fra
+   ```
+
+1. Set your access token (from the [console](https://console.unikraft.cloud/), go to `Settings` and see the `API TOKEN`):
+
+   ```bash
+   export UKC_TOKEN=<your_token_here>
+   ```
+
+1. Install Docker on your system, by following [the official instructions](https://docs.docker.com/get-started/get-docker/).
+   You require Docker to build the app image that you will then deploy on Unikraft Cloud.
+
+   Be sure to follow the [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/).
+
+1. (optional, but recommended) Configure BuildKit on your system.
+   BuildKit is useful to cache the Unikraft Cloud builds and reduce the build time.
+
+   See instructions [here](/platform/troubleshooting#how-can-you-cache-the-apps-filesystem-for-faster-builds).
+
+1. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples):
+
+   ```bash
+   git clone https://github.com/unikraft-cloud/examples
+   cd examples/
+   ```
+
+1. Navigate to your favorite example, for example Nginx:
+
+   ```bash
+   cd nginx/
    ```
 
 1. Deploy your first scale-to-zero, serverless app with Unikraft Cloud:
+
    ```bash
-   kraft cloud deploy -p 443:8080 nginx:latest
+   kraft cloud deploy --port 443:8080 --memory 256Mi .
+   ```
+
+1. Use `curl` or a browser to access the Unikraft Cloud instance of Nginx, at the address shown by the `kraft cloud deploy` command:
+
+   ```bash
+   curl https://<address_above>
    ```
 
 </Stepper>
