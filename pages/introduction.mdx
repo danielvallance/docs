@@ -17,7 +17,7 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
 
 1. [Create a free account](https://console.unikraft.cloud/signup).
 
-1. Install the `kraft` CLI:
+1. Install the [`kraft`](/cli/) CLI:
 
     <Tabs defaultValue="shell">
       <TabsList>
@@ -88,7 +88,7 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
 
    Be sure to follow the [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/).
 
-1. (optional, but recommended) Configure BuildKit on your system.
+1. _(optional, but recommended)_ Configure BuildKit on your system.
    BuildKit is useful to cache the Unikraft Cloud builds and reduce the build time.
 
    See instructions [here](/platform/troubleshooting#how-can-you-cache-the-apps-filesystem-for-faster-builds).
@@ -112,7 +112,7 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
    kraft cloud deploy --port 443:8080 --memory 256Mi .
    ```
 
-1. Use `curl` or a browser to access the Unikraft Cloud instance of Nginx, at the address shown by the `kraft cloud deploy` command:
+1. Use `curl` or a browser to access the Unikraft Cloud instance of Nginx, at the address shown by the `kraft cloud deploy` command (or, use `kraft cloud instance ls` and `kraft cloud instance get <name>` to get the address):
 
    ```bash
    curl https://<address_above>

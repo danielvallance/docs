@@ -291,7 +291,8 @@ Here the cause is insufficient memory.
 
 If the stop reason lacks detail, enable debug tracing for the instance.
 
-To do that, in your app of choice in the [examples repository](https://github.com/unikraft-cloud/examples/), or in an app directory you created, update the `runtime` entry in the `Kraftfile` to reference the debug build of the image you use by adding `-dbg` to the name of the runtime.
+To do that, in your app of choice in the [examples repository](https://github.com/unikraft-cloud/examples/), or in an app directory you created, update the `runtime` entry in the `Kraftfile`.
+The entry should reference the debug build of the image you use by adding `-dbg` to the name of the runtime.
 For example, if you want to run the [http-go1.21 example](https://github.com/unikraft-cloud/examples/tree/main/http-go1.21) with debug output, update its `Kraftfile` as follows:
 
 ```yaml title="Kraftfile"
