@@ -219,8 +219,11 @@ There's also a chance that Kraft staging contains changes available only on non-
 #### What keywords does Kraftkit ignore from a Dockerfile?
 
 This is the current list of ignored keywords: `EXPOSE`, `HEALTHCHECK`, `ONBUILD`, `SHELL`, `STOPSIGNAL`, `VOLUME`.
+The `USER` keyword is relevant for running subsequent `RUN` instructions in the Dockerfile, but not for the `ENTRYPOINT` and `CMD` commands.
+At runtime, Unikraft Cloud instances run as `root` user, unless explicitly switching to another user. 
 
 Currently, `kraft` parses the `ENV` keyword, but the platform discards the result in the current stable version.
+
 
 #### How does the image size and memory relate to boot times?
 
@@ -280,6 +283,7 @@ docker inspect library/node --format='{{json .Config.Env}}' | jq
 If you are using the Unikraft OS, you need to specify those in the command like with `--env`.
 
 Note: `ENTRYPOINT` is a recognised keyword in the Dockerfile so it should propagate up into the image.
+
 
 #### How to tell if an app can run in the Unikraft kernel or TinyX?
 
