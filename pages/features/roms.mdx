@@ -33,7 +33,7 @@ This separation allows you to maintain one base image while deploying many diffe
 
 :::note
 The app running inside the base image is responsible to read the data from the attached ROM devices.
-ROM blobs appear as block devices at paths like `/dev/ukp_rom<rom_name>`, where `<rom_name>` is the ROM name you specify when creating the instance.
+ROM blobs appear as block devices at paths like `/dev/ukp_rom_<rom_name>`, where `<rom_name>` is the ROM name you specify when creating the instance.
 :::
 
 
