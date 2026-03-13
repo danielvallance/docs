@@ -16,7 +16,7 @@ The order they're presented is from the least precedence to the highest preceden
 
 ### Dockerfile ENV
 
-:::caution[Disclaimer]
+:::caution
 At the moment environment variables from the `Dockerfile` are passed in the image but not read by the Unikraft Cloud platform.
 Please use the other methods described below in the meantime.
 :::
@@ -33,7 +33,7 @@ ENV MY_ENV_VAR=my_value
 
 ### Kraftfile env
 
-:::caution[Disclaimer]
+:::caution
 At the moment environment variables from the `Kraftfile` are passed in the image but not read by the Unikraft Cloud platform.
 Nonetheless, `kraft cloud deploy` can still read them and set them in the instance.
 For other use cases, please use the other methods described below in the meantime.
