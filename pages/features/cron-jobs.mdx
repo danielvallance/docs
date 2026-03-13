@@ -1,0 +1,97 @@
+---
+title: Cron Jobs / Scheduled Wake-ups
+navigation_icon: clock
+---
+
+Scheduled operations let you automatically start, stop, or delete instances on a calendar-based schedule.
+Each scheduled operation specifies a name, a calendar expression, and an action (`start`, `stop`, or `delete`).
+
+Each instance stores its own schedules, and cloning preserves them.
+
+## Calendar expression format
+
+Unikraft Cloud uses systemd calendar events (see [systemd.time(7)](https://www.man7.org/linux/man-pages/man7/systemd.time.7.html)).
+Calendar expressions have the following fields:
+
+```
+[weekday] [[year-]month-day] [hour:minute[:second]]
+```
+
+The expression syntax supports ranges, steps, and comma-separated lists:
+
+| Syntax | Description |
+|--------|-------------|
+| `*` | Any value |
+| `5` | Exact value |
+| `1..5` | Range |
+| `1..5/2` | Range with step |
+| `1,2,5` | Comma-separated list |
+
+## Setting a schedule at instance creation
+
+Pass `schedules` in the create request.
+For example, to start an instance every day at 09:00 UTC and stop it at 18:00 UTC:
+
+```json title="POST /v1/instances"
+{
+  "image": "...",
+  "schedules": [
+    {
+      "name": "morning-start",
+      "when": "*-*-* 09:00:00",
+      "action": "start"
+    },
+    {
+      "name": "evening-stop",
+      "when": "*-*-* 18:00:00",
+      "action": "stop"
+    }
+  ]
+}
+```
+
+## Updating schedules of an existing instance
+
+Add, set, or remove scheduled operations via `PATCH`:
+
+```json title="PATCH /v1/instances/{uuid}"
+{
+  "prop": "schedules",
+  "op": "add",
+  "value": [
+    {
+      "name": "weekend-stop",
+      "when": "Sat,Sun *-*-* 20:00:00",
+      "action": "stop"
+    }
+  ]
+}
+```
+
+```json title="PATCH /v1/instances/{uuid}"
+{
+  "prop": "schedules",
+  "op": "del",
+  "value": [
+    "morning-start"
+  ]
+}
+```
+
+## Actions
+
+| Action | Description |
+|--------|-------------|
+| `start` | Start the instance at the scheduled time |
+| `stop` | Stop the instance at the scheduled time |
+| `delete` | Delete the instance at the scheduled time |
+
+## Notes
+
+- Each schedule has a name that must be unique within an instance.
+- An instance can have more than one scheduled operation.
+- When you clone an instance from a template, the clone inherits its scheduled operations.
+
+## Learn more
+
+* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [instances](/api/platform/v1/instances)
