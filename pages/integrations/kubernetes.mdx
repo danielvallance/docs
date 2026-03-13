@@ -237,6 +237,41 @@ NAME      CREATED AT     SIZE    ATTACHED TO      MOUNTED BY       STATE    PERS
 my-claim  8 minutes ago  10 MiB  nginx-pod-nginx  nginx-pod-nginx  mounted  true
 ```
 
+## Kraftlet internals
+
+This section describes how Kraftlet translates Kubernetes objects into Unikraft Cloud resources.
+
+### Ports and handlers
+
+When Kraftlet maps a Kubernetes Service port to a Unikraft Cloud service, it derives the [handler](/platform/services#handlers) from the port number automatically:
+
+| Port | Handler applied |
+|------|-----------------|
+| `80` | `http` |
+| `443` | `tls + http` |
+| Any other port | `tls` |
+
+This is why the example above produces `443:8080/tls+http` in `kraft cloud service list`.
+Kraftlet infers `tls+http` from port 443.
+
+### Multi-container pods
+
+Kraftlet maps each container in a pod to a **separate Unikraft Cloud instance**.
+When a Pod has a single container, the Unikraft Cloud service takes the Kubernetes Service name directly.
+When a Pod has more than one container, each container gets its own Unikraft Cloud service, named `<service>-<container>` (for example, `my-svc-app` and `my-svc-sidecar`).
+
+Kraftlet supports init containers.
+Kraftlet schedules both regular containers and init containers as Unikraft Cloud instances, and deletes them together when you delete the Pod.
+
+### Resource lifecycle
+
+When you delete a Kubernetes object, Kraftlet deletes the corresponding Unikraft Cloud resource:
+
+| Kubernetes object deleted | Unikraft Cloud resource deleted |
+|---|---|
+| Pod / Deployment replica | Instance (and service group if no other Pods are backing it) |
+| PersistentVolumeClaim | Unikraft Cloud volume |
+
 ## Notes
 
 * [**Instances**](/platform/instances)
@@ -255,6 +290,40 @@ my-claim  8 minutes ago  10 MiB  nginx-pod-nginx  nginx-pod-nginx  mounted  true
   For each creation of such Persistent Volume Claim (PVC) object, the Kraftlet will create a corresponding Unikraft Cloud volume and a `PersistentVolume` object to bind the PVC object to.
   Kraftlet allows for volume management through Kubernetes clusters.
 
+## Platform features
+
+Kraftlet supports the following Unikraft Cloud platform features on Kraftlet-managed resources:
+
+* [**Instance templates**](/platform/instances#instance-templates)
+
+  Frequently deployed workloads can go into instance templates.
+  Templates pre-warm the snapshot, reducing cold-start latency for every new instance created from the template.
+  When Kraftlet creates an instance from a Pod spec, you can pre-position an instance template to speed up scheduling.
+
+* [**Scale-to-zero**](/features/scale-to-zero)
+
+  Instances attached to a Unikraft Cloud service suspend automatically when idle.
+  Scale-to-zero runs by default for service-backed pods and you can configure it via Pod annotations (see [Annotations](#annotations) below).
+
+## Annotations
+
+Kraftlet reads the following annotations from Pod and Service objects to configure Unikraft Cloud resources.
+
+### Pod annotations
+
+| Annotation | Type | Default | Description |
+|---|---|---|---|
+| `cloud.unikraft.v1.instances/autostart` | boolean | `true` | Whether the instance starts automatically when Kraftlet schedules the Pod. |
+| `cloud.unikraft.v1.instances/template` | string | — | Name of a pre-existing Unikraft Cloud instance template to use instead of the container image. |
+| `cloud.unikraft.v1.instances/scale_to_zero.policy` | `on` \| `off` \| `idle` | `on` | Enables or disables scale-to-zero for service-backed instances. |
+| `cloud.unikraft.v1.instances/scale_to_zero.stateful` | boolean | `false` | When `true`, Kraftlet retains the instance state when scaling to zero. |
+| `cloud.unikraft.v1.instances/scale_to_zero.cooldown_time_ms` | integer | `1000` | Idle time in milliseconds before Kraftlet suspends the instance. |
+
+### Service annotations
+
+| Annotation | Type | Default | Description |
+|---|---|---|---|
+| `cloud.unikraft.v1.services/domain` | string | — | Custom domain for the Unikraft Cloud service. For multi-container pods, prefix with the container name (`cloud.unikraft.v1.services/domain.<containerName>`) to set a per-container domain, or use the global annotation to derive `<containerName>-<domain>` automatically. |
 
 ## Resources
 
