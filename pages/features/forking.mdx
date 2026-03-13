@@ -1,0 +1,102 @@
+---
+title: Instance Forking
+navigation_icon: git-fork
+---
+
+:::caution
+Instance forking is a preview feature and isn't yet available on stable.
+The interface described here reflects the current implementation and may change before general availability.
+:::
+
+Instance forking allows a running instance to create an independent copy of itself at a snapshot boundary.
+Both the original instance (the **parent**) and the copy (the **child**) resume execution from the same memory state.
+
+This is conceptually similar to `fork(2)` in a POSIX process.
+After the call, two independent instances run with identical state, and each can determine its own role by inspecting the messages it receives from the platform.
+
+## How it works
+
+Forking is **guest-initiated**: the app inside an instance triggers the fork programmatically by sending a request over the platform's guest communication channel.
+No REST API endpoint or CLI command exists to fork an instance externally.
+
+When the guest triggers a fork:
+
+1. The platform takes a snapshot of the parent instance.
+2. The platform creates a new child instance from that snapshot with a fresh network interface.
+3. Both parent and child start from the same snapshot.
+4. The platform notifies each instance of its role via messages over [vsock](https://man7.org/linux/man-pages/man7/vsock.7.html) port `137`.
+
+The child has [delete-on-stop](/platform/instances#delete-on-stop) set automatically—it's ephemeral and the platform removes it when it stops.
+
+## Guest notifications
+
+After a fork completes, both the parent and child receive vsock messages on port `137`.
+
+### Parent receives: `FORK_CREATED`
+
+The parent receives a `FORK_CREATED` message with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `msg_type` | uint32 | `0x2`—identifies this as a `FORK_CREATED` message. |
+| `correlation_id` | uint32 | Echoed from the original fork request. |
+| `child_id` | UUID (16 bytes) | UUID of the newly created child instance. |
+| `snapshot_id` | UUID (16 bytes) | UUID of the snapshot the child originates from. |
+| `creation_time` | uint64 | Child creation timestamp (UTC, seconds since Unix epoch). |
+| `fqdn_len` | uint16 | Length of the child's FQDN string (may be 0). |
+| `fqdn` | char[] | Child's private FQDN (variable-length, follows the fixed header). |
+
+### Child receives: `PARENT_ID`
+
+The child receives a `PARENT_ID` message telling it which instance it originates from:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `msg_type` | uint32 | `0x3`—identifies this as a `PARENT_ID` message. |
+| `correlation_id` | uint32 | Echoed from the original fork request. |
+| `parent_id` | UUID (16 bytes) | UUID of the parent instance. |
+
+### Ongoing child lifecycle updates (parent)
+
+After the fork, the parent continues to receive state change notifications for each of its children over the same vsock port:
+
+**`STATUS` message** (`msg_type = 0x4`)—sent when a child changes state:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `uuid` | UUID (16 bytes) | UUID of the child instance. |
+| `state` | uint32 | New instance state (same values as the `state` field in `GET /v1/instances`). |
+
+**`EXIT_STATUS` message** (`msg_type = 0x5`)—sent when a child stops:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `uuid` | UUID (16 bytes) | UUID of the child instance. |
+| `exit_status` | uint32 | Exit code of the child. |
+
+All messages share a common 8-byte header (`msg_type` uint32 + `correlation_id` uint32) followed by the message-specific payload.
+
+## Child lifecycle
+
+- Children have `delete-on-stop` set automatically—they're removed from the platform when they stop.
+- The platform clears a child's relationship to its parent when the child stops or transitions to a template state. Later lifecycle messages for that child aren't sent to the parent.
+- A parent can have more than one child alive at the same time.
+- A child can itself become a parent by issuing its own fork request.
+
+## Parent behaviour during fork
+
+- While the platform snapshots the parent, it temporarily pauses the parent's [scale-to-zero autostart](/features/scale-to-zero) to prevent a race condition.
+- If the parent had autostart configured, the platform re-enables it after the fork completes.
+- The parent resumes execution immediately after the snapshot. The pause is brief.
+
+## Constraints
+
+- The parent must support snapshotting (this requires [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) to be on or a snapshot otherwise available). A fork request on a parent without a snapshot fails.
+- The REST API and CLI can't trigger a fork; the guest must do it from within the instance.
+- Fork state doesn't survive a reboot of the child instance.
+
+## Learn more
+
+* [Instance templates](/platform/instances#instance-templates): a related snapshot-based feature for cloning instances from a stopped state
+* [Scale-to-zero](/features/scale-to-zero): stateful mode must be on for forking to work
+* [Instances](/platform/instances)
