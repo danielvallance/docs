@@ -16,7 +16,7 @@ With **Unikraft Cloud**, you can deploy webhook receivers that combine instant a
 
 Webhooks are inherently sporadic—events can arrive in bursts or be silent for hours.
 Traditional servers waste resources running every day, waiting for events.
-Unikraft Cloud's unikernel architecture provides:
+Unikraft Cloud's microVM architecture provides:
 
 * Single-digit-millisecond cold starts ensure instant response when events arrive.
 * No noticeable delay for webhook senders, maintaining reliable integrations.
@@ -28,7 +28,6 @@ Webhook receivers often process sensitive data from external services.
 Unikraft Cloud provides VM-level isolation for each instance:
 
 * Strong isolation prevents cross-contamination between different webhook handlers.
-* Immutable unikernel images reduce the attack surface.
 * Built-in HTTPS endpoints with automatic TLS certificate management.
 
 ### 💸 Pay only for events
