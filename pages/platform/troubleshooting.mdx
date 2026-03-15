@@ -163,7 +163,7 @@ labels:
   cloud.unikraft.v1.instances/scale_to_zero.cooldown_time_ms: 1000
 ```
 
-The `runtime` specifies one of the Unikraft Cloud runtimes (unikernels) built to run different languages and apps.
+The `runtime` specifies one of the Unikraft Cloud runtimes (microVMs) built to run different languages and apps.
 Here it specifies a Python runtime.
 
 The `rootfs` parameter tells `kraft` to use a `Dockerfile` in the same directory to build the root filesystem, and the `cmd` parameter which command to run when deployed (although you can also specify this in the `Dockerfile`).
