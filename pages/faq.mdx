@@ -5,8 +5,17 @@ navigation_icon: circle-question-mark
 
 #### What's Unikraft?
 
-Unikraft is the company behind Unikraft Cloud, a next-generation compute platform that leverages unikernel technology.
+Unikraft is the company behind Unikraft Cloud, a next-generation compute platform that leverages microVM technology.
 It delivers millisecond cold boots and scale-to-zero autoscaling so you never pay for idle resources.
+
+
+{/* vale off */}
+#### What's a microVM?
+
+Definitionally, a microVM is any virtual machine launched with Firecracker, an open source Virtual Machine Monitor (VMM) from Amazon, originally done for AWS Lambda.
+{/* vale on */}
+The VM itself can still be chunky: as long as Firecracker launched it, it's considered a microVM.
+And any microVM *is* a VM, so it has the same strong, hardware-level isolation as any VM does.
 
 
 #### Can you do cloud-prem, or on-prem deployments?
@@ -15,20 +24,10 @@ Yes.
 Please [get in touch](https://unikraft.com/contact) to discuss dedicated hosting.
 
 
-#### What's a unikernel?
-
-A unikernel is a specialized virtual machine.
-Each target app gets a distro and kernel containing only the code it needs.
-Everything builds at compile time, before deployment.
-If an app doesn't need a line of code to run, it doesn't get deployed.
-This packages as any other virtual machine, with strong, hardware-level isolation.
-Unikraft packages unikernels as OCI images.
-
-
 #### Aren't virtual machines heavyweight?
 
 They need not be!
-Unikraft unikernels are proof you can have strong, hardware-level isolation.
+Unikraft microVMs are proof you can have strong, hardware-level isolation.
 This isolation is the workhorse of public cloud deployments.
 It combines with the lightweight characteristics of containers or processes, such as millisecond cold boot times.
 
@@ -44,10 +43,10 @@ For example, an NGINX Unikraft image is under 2MBs in size.
 When you deploy a container on the public cloud, it gets deployed on top of a virtual machine to have strong, hardware-level isolation.
 The container thus adds yet another layer of overhead between your app and the hardware.
 At Unikraft, `Dockerfile`s create the filesystem at build time.
-Then, a lean unikernel provides the best efficiency at deploy time.
+Then, a lean microVM provides the best efficiency at deploy time.
 
 
-#### Do Unikraft unikernels come with security benefits?
+#### Do Unikraft microVMs come with security benefits?
 
 Yes, especially stemming from the fact that they have a minimal Trusted Computing Base (TCB), and everything is off by default (services, ports, etc).
 
@@ -72,18 +71,10 @@ See any of the apps/langs guides [here](/guides/bun) to see examples.
 You can control Unikraft Cloud with it as well as build unikernels and try things out locally.
 
 
-#### How does Unikraft differ from Linux, and what about debugging?
-
-Unikraft implements the Linux API so apps and languages run unmodified.
-A common concern is that unikernels are hard to debug.
-Unikraft includes a full GDB server, tracing, and other facilities, so debugging feels like Linux (see [here](https://unikraft.org/docs/internals/debugging)).
-For observability, Unikraft ships a Prometheus library so a unikernel can export metrics to Grafana dashboards.
-
-
 #### How's millisecond scale-to-zero achieved?
 
-Magic 🪄.
-Kidding, it's the combination of using Unikraft unikernels to run workloads and a custom node ingress controller.
+Magic 🪄
+Kidding, it's the combination of using Unikraft microVMs to run workloads and a custom node ingress controller.
 This controller can be reactive in milliseconds and scale to thousands of instances.
 Other optimizations to the underlying host also help.
 When traffic dies, your app will stop, consume no resources, and get charged $0.
@@ -153,7 +144,7 @@ When you're ready to deploy, switch to `kraft cloud deploy`.
 Definitely not!
 Docker is great for dev environments and for building images.
 In fact, Unikraft relies on `Dockerfile` to specify the filesystem of images on Unikraft Cloud.
-Having said that, when it's time to deploy, Unikraft places the resulting filesystem on a lean unikernel.
+Having said that, when it's time to deploy, Unikraft places the resulting filesystem on a lean microVM.
 It's ready to run with hardware-level isolation and extreme efficiency.
 
 
@@ -194,7 +185,22 @@ Unikraft provides full log support for all users.
 Paying customers get access to Prometheus metrics.
 
 
-#### Are there other unikernel cloud platforms?
+#### What's a unikernel?
+
+A unikernel is a specialized virtual machine.
+Each target app gets a distro and kernel containing only the code it needs.
+Everything builds at compile time, before deployment.
+If an app doesn't need a line of code to run, it doesn't get deployed.
+This packages as any other virtual machine, with strong, hardware-level isolation.
+Unikraft packages unikernels as OCI images.
+
+
+#### Does Unikraft Cloud only support unikernels?
+
+No, Unikraft Cloud also supports minimalistic, Linux-based microVMs.
+
+
+#### Are there other platforms supporting unikernels?
 
 Other unikernel projects exist, but most are research efforts, unmaintained, or limited to a single app or language and aren't POSIX (Portable Operating System Interface) compliant.
 
