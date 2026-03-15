@@ -5,16 +5,16 @@ navigation_icon: ship-wheel
 
 Unikraft Cloud integrates seamlessly with any Kubernetes cluster through a virtual [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/) known as **Kraftlet**.
 This is a lightweight Kubernetes node implementation which connects your cluster to Unikraft Cloud's high-performance compute instead of running real pods locally.
-This enables developers to deploy and manage Unikraft unikernels as if they were native Kubernetes pods.
+This enables developers to deploy and manage Unikraft microVMs as if they were native Kubernetes pods.
 
 This integration extends Kubernetes' scheduling and orchestration capabilities to the Unikraft Cloud platform.
-This allows workloads to take advantage of unikernel-level I/O performance, security, cold start and transparent scale-to-zero efficiency while retaining full compatibility with existing Kubernetes tooling.
+This allows workloads to take advantage of microVM-level I/O performance, security, cold start and transparent scale-to-zero efficiency while retaining full compatibility with existing Kubernetes tooling.
 
 Upon startup, Kraftlet will register itself as a worker node with the Kubernetes API.
 Once Kraftlet registers itself as a node, Kubernetes can schedule Pods onto it.
 
 Any Pod scheduled to the Kraftlet node won't run as a container within the cluster.
-Instead, it will run a highly optimized, ultra lightweight unikernel VM instance on Unikraft Cloud.
+Instead, it will run a highly optimized microVM on Unikraft Cloud.
 Kraftlet will manage the Pod lifecycle to make sure the apps are up and running.
 
 

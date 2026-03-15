@@ -6,24 +6,24 @@ navigation_icon: database-zap
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
 Databases are central to modern apps, but they're notoriously resource-hungry, slow to scale, and costly to operate at low utilisation.
-Traditional VM or container-based solutions keep idle resources running, resulting in waste and inefficiency.
-With **Unikraft Cloud**, serverless databases gain the advantages of **unikernels**, combining **extreme performance** with **true scale-to-zero efficiency**.
+Traditional VM- or container-based solutions keep idle resources running, resulting in waste and inefficiency.
+With **Unikraft Cloud**, serverless databases gain the advantages of **microVMs**, combining **extreme performance** with **true scale-to-zero efficiency**.
 
 ## Why run serverless databases on Unikraft Cloud
 
 ### ⚡ Instant boot, millisecond latency
 
-Unikraft unikernels start in milliseconds, enabling databases to **scale up instantly** when requests arrive and **shut down to zero** when idle.
+Unikraft microVMs start in milliseconds, enabling databases to **scale up instantly** when requests arrive and **shut down to zero** when idle.
 This ensures the system uses resources **only when needed**, without cold-start penalties.
 
 ### 🔒 Stronger security by design
 
-Each database instance runs as a **specialised, single-process unikernel**, drastically reducing the attack surface compared to general-purpose operating systems.
+Each database instance runs as a **specialised, single-process microVM**, drastically reducing the attack surface compared to general-purpose OSes.
 This isolation protects customer data with **built-in, lightweight security**.
 
 ### 💰 Cost-efficient scale-to-zero
 
-Unikraft's unikernel architecture allows serverless databases to **consume no resources when idle** and scale to thousands of instances under load.
+Unikraft's microVM architecture allows serverless databases to **consume no resources when idle** and scale to thousands of instances under load.
 You pay only for active queries, making it ideal for **spiky workloads, dev/test environments, and SaaS platforms**.
 
 ### 🛠 Seamless serverless integration
@@ -33,7 +33,7 @@ Databases can integrate with API gateways, event triggers, and headless services
 
 ### 📈 Performance without trade-offs
 
-Unlike traditional serverless platforms where databases often suffer from high overhead, unikernel-based instances deliver **bare-metal-like throughput and predictable latency**.
+Unlike traditional serverless platforms where databases often suffer from high overhead, microVM-based instances deliver **bare-metal-like throughput and predictable latency**.
 These instances optimise both Online Transaction Processing (OLTP) and Online Analytical Processing (OLAP) workloads.
 
 

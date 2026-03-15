@@ -7,13 +7,13 @@ API Gateways are the critical entry point to your services.
 They manage authentication, routing, rate-limiting, observability, and security at the edge of your infrastructure.
 In modern architectures—especially microservices and serverless platforms—the API Gateway is the first line of defence and performance optimisation.
 
-With **Unikraft Cloud**, API Gateways gain advantage from a unikernel-based, scale-to-zero infrastructure that delivers the performance of specialised systems with the flexibility of serverless deployment.
+With **Unikraft Cloud**, API Gateways gain advantage from a microVM-based, scale-to-zero infrastructure that delivers the performance of specialised systems with the flexibility of serverless deployment.
 
 ## Why run an API gateway on Unikraft Cloud
 
 ### ⚡ Ultra-low latency
 
-Unikernels remove the overhead of general-purpose operating systems by compiling only the required OS components alongside the API Gateway app.
+MicroVMs remove the overhead of general-purpose operating systems by compiling only the required OS components alongside the API Gateway app.
 This results in:
 
 * Single-digit-millisecond cold-start times (perfect for bursty API traffic).
@@ -25,7 +25,7 @@ This results in:
 The open internet exposes API Gateways, making them often the most attacked component.
 Unikraft Cloud isolates each instance at the virtual machine level while keeping footprint minimal:
 
-* Immutable, single-purpose unikernel images reduce attack surface.
+* Immutable, single-purpose microVM images reduce attack surface.
 * Strong VM-level isolation without container overhead.
 * Built-in memory safety and image signing to ensure trust at deployment.
 
