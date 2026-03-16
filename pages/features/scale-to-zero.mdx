@@ -111,7 +111,7 @@ Your app can listen on vsock port `138` and use the signal to:
 
 ### Configuring the notification lead time
 
-Use the `notify_time_ms` field in the `scale_to_zero` configuration when creating or updating an instance:
+Use the `notify_time_ms` field in the `scale_to_zero` configuration when creating or updating an instance to specify the number of milliseconds before the scaletozero event, when the platform should send the notification signal:
 
 ```json title="POST /v1/instances"
 {
@@ -126,7 +126,7 @@ This sends the notification 2 seconds before the cooldown expires and suspension
 
 :::note
 `notify_time_ms` must be less than `cooldown_time_ms`.
-If `notify_time_ms` is `0` (the default), the platform skips the notification and suspends the instance immediately when the cooldown expires.
+If `notify_time_ms` is `0` (the default), the platform skips the notification and suspends the instance immediately when the cooldown expires, without informing the guest.
 :::
 
 ## Stateful scale-to-zero
