@@ -226,9 +226,7 @@ There's also a chance that Kraft staging contains changes available only on non-
 
 This is the current list of ignored keywords: `EXPOSE`, `HEALTHCHECK`, `ONBUILD`, `SHELL`, `STOPSIGNAL`, `VOLUME`.
 The `USER` keyword is relevant for running subsequent `RUN` instructions in the Dockerfile, but not for the `ENTRYPOINT` and `CMD` commands.
-At runtime, Unikraft Cloud instances run as `root` user, unless explicitly switching to another user. 
-
-Currently, `kraft` parses the `ENV` keyword, but the platform discards the result in the current stable version.
+At runtime, Unikraft Cloud instances run as `root` user, unless explicitly switching to another user.
 
 
 #### How does the image size and memory relate to boot times?
@@ -274,23 +272,6 @@ Finally, kernels can also run without a rootfs.
 They don't do anything, but support exists to run them.
 
 
-#### How to replicate the `ENV`/`ENTRYPOINT` of a container?
-
-To reproduce the starting environment without specifying extra arguments in the command line you can replace your Kraftfile's `cmd:` with the path to a script.
-In there you can place all `ENV`s from the dockerfile and call the binary as you want.
-You can also use the `env:` field in the Kraftfile.
-
-When building a rootfs directly from a DockerHub image, or a `Dockerfile` which starts from a DockerHub image, you should inspect the environment set by said image (example with `library/node`):
-
-```bash
-docker inspect library/node --format='{{json .Config.Env}}' | jq
-```
-
-If you are using the Unikraft OS, you need to specify those in the command like with `--env`.
-
-Note: `ENTRYPOINT` is a recognised keyword in the Dockerfile so it should propagate up into the image.
-
-
 #### How to tell if an app can run in the Unikraft kernel or TinyX?
 
 No exact suite can determine if your app can run on one or another.
@@ -304,6 +285,7 @@ For example, if your app uses extensive process cloning, it has a low chance to 
 Other examples of unsupported formats are 32bit executables and non-PIE (Position Independent Executable) executables, as the Unikraft kernel can't load them in memory at the moment.
 
 Other small differences exist, which you should report to the Unikraft Team for fixing, as the Unikraft kernel tries to follow Linux and the POSIX format.
+
 
 #### How does the [rootfs format](/tutorials/rootfs-formats) and size equate to the memory used?
 
