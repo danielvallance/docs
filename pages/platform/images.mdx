@@ -193,18 +193,21 @@ You now have a new instance created from the existing image.
 GET /v1/images
 ```
 
-Returns all images in your account.
+Returns all images accessible for your account and known by the platform.
 Each image object includes:
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `uuid` | string | Image UUID. |
-| `name` | string | Image name (if present). |
 | `created_at` | timestamp | Creation time. |
+| `owner` | string | Owner of the image (omitted if not root account). |
 | `url` | string | Full image address (includes digest). |
+| `tags` | array of strings | List of shortened tags. |
 | `initrd_or_rom` | bool | Whether the image includes an initrd or ROM component. |
 | `size_in_bytes` | int64 | Total image size in bytes. |
 | `args` | array of strings | Default arguments (omitted if none). |
+| `env` | map of strings | Default environmental variables (omitted if none). |
+| `users` | array of strings | Users with access to the image (omitted if not root account). |
 
 ### Look up by UUID
 
@@ -217,24 +220,34 @@ Returns one or more images by UUID.
 ### Look up by digest
 
 ```
-GET /v1/images/list
+GET /v1/images
 ```
 
 Pass a `digest` string in the request body to return the image matching that digest:
 
-```json title="GET /v1/images/list"
+```json title="GET /v1/images"
 {
-  "digest": "sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472"
+  "digest": "user/image@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472"
 }
 ```
 
-The response includes `digest`, `tags`, `initrd`, `size_in_bytes`, and `args`.
+The response includes `url`, `tags`, `initrd_or_rom`, `size_in_bytes`, args` and `env`.
 
-:::note
-Tag-based filtering (`tag` field in the list body) appears in the API schema but the platform doesn't act on it yet.
-The platform accepts and ignores the field.
-Use the digest or UUID endpoints to look up a specific image.
-:::
+### Look up by tag
+
+```
+GET /v1/images
+```
+
+Pass a `tag` string in the request body to return the image matching that tag:
+
+```json title="GET /v1/images"
+{
+  "tag": "user/image:tag"
+}
+```
+
+The response includes `url`, `tags`, `initrd_or_rom`, `size_in_bytes`, args` and `env`.
 
 ## Learn more
 
