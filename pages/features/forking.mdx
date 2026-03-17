@@ -26,8 +26,6 @@ The filesystem exposes the following top-level entries:
 |------|------|-------|-------------|
 | `/uk/libukp/fork` | Returns the child UUID after a fork (for the parent), or empty (for the child). | Triggers a new fork operation. | Main entry point for forking. |
 | `/uk/libukp/vm/` | Directory listing of all child instance UUIDs. | — | Each child gets a subdirectory named by its UUID. |
-| `/uk/libukp/scale_to_zero_disable` | Returns the current counter value (for example `=3`). | Change the counter: `+1`, `-1`, `+N`, `-N`, or `=N`. | Prevents scale-to-zero suspension while the counter isn't zero. |
-| `/uk/libukp/template_instance` | — | Write any value to convert the current instance into a template. | Write-only. |
 
 ## Triggering a fork
 
@@ -48,21 +46,11 @@ cat /uk/libukp/fork
 For the child instance, reading `/uk/libukp/fork` returns an empty response (a zero UUID).
 This is how an app determines whether it's the parent or the child after a fork.
 
-### What happens during a fork
-
-1. The app writes to `/uk/libukp/fork`.
-2. The `ukp-fuse` daemon sends a `ForkRequest` message (type `0x6`) to the platform via the boot timer device, including a `correlation_id` to match the response.
-3. The platform snapshots the parent instance and creates a new child instance from that snapshot with a fresh network interface.
-4. The platform sends a response back to the instance over [vsock](https://man7.org/linux/man-pages/man7/vsock.7.html) port `137`:
-   - The **parent** gets a `ForkCreated` message containing the child's UUID, snapshot ID, creation timestamp, and FQDN.
-   - The **child** gets a `ParentId` message containing the parent's UUID.
-5. The `ukp-fuse` daemon completes the blocked write and makes the result available via a follow-up read.
-
 ### Concurrent fork requests
 
 The `ukp-fuse` daemon serializes fork operations with a request gate.
 Only one fork can run at a time.
-If a second fork request arrives while one runs, the daemon queues it (up to 32 pending requests).
+If a second fork request arrives while one runs, the daemon queues it.
 If the queue fills up, the write returns `EBUSY`.
 
 The daemon processes queued requests in order once the current fork completes.
@@ -88,7 +76,7 @@ echo "1" > /uk/libukp/vm/<child-uuid>/wait
 cat /uk/libukp/vm/<child-uuid>/wait
 ```
 
-The write to `wait` blocks until the child stops and the platform delivers an `ExitStatus` message.
+The write to `wait` blocks until the child stops.
 After the write completes, reading `wait` returns the numeric exit code.
 
 If the child has already stopped by the time you write to `wait`, the write completes immediately.
@@ -107,41 +95,18 @@ cat /uk/libukp/vm/<child-uuid>/status
 # Output: Running
 ```
 
-The platform updates the status file in real time via `Status` messages (state changes) and `ExitStatus` messages (termination).
+The platform updates the status file in real time.
 
 Possible states and their numeric values:
 
-| State | Value | Description |
-|-------|-------|-------------|
-| `Stopped` | 0 | Instance has exited. |
-| `Starting` | 1 | Instance is booting. |
-| `Running` | 2 | Instance is running. |
-| `Draining` | 3 | Instance is draining connections before stopping. |
-| `Stopping` | 4 | Instance is shutting down. |
-| `Template` | 5 | Instance has become a template. |
-
-## Preventing scale-to-zero during fork operations
-
-If your instance uses [scale-to-zero](/features/scale-to-zero), the platform could suspend it while a fork runs or while children are running.
-Use the `scale_to_zero_disable` counter to prevent this:
-
-```bash
-# Increment the counter to prevent suspension
-echo "+1" > /uk/libukp/scale_to_zero_disable
-
-# ... perform fork and work with children ...
-
-# Decrement the counter to allow suspension again
-echo "-1" > /uk/libukp/scale_to_zero_disable
-```
-
-The counter supports:
-- `+1` or `+N`—increment by 1 or N.
-- `-1` or `-N`—decrement by 1 or N (returns `ERANGE` on underflow).
-- `=N`—set to an exact value.
-
-The platform allows suspension only when the counter reaches zero.
-Reading the file returns the current value (for example `=3`).
+| State | Description |
+|-------|-------------|
+| `Stopped` | Instance has exited. |
+| `Starting` | Instance is booting. |
+| `Running` | Instance is running. |
+| `Draining` | Instance is draining connections before stopping. |
+| `Stopping` | Instance is shutting down. |
+| `Template` | Instance has become a template. |
 
 ## Child lifecycle
 
@@ -151,118 +116,21 @@ The platform removes them when they stop.
 The child doesn't inherit any children from the parent—it only sees children from forks it starts itself.
 - A parent can have many children alive at the same time.
 - A child can itself fork, becoming a parent to its own children.
-- When a child stops or transitions to a template state, the platform clears its relationship to the parent.
-The daemon removes the corresponding directory under `/uk/libukp/vm/` on the next access.
 
 ## Error handling
 
 | Error | Cause |
 |-------|-------|
-| `EBUSY` | Fork queue is full (more than 32 pending requests). |
+| `EBUSY` | Fork queue is full. |
 | `EIO` | Hardware signal to the platform failed, or the request belonged to a parent before a fork occurred. |
 | `ESTALE` | A child VM directory access occurred after the child's cleanup (for example, after the current instance became a child via fork). |
-| Numeric error code from platform | The platform rejected the fork request (for example, no snapshot available). The `Error` message type (`0x1`) carries the code. |
-
-When a fork fails, the request gate reopens and the daemon processes queued requests normally.
-
-When the current instance discovers it's a child (via a `ParentId` message), the daemon fails all pending fork and wait requests from the parent's context with `EIO`.
-It also drains the fork queue.
-This prevents stale parent operations from blocking the child.
 
 ## Constraints
 
-- The parent must support snapshotting.
-This requires you to enable [stateful scale-to-zero](/features/scale-to-zero) or have a snapshot otherwise available.
-A fork request on a parent without a snapshot fails.
 - The REST API and `kraft` can't trigger a fork.
 You must start it from within the instance via the `/uk/libukp/fork` file.
-- Fork state doesn't survive a reboot of the child instance.
-- While the platform snapshots the parent during a fork, it temporarily pauses the parent's [scale-to-zero](/features/scale-to-zero) autostart to prevent a race condition.
-Autostart resumes after the fork completes.
-
-## Protocol internals
-
-This section documents the wire protocol between the `ukp-fuse` daemon and the platform.
-App developers don't need to interact with this layer directly—the filesystem interface described above handles it.
-
-### Vsock communication
-
-The `ukp-fuse` daemon listens on [vsock](https://man7.org/linux/man-pages/man7/vsock.7.html) port `137` (`VMADDR_CID_ANY`) for incoming messages from the platform.
-The daemon sends fork requests to the platform via the boot timer device (`/dev/uio0` or `/dev/mem` as fallback) using a message queue at `/sys/class/uio/uio0/device/msg_queue`.
-
-### Message format
-
-All vsock messages share an 8-byte header:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `msg_type` | uint32 | Message type identifier. |
-| `correlation_id` | uint32 | Links a response to its request. `0` indicates an unsolicited message. |
-
-### Message types
-
-| Type | Value | Direction | Description |
-|------|-------|-----------|-------------|
-| `Error` | `0x1` | Platform to guest | Fork request failed. Contains an `error_code` (int32, negated errno). |
-| `ForkCreated` | `0x2` | Platform to parent | Fork succeeded. Contains child UUID, snapshot UUID, creation time, and FQDN. |
-| `ParentId` | `0x3` | Platform to child | Tells the child which instance is its parent. Contains parent UUID. |
-| `Status` | `0x4` | Platform to parent (unsolicited) | Child state changed. Contains child UUID and new state (uint32). |
-| `ExitStatus` | `0x5` | Platform to parent (unsolicited) | Child stopped. Contains child UUID and exit code (uint32). |
-| `ForkRequest` | `0x6` | Guest to platform | Requests a fork. Contains `correlation_id`. The daemon sends this via the boot timer message queue. |
-
-### Fork created message
-
-| Field | Type | Size | Description |
-|-------|------|------|-------------|
-| `header` | Header | 8 bytes | `msg_type = 0x2`, `correlation_id` from request. |
-| `child_id` | UUID | 16 bytes | UUID of the newly created child instance. |
-| `snapshot_id` | UUID | 16 bytes | UUID of the snapshot the child originates from. |
-| `creation_time` | uint64 | 8 bytes | Child creation timestamp (UTC, seconds since Unix epoch). |
-| `fqdn_len` | uint16 | 2 bytes | Length of the FQDN string (may be 0). |
-| `fqdn` | char[] | variable | Child's private FQDN. |
-
-Total fixed size: 56 bytes (plus variable-length FQDN).
-
-### Parent ID message
-
-| Field | Type | Size | Description |
-|-------|------|------|-------------|
-| `header` | Header | 8 bytes | `msg_type = 0x3`, `correlation_id` from request. |
-| `parent_id` | UUID | 16 bytes | UUID of the parent instance. |
-
-Total size: 24 bytes.
-
-### Status message
-
-| Field | Type | Size | Description |
-|-------|------|------|-------------|
-| `header` | Header | 8 bytes | `msg_type = 0x4`, `correlation_id = 0` (unsolicited). |
-| `uuid` | UUID | 16 bytes | UUID of the child instance. |
-| `state` | uint32 | 4 bytes | New instance state (0=Stopped, 1=Starting, 2=Running, 3=Draining, 4=Stopping, 5=Template). |
-
-Total size: 32 bytes (4 bytes padding due to alignment).
-
-### Exit status message
-
-| Field | Type | Size | Description |
-|-------|------|------|-------------|
-| `header` | Header | 8 bytes | `msg_type = 0x5`, `correlation_id = 0` (unsolicited). |
-| `uuid` | UUID | 16 bytes | UUID of the child instance. |
-| `exit_status` | uint32 | 4 bytes | Exit code of the child. |
-
-Total size: 32 bytes (4 bytes padding due to alignment).
-
-### Error message
-
-| Field | Type | Size | Description |
-|-------|------|------|-------------|
-| `header` | Header | 8 bytes | `msg_type = 0x1`, `correlation_id` from request. |
-| `error_code` | int32 | 4 bytes | Negated errno value (for example `-ENOMEM`). |
-
-Total size: 12 bytes.
 
 ## Learn more
 
 - [Instance templates](/platform/instances#instance-templates): a related snapshot-based feature for creating instances from a stopped template
-- [Scale-to-zero](/features/scale-to-zero): you must enable stateful mode for forking to work
 - [Instances](/platform/instances)
