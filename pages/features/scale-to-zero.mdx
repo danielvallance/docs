@@ -97,6 +97,37 @@ There can be a short delay (a few milliseconds) until the Unikraft Cloud control
 Ensure you configure a cooldown time large enough to accommodate for potential signal delay.
 :::
 
+## Notification signal
+
+Before the platform suspends an instance, it can send a notification signal to the guest, giving it time to finish in-flight work before suspension begins.
+
+The platform delivers the notification over [vsock](https://man7.org/linux/man-pages/man7/vsock.7.html) on port `138`.
+The platform sends the literal string `scaletozero` to the guest at the configured lead time before suspension.
+
+Your app can listen on vsock port `138` and use the signal to:
+- Drain in-flight requests
+- Flush write buffers
+- Update any external state
+
+### Configuring the notification lead time
+
+Use the `notify_time_ms` field in the `scale_to_zero` configuration when creating or updating an instance to specify the number of milliseconds before the scaletozero event, when the platform should send the notification signal:
+
+```json title="POST /v1/instances"
+{
+  "scale_to_zero": {
+    "cooldown_time_ms": 5000,
+    "notify_time_ms": 2000
+  }
+}
+```
+
+This sends the notification 2 seconds before the cooldown expires and suspension begins.
+
+:::note
+`notify_time_ms` must be less than `cooldown_time_ms`.
+If `notify_time_ms` is `0` (the default), the platform skips the notification and suspends the instance immediately when the cooldown expires, without informing the guest.
+:::
 
 ## Stateful scale-to-zero
 
