@@ -6,6 +6,7 @@
 (?i)autoscale
 (?i)autoscaling
 (?i)FQDN
+FUSE
 (?i)just-in-time
 (?i)kraftkit
 (?i)maximum
