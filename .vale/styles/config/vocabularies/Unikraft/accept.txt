@@ -24,6 +24,7 @@ FUSE
 (?i)webservers?
 ALIAS
 ANAME
+ASCII
 CNAME
 COPY
 DCO
