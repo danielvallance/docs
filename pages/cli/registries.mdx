@@ -3,6 +3,8 @@ title: Registries
 navigation_icon: package
 ---
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
 Unikraft Cloud uses a central OCI registry at `index.unikraft.io` to store images.
 Every image you build and push lands in this registry under your account's namespace.
 When you start an instance, the platform pulls the image from this registry automatically.
