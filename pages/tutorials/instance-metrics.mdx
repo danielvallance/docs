@@ -33,19 +33,19 @@ kraft cloud deploy -p 443:8080 -M 256 .
 This command will create the NGINX instance with scale-to-zero enabled:
 
 ```ansi title=""
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: nginx-26g86
- [90m├[0m[90m──────────[0m [90muuid[0m: 3605978e-5feb-4209-8f9e-de45f00a7d66
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://black-snowflake-iy7509ap.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: nginx@sha256:19854a12fe97f138313cb9b4806828cae9cecf2d050077a0268d98129863f954
- [90m├[0m[90m─────[0m [90mboot time[0m: 7.77 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 256 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: black-snowflake-iy7509ap
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: nginx-26g86.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.1
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m──────────[0m [90mname[0m: nginx-26g86
+ [90m├[0m[90m──────────[0m [90muuid[0m: 3605978e-5feb-4209-8f9e-de45f00a7d66
+ [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m───────────[0m [90murl[0m: https://black-snowflake-iy7509ap.fra.unikraft.app
+ [90m├[0m[90m─────────[0m [90mimage[0m: nginx@sha256:19854a12fe97f138313cb9b4806828cae9cecf2d050077a0268d98129863f954
+ [90m├[0m[90m─────[0m [90mboot time[0m: 7.77 ms
+ [90m├[0m[90m────────[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m───────[0m [90mservice[0m: black-snowflake-iy7509ap
+ [90m├[0m[90m──[0m [90mprivate fqdn[0m: nginx-26g86.internal
+ [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.1
+ [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
 ```
 
 Now, request the metrics for that instance:
