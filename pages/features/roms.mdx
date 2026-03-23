@@ -5,7 +5,7 @@ navigation_icon: hard-drive
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
-:::caution[Disclaimer]
+:::caution[**DISCLAIMER**]
 The ROM feature isn't currently enabled for the public Unikraft Cloud offering.
 As such, the [KraftKit CLI tool](/cli/) can't entirely leverage this feature.
 For boxes where it's enabled, use it via the [Unikraft Cloud API](/api/platform/v1).
@@ -14,7 +14,6 @@ For boxes where it's enabled, use it via the [Unikraft Cloud API](/api/platform/
 Unikraft Cloud supports the ability to attach **Read-Only Memory (ROM)** blobs to instances.
 It allows you to create a general-purpose base image and then customize individual instances by attaching code or data as separate ROM blobs.
 This enables quick deployment of custom functionality to preexisting language environments without rebuilding the entire image.
-
 
 ## Overview
 
@@ -35,7 +34,6 @@ This separation allows you to maintain one base image while deploying many diffe
 The app running inside the base image is responsible to read the data from the attached ROM devices.
 ROM blobs appear as block devices at paths like `/dev/ukp_rom_<rom_name>`, where `<rom_name>` is the ROM name you specify when creating the instance.
 :::
-
 
 ## Setup
 
