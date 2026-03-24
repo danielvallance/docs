@@ -174,7 +174,7 @@ You must also list the `UDP` IPs in the `additional_ip_addresses` directive in `
 
 To create a `UDP` service, set both `protocol` and `ip`:
 
-```json title="POST /v1/services"
+```json title="POST /services"
 {
   "services": [
     {
@@ -201,9 +201,9 @@ Every service group has a soft and a hard connection limit that the load balance
 `soft_limit` must be less than or equal to `hard_limit`.
 Setting `soft_limit > hard_limit` returns a `400` error.
 
-You can set both fields at service group creation time and update them later with `PATCH /v1/services/{name}`.
+You can set both fields at service group creation time and update them later with `PATCH /services/{name}`.
 
-```json title="POST /v1/services"
+```json title="POST /services"
 {
   "name": "my-service",
   "soft_limit": 100,
@@ -215,12 +215,12 @@ You can set both fields at service group creation time and update them later wit
 
 A service group is **persistent** when your user account owns it rather than a specific instance.
 
-- A service group created with `kraft cloud service create` (or `POST /v1/services`) is persistent.
+- A service group created with `kraft cloud service create` (or `POST /services`) is persistent.
   It survives independently of any instances attached to it.
 - A service group created implicitly via `kraft cloud deploy -p …` (shorthand port forwarding) belongs to the instance.
   The platform deletes it when you delete that instance.
 
-The `GET /v1/services/{name}` response includes a `persistent` field (`bool`) that indicates which case applies.
+The `GET /services/{name}` response includes a `persistent` field (`bool`) that indicates which case applies.
 
 ## Learn more
 

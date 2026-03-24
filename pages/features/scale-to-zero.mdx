@@ -113,7 +113,7 @@ Your app can listen on vsock port `138` and use the signal to:
 
 Use the `notify_time_ms` field in the `scale_to_zero` configuration when creating or updating an instance to specify the number of milliseconds before the scaletozero event, when the platform should send the notification signal:
 
-```json title="POST /v1/instances"
+```json title="POST /instances"
 {
   "scale_to_zero": {
     "cooldown_time_ms": 5000,

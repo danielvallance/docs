@@ -18,7 +18,7 @@ Kraftkit neither displays them nor allows you to edit them.
 
 Add tags to a resource at creation time:
 
-```json title="POST /v1/instances"
+```json title="POST /instances"
 {
   "image": "...",
   "memory_mb": ...,
@@ -28,7 +28,7 @@ Add tags to a resource at creation time:
 
 Add tags to an existing resource (`"op": "set"` will replace all existing tags):
 
-```json title="PATCH /v1/instances"
+```json title="PATCH /instances"
 {
   "name": "example-instance",
   "prop": "tags",
@@ -43,7 +43,7 @@ Use `/v1/volumes` for volumes, `/v1/instances/templates` for instance templates,
 
 Add tags to a resource without replacing existing ones (`"op": "add"`):
 
-```json title="PATCH /v1/instances"
+```json title="PATCH /instances"
 {
   "name": "example-instance",
   "prop": "tags",
@@ -62,7 +62,7 @@ Adding a tag already attached to a resource has no effect.
 
 Remove specific tags from a resource (`"op": "del"`):
 
-```json title="PATCH /v1/instances"
+```json title="PATCH /instances"
 {
   "name": "example-instance",
   "prop": "tags",
@@ -77,7 +77,7 @@ Filter the instance list, volume list, instance template list, or volume templat
 Only resources that have _all_ the specified tags appear in the results.
 
 ```
-GET /v1/instances?tags=production,customer_A
+GET /instances?tags=production,customer_A
 ```
 
 Separate tags by commas (`,`).
