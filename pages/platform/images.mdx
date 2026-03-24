@@ -190,7 +190,7 @@ You now have a new instance created from the existing image.
 ### List images
 
 ```
-GET /v1/images
+GET /images
 ```
 
 Returns all images accessible for your account and known by the platform.
@@ -212,7 +212,7 @@ Each image object includes:
 ### Look up by UUID
 
 ```
-GET /v1/images?uuid=<uuid>[,<uuid>…]
+GET /images?uuid=<uuid>[,<uuid>…]
 ```
 
 Returns one or more images by UUID.
@@ -220,12 +220,12 @@ Returns one or more images by UUID.
 ### Look up by digest
 
 ```
-GET /v1/images
+GET /images
 ```
 
 Pass a `digest` string in the request body to return the image matching that digest:
 
-```json title="GET /v1/images"
+```json title="GET /images"
 {
   "digest": "user/image@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472"
 }
@@ -236,12 +236,12 @@ The response includes `url`, `tags`, `initrd_or_rom`, `size_in_bytes`, args` and
 ### Look up by tag
 
 ```
-GET /v1/images
+GET /images
 ```
 
 Pass a `tag` string in the request body to return the image matching that tag:
 
-```json title="GET /v1/images"
+```json title="GET /images"
 {
   "tag": "user/image:tag"
 }

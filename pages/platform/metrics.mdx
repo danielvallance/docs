@@ -10,9 +10,9 @@ Unikraft Cloud exposes runtime metrics for each instance: CPU time, memory usage
 ## Endpoints
 
 ```
-GET  /v1/instances/{uuid}/metrics
-GET  /v1/instances/metrics?uuid=<uuid>[,<uuid>…]
-POST /v1/instances/metrics (UUIDs or names in request body)
+GET  /instances/{uuid}/metrics
+GET  /instances/metrics?uuid=<uuid>[,<uuid>…]
+POST /instances/metrics (UUIDs or names in request body)
 ```
 
 With no identifiers, the platform returns metrics for all instances in your account.

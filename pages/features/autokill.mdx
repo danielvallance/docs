@@ -17,7 +17,7 @@ You can configure autokill on:
 
 Automatically kill an instance after it stops and remains stopped for a given number of milliseconds:
 
-```json title="POST /v1/instances"
+```json title="POST /instances"
 {
   "autokill": {
     "time_ms": 3600000
@@ -31,7 +31,7 @@ This example kills the instance 1 hour after it stops.
 
 Kill an instance after it serves a specified request count:
 
-```json title="POST /v1/instances"
+```json title="POST /instances"
 {
   "autokill": {
     "num_requests": 1000
@@ -41,7 +41,7 @@ Kill an instance after it serves a specified request count:
 
 ### Updating autokill on a stopped instance
 
-```json title="PATCH /v1/instances/{uuid}"
+```json title="PATCH /instances/{uuid}"
 {
 	"prop": "autokill",
 	"op": "set",
@@ -55,7 +55,7 @@ Kill an instance after it serves a specified request count:
 
 Automatically kill a service group after it stays empty (no instances) for a given number of milliseconds:
 
-```json title="POST /v1/services"
+```json title="POST /services"
 {
   "autokill": {
     "time_ms": 300000
@@ -69,7 +69,7 @@ This example kills the service group 5 minutes after its last instance leaves.
 
 Automatically kill an instance template if nobody clones it within a given number of milliseconds:
 
-```json title="POST /v1/instances/templates"
+```json title="POST /instances/templates"
 {
   "autokill": {
     "time_ms": 86400000

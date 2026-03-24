@@ -32,7 +32,7 @@ The expression syntax supports ranges, steps, and comma-separated lists:
 Pass `schedules` in the create request.
 For example, to start an instance every day at 09:00 UTC and stop it at 18:00 UTC:
 
-```json title="POST /v1/instances"
+```json title="POST /instances"
 {
   "image": "...",
   "schedules": [
@@ -54,7 +54,7 @@ For example, to start an instance every day at 09:00 UTC and stop it at 18:00 UT
 
 Add, set, or remove scheduled operations via `PATCH`:
 
-```json title="PATCH /v1/instances/{uuid}"
+```json title="PATCH /instances/{uuid}"
 {
   "prop": "schedules",
   "op": "add",
@@ -68,7 +68,7 @@ Add, set, or remove scheduled operations via `PATCH`:
 }
 ```
 
-```json title="PATCH /v1/instances/{uuid}"
+```json title="PATCH /instances/{uuid}"
 {
   "prop": "schedules",
   "op": "del",
