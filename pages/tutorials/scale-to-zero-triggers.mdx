@@ -21,7 +21,7 @@ You can also configure scale-to-zero to consider idle active connections when de
 
 When you enable this trigger, Unikraft Cloud will track incoming connections to your instance.
 If there is no traffic for the configured duration, the instance scales down to zero.
-You can use the [`kraft` CLI tool](/cli/) or the [API](/api/platform/v1/instances#create-instance) to enable this trigger:
+You can use the legacy CLI tool or the [API](/api/platform/v1/instances#create-instance) to enable this trigger:
 
 <Tabs defaultValue="kraft">
     <TabsList>
@@ -54,7 +54,7 @@ kraft cloud instance create \
 When enabling this trigger, the platform will consider all active connections to your instance, so all traffic going to them.
 The instance will scale down if you make no new network connections and all existing connections have been idle for the configured duration.
 
-You can enable this trigger using the [`kraft` CLI tool](/cli/) or the [API](/api/platform/v1/instances#create-instance) as follows:
+You can enable this trigger using the legacy CLI tool or the [API](/api/platform/v1/instances#create-instance) as follows:
 
 <Tabs defaultValue="kraft">
     <TabsList>
@@ -101,7 +101,8 @@ You can use the Unikraft Cloud API to manually scale down an instance.
 You will have to use the `/instances/suspend` endpoint to scale down an instance.
 This happens instantly, regardless of the configured automatic triggers.
 
-First, set the required environment variables:
+First, set the required environment variables.
+These are for the API call and the legacy CLI, not the `unikraft` profile system:
 
 ```bash
 # Set Unikraft Cloud access token
@@ -140,4 +141,4 @@ Once your app is ready to serve requests, you can write '-' to the file to re-en
 ## Learn more
 
 * The [Scale To Zero](/features/scale-to-zero) feature page.
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [instance create](/cli/instance/create) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).

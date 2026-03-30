@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 This guide explains how to create and deploy a Python Flask app using SQLite.
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/python3.12-flask3.0-sqlite/` directory:
 
@@ -16,21 +17,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/python3.12-flask3.0-sqlite/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/python312-flask30-sqlite:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB my-org/python312-flask30-sqlite:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 443:8080 -M 512 .
 ```
+
+</CodeTabs>
 
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
@@ -79,9 +99,17 @@ curl https://young-night-5fpf0jj8.fra.unikraft.app
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME                            FQDN                                           STATE    CREATED AT   IMAGE                               MEMORY   ARGS                             BOOT TIME
 python312-flask30-sqlite-qodkd  lingering-orangutan-840mmdvd.fra.unikraft.app  running  1 minute ago  python312-flask30-sqlite@sha256...  512 MiB  /usr/bin/python3 /app/server.py  166250us
@@ -89,9 +117,17 @@ python312-flask30-sqlite-qodkd  lingering-orangutan-840mmdvd.fra.unikraft.app  r
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete python312-flask30-sqlite-qodkd
+```
+
+```bash title="kraft"
 kraft cloud instance remove python312-flask30-sqlite-qodkd
 ```
+
+</CodeTabs>
 
 ## Implementation details
 
@@ -246,8 +282,16 @@ The following options are available for customizing the app:
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

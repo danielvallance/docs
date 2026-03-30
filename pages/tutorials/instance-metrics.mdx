@@ -22,13 +22,23 @@ Use a tool like `curl` for ad-hoc queries, or configure your monitoring system t
 
 The following example creates an instance and retrieves its metrics using `curl`.
 
-First, provision a new instance (set `$UKC_TOKEN` and `$UKC_METRO` as appropriate):
+First, provision a new instance:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/nginx/
+unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB nginx:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
 kraft cloud deploy -p 443:8080 -M 256 .
 ```
+
+</CodeTabs>
 
 This command will create the NGINX instance with scale-to-zero enabled:
 
@@ -48,7 +58,8 @@ This command will create the NGINX instance with scale-to-zero enabled:
  [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
 ```
 
-Now, request the metrics for that instance:
+Now, request the metrics for that instance.
+Set `UKC_TOKEN` and `UKC_METRO` for the API call (the `unikraft` CLI uses profiles instead).
 
 <Tabs defaultValue="json">
     <TabsList>
@@ -398,4 +409,4 @@ The Prometheus format lets you plug these metrics directly into monitoring tools
 * [Scale to zero](/features/scale-to-zero) and how it affects instance lifecycle.
 * [Scale to zero triggers](/tutorials/scale-to-zero-triggers) for controlling when instances wake up.
 * [Platform instances](/platform/instances) for managing and inspecting your instances.
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [instance create](/cli/instance/create) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).

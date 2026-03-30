@@ -34,13 +34,23 @@ Autoscale, as well as load balancing in general, currently supports only Interne
 
 ## Setting up autoscale
 
-First, use the `kraft cloud deploy` command to create an instance, in this example using NGINX:
+First, create an instance, in this example using NGINX:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/nginx/
+unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB nginx:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
 kraft cloud deploy -p 443:8080 -M 256 .
 ```
+
+</CodeTabs>
 
 ```ansi title=""
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
@@ -58,7 +68,7 @@ kraft cloud deploy -p 443:8080 -M 256 .
  [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
 ```
 
-This single `kraft cloud deploy` command does 3 things:
+This single deploy or run flow does 3 things:
 
 1. Creates an instance of NGINX which will serve as the **autoscale master** instance.
 1. Creates a service via the `-p` flag (named `small-leaf-rafirkw7`).
@@ -66,9 +76,11 @@ This single `kraft cloud deploy` command does 3 things:
 
 All that's left to do now to set up autoscale is to set an autoscale configuration *policy* and to set the instance as master.
 Unikraft Cloud then takes care of cloning this master instance whenever load increases.
-To achieve this, use the `kraft cloud scale` command:
+To achieve this, use the legacy CLI scale command:
 
-```bash  title=""
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud scale init small-leaf-rafirkw7 \
   --master nginx-4d7u3 \
   --min-size 1 \
@@ -90,6 +102,8 @@ kraft cloud scale add small-leaf-rafirkw7 \
   --step :50/-50
 ```
 
+</CodeTabs>
+
 Note the following:
 
 * The first command sets the master to the created instance, and configures it to scale up to a maximum of 8 instances and a minimum of 1; the command also sets the warm up and cool down time to 1 second each, so it doesn't constantly fluctuate up and down.
@@ -99,7 +113,7 @@ Note the following:
 
 :::note
 
-The intervals that autoscale uses for making scale-out and scale-in decisions use the `--warmup-time` and `--cooldown-time` parameters of `kraft cloud scale init`, in units of milliseconds.
+The intervals that autoscale uses for making scale-out and scale-in decisions use the `--warmup-time` and `--cooldown-time` parameters of the scale init command, in units of milliseconds.
 Refer to the API autoscale [reference](/api/platform/v1/autoscale) for more details.
 
 :::
@@ -114,11 +128,15 @@ You can find the documentation [here](/api/platform/v1/autoscale) at the bottom 
 
 ## Testing it
 
-To check it's working, you can use the `kraft cloud scale get` command to list the autoscale properties of the service:
+To check it's working, you can use the legacy CLI scale get command to list the autoscale properties of the service:
 
-```bash title=""
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud scale get small-leaf-rafirkw7
 ```
+
+</CodeTabs>
 
 You should see output like:
 
@@ -134,11 +152,15 @@ You should see output like:
       policies: scale-out-policy;scale-in-policy
 ```
 
-To list an individual policy, you can further use the `kraft cloud scale get` command as follows:
+To list an individual policy, use the legacy CLI scale get command as follows:
 
-```bash title=""
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud scale get --policy scale-out-policy small-leaf-rafirkw7
 ```
+
+</CodeTabs>
 
 You should see output like:
 
@@ -158,11 +180,19 @@ type: step
 ```
 
 You can further check that the master instance is on `standby` (scaled to zero), assuming your service hasn't received any traffic yet.
-You can get the UUID of your master instance from the `kraft cloud scale get` command above.
+You can get the UUID of your master instance from the legacy CLI scale get command above.
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances get f840ac12-f485-4f02-9f33-6a0a7de46f1f -o list
+```
+
+```bash title="kraft"
 kraft cloud instance get f840ac12-f485-4f02-9f33-6a0a7de46f1f -o list
 ```
+
+</CodeTabs>
 
 You should see output like:
 
@@ -190,11 +220,19 @@ curl https://small-leaf-rafirkw7.fra.unikraft.app
 ```
 
 You should get an immediate response, even though the instance was on `standby`.
-You can use the `watch` tool to see if you catch the instance changing state from `standby` to `running`:
+You can use a watch command to see if you catch the instance changing state from `standby` to `running`:
 
-```ansi title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list --watch
+```
+
+```bash title="kraft"
 watch --color -n 0.5 kraft cloud instance list
 ```
+
+</CodeTabs>
 
 ## Policy types
 
@@ -298,5 +336,5 @@ The `idle` policy scales in (removes instances) when the service has been idle�
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [scale](/cli/scale) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the section on [autoscale](/api/platform/v1/autoscale).

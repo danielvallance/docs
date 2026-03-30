@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 This guide explains how to create and deploy a Python Django web app.
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/http-python3.12-django5.0/` directory:
 
@@ -16,21 +17,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/http-python3.12-django5.0/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/http-python312-django:latest
+unikraft run --metro=fra -p 443:80/http+tls -m 512MiB my-org/http-python312-django:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 443:80 -M 512 .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -87,9 +107,17 @@ For a production site, ensure you read the recommended deployment guides of the 
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME                  FQDN                                   STATE    CREATED AT    IMAGE                                        MEMORY   ARGS                            BOOT TIME
 http-python312-ma2i9  young-night-5fpf0jj8.fra.unikraft.app  running  1 minute ago   http-python312@sha256:278cb8b14f9faf9c27...  512 MiB  /usr/bin/python /src/server.py  15094us
@@ -98,9 +126,17 @@ http-python312-ma2i9  young-night-5fpf0jj8.fra.unikraft.app  running  1 minute a
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete http-python312-django50-vt56c
+```
+
+```bash title="kraft"
 kraft cloud instance remove http-python312-django50-vt56c
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -197,9 +233,18 @@ The [`http-python3.12-flask3.0`](/docs/guides/flask-sqlite/) guide details the u
 
 Run the command below to deploy the app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/http-python312-django:latest
+unikraft run --metro=fra -p 443:80/http+tls -m 512MiB my-org/http-python312-django:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 443:80 -M 512 .
 ```
+
+</CodeTabs>
 
 Differences from the Django app are also the steps required to create an `pip`-based app:
 
@@ -295,8 +340,16 @@ See also the [`http-python3.12-django5.0`](https://github.com/kraftcloud/example
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

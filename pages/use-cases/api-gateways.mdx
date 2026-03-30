@@ -68,21 +68,36 @@ git clone https://github.com/unikraft-cloud/examples
 cd examples/tyk/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/platform/metros) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
-Then invoke:
+</CodeTabs>
 
-```bash title=""
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
+Then invoke.
+Compose is only available in the legacy CLI:
+
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud compose up
 ```
+
+</CodeTabs>
 
 After deploying, you can query the service using the provided address.
 Use the `/hello` path after the address, such as below:
@@ -109,8 +124,16 @@ curl https://<service-fqdn>/hello | jq
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

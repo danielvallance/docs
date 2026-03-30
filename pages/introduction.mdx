@@ -3,9 +3,8 @@ title: Introduction
 navigation_icon: book-check
 ---
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
-Unikraft Cloud is a from-first-principles virtualization solution and cloud platform based on **MicroVMs** which provides best-in-class performance, security, and scalability.
+Unikraft is a from-first-principles virtualization solution and cloud platform based on **MicroVMs** which provides best-in-class performance, security, and scalability.
 
 Running your app on Unikraft Cloud is like running a container but with hardware isolation, millisecond cold starts, and stateful scale-to-zero.
 
@@ -17,105 +16,68 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
 
 1. [Create a free account](https://console.unikraft.cloud/signup).
 
-1. Install the [`kraft`](/cli/) CLI:
+1. Install the Unikraft CLI.
 
-    <Tabs defaultValue="shell">
-      <TabsList>
-        <TabsTrigger value="shell">Shell 1-liner</TabsTrigger>
-        <TabsTrigger value="macos">macOS</TabsTrigger>
-        <TabsTrigger value="debian">Debian/Ubuntu</TabsTrigger>
-      </TabsList>
-      <TabsContent value="shell">
-      ```bash title="Run on any *NIX shell"
-      curl -sSfL https://get.kraftkit.sh | sh
-      ```
-      </TabsContent>
-      <TabsContent value="macos">
-        ```bash title="zsh"
-        brew install unikraft/cli/kraftkit
-        ```
-      </TabsContent>
-      <TabsContent value="debian">
-        ```bash
-        sudo apt-get update
-        sudo apt-get install \
-            ca-certificates \
-            curl \
-            gnupg \
-            lsb-release
-        ```
+   <CodeTabs>
 
-        Add Unikraft's official GPG key:
-
-        ```bash
-        sudo mkdir -p /etc/apt/keyrings
-        curl -fsSL https://deb.pkg.kraftkit.sh/gpg.key | \
-          sudo gpg --dearmor -o /etc/apt/keyrings/unikraft.gpg
-        ```
-
-        Use the following command to set up the APT repository:
-
-        ```bash
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/unikraft.gpg] https://deb.pkg.kraftkit.sh /" | \
-          sudo tee /etc/apt/sources.list.d/unikraft.list > /dev/null
-        ```
-
-        Update the APT package index, and install the latest version of `kraftkit`:
-
-        ```bash
-        sudo apt-get update
-        sudo apt-get install kraftkit
-        ```
-      </TabsContent>
-   </Tabs>
-
-   See [alternative installation instructions](https://unikraft.org/docs/cli/install) for other platforms.
-
-1. Set a metro you want to use, e.g. `fra`:
-
-   ```bash
-   export UKC_METRO=fra
+   ```bash title="1-liner (macOS & Linux)"
+   curl --proto '=https' --tlsv1.2 -fsSL https://unikraft.com/cli/install.sh | sh
    ```
 
-1. Set your access token (from the [console](https://console.unikraft.cloud/), go to `Settings` and see the `API TOKEN`):
-
-   ```bash
-   export UKC_TOKEN=<your_token_here>
+   ```bash title="macOS"
+   brew install unikraft/cli/unikraft
    ```
 
-1. Install Docker on your system, by following [the official instructions](https://docs.docker.com/get-started/get-docker/).
-   You require Docker to build the app image that you will then deploy on Unikraft Cloud.
-
-   Be sure to follow the [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/).
-
-1. _(optional, but recommended)_ Configure BuildKit on your system.
-   BuildKit is useful to cache the Unikraft Cloud builds and reduce the build time.
-
-   See instructions [here](/platform/troubleshooting#how-can-you-cache-the-apps-filesystem-for-faster-builds).
-
-1. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples):
-
-   ```bash
-   git clone https://github.com/unikraft-cloud/examples
-   cd examples/
+   ```bash title="Debian/Ubuntu"
+   sudo apt-get update
+   sudo apt-get install \
+       ca-certificates \
+       curl \
+       gnupg \
+       lsb-release
+   
+   # Add Unikraft's official GPG key
+   sudo mkdir -p /etc/apt/keyrings
+   curl -fsSL https://deb.pkg.unikraft.com/gpg.key | \
+     sudo gpg --dearmor -o /etc/apt/keyrings/unikraft.gpg
+   
+   # Set up the APT repository
+   echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/unikraft.gpg] https://deb.pkg.unikraft.com /" | \
+     sudo tee /etc/apt/sources.list.d/unikraft.list > /dev/null
+   
+   # Install unikraft CLI
+   sudo apt-get update
+   sudo apt-get install unikraft
    ```
 
-1. Navigate to your favorite example, for example Nginx:
+   ```bash title="Fedora/RHEL/Rocky/Alma"
+   # Add the Unikraft CLI repository
+   sudo tee /etc/yum.repos.d/unikraft-cli-rpm.repo <<EOF
+   [unikraft]
+   name=unikraft
+   baseurl=https://pkg.unikraft.com/rpm/cli-rpm/
+   gpgcheck=0
+   enabled=1
+   EOF
 
-   ```bash
-   cd nginx/
+   # Install the CLI at the specific pre-release version
+   yum install unikraft-cli
    ```
 
-1. Deploy your first scale-to-zero, serverless app with Unikraft Cloud:
+   </CodeTabs>
+
+   See [alternative installation instructions](https://github.com/unikraft/cli/?tab=readme-ov-file#installation) for other platforms.
+
+1. Authenticate with your account.
 
    ```bash
-   kraft cloud deploy --port 443:8080 --memory 256Mi .
+   unikraft login
    ```
 
-1. Use `curl` or a browser to access the Unikraft Cloud instance of Nginx, at the address shown by the `kraft cloud deploy` command (or, use `kraft cloud instance ls` and `kraft cloud instance get <name>` to get the address):
+1. Deploy your first scale-to-zero, serverless app with Unikraft Cloud.
 
    ```bash
-   curl https://<address_above>
+   unikraft run --metro=fra -p 443:8080/http+tls nginx:latest
    ```
 
 </Stepper>

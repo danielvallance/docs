@@ -3,8 +3,6 @@ title: Serverless Databases
 navigation_icon: database-zap
 ---
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
-
 Databases are central to modern apps, but they're notoriously resource-hungry, slow to scale, and costly to operate at low utilisation.
 Traditional VM- or container-based solutions keep idle resources running, resulting in waste and inefficiency.
 With **Unikraft Cloud**, serverless databases gain the advantages of **microVMs**, combining **extreme performance** with **true scale-to-zero efficiency**.
@@ -58,19 +56,25 @@ cd examples/postgres/
 Make sure to log into Unikraft Cloud by setting your token and a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+unikraft build . --output my-org/postgres:latest
+unikraft run --metro=fra -e POSTGRES_PASSWORD=unikraft -p 5432:5432/tls -m 1Gi my-org/postgres:latest
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
-```
-
-When done, invoke the following command to deploy this app on Unikraft
-Cloud:
-
-```bash
 kraft cloud deploy -e POSTGRES_PASSWORD=unikraft -p 5432:5432/tls -M 1Gi .
 ```
+
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
 
 The output shows the instance address and other details:
 
@@ -125,7 +129,7 @@ You can see this in action by running `SELECT pg_sleep(10);` and verifying that 
 :::
 
 :::note
-If you'd like to use a port other than `5432/tls`, you'll need to use the [`kraft cloud tunnel`](/cli/tunnel) command to connect to Postgres.
+If you'd like to use a port other than `5432/tls`, you'll need to use the legacy CLI tunnel command to connect to Postgres.
 
 You need to explicitly disable scale-to-zero.
 You can do this by either changing the label in the `Kraftfile` or by using `--scale-to-zero off` in the deploy command.
@@ -133,9 +137,17 @@ You can do this by either changing the label in the `Kraftfile` or by using `--s
 
 At any time, you can list information about the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 
 ```text
 NAME              FQDN                                     STATE    CREATED AT     IMAGE                                   MEMORY   ARGS                                      BOOT TIME
@@ -144,9 +156,17 @@ postgres-saan9    young-thunder-fbafrsxj.fra.unikraft.app  running  6 minutes ag
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete postgres-saan9
+```
+
+```bash title="kraft"
 kraft cloud instance remove postgres-saan9
 ```
+
+</CodeTabs>
 
 ### Using volumes
 
@@ -154,15 +174,35 @@ You can use [volumes](/platform/volumes) for data persistence for your PostgreSQ
 
 For that you would first create a volume:
 
-```console
+<CodeTabs syncKey="cli-tool">
+
+```console title="unikraft"
+unikraft volumes create \
+  --set name=postgres \
+  --set size=200 \
+  --set metro=fra
+```
+
+```console title="kraft"
 kraft cloud volume create --name postgres --size 200
 ```
 
+</CodeTabs>
+
 Then start the PostgreSQL instance and mount that volume:
 
-```console
+<CodeTabs syncKey="cli-tool">
+
+```console title="unikraft"
+unikraft build . --output my-org/postgres:latest
+unikraft run --metro=fra -p 5432:5432/tls -m 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres -v postgres:/volume my-org/postgres:latest
+```
+
+```console title="kraft"
 kraft cloud deploy -p 5432:5432/tls -M 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres -v postgres:/volume .
 ```
+
+</CodeTabs>
 
 ### Customize your deployment
 
@@ -188,8 +228,16 @@ Support for scale-to-zero for internal instances is coming soon.
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

@@ -9,7 +9,8 @@ Tyk is used together with Redis to store API tokens and OAuth clients.
 
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/tyk/` directory:
 
@@ -18,21 +19,36 @@ git clone https://github.com/kraftcloud/examples
 cd examples/tyk/
 ```
 
-Make sure to log into KraftCloud by setting your token and a [metro](/docs/metros#available) close to you.
+Make sure to log into KraftCloud and pick a [metro](/docs/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set KraftCloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
-When done, invoke the following command to deploy this app on KraftCloud:
+</CodeTabs>
 
-```bash
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
+When done, invoke the following command to deploy this app on KraftCloud.
+Compose is only available in the legacy CLI:
+
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud compose up
 ```
+
+</CodeTabs>
 
 The output shows the [Compose](/docs/guides/features/compose) output:
 
@@ -51,9 +67,13 @@ The output shows the [Compose](/docs/guides/features/compose) output:
 
 To list information about the instances, use:
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud compose ps
 ```
+
+</CodeTabs>
 ```text
 NAME       FQDN                                  STATE    STATUS        IMAGE                                         MEMORY   ARGS                                         BOOT TIME
 tyk-tyk    funky-pond-45usfkxx.fra.unikraft.app  running  since 45secs  tyk-tyk@sha256:06f8ba3...                     128 MiB  /usr/bin/tyk start --conf /etc/tyk.conf      38.12 ms
@@ -76,9 +96,13 @@ curl https://funky-pond-45usfkxx.fra-test.unikraft.app/hello
 
 When done, you can bring down the instances:
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud compose down
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -179,8 +203,16 @@ The `compose.yaml` file can be update to assign different names, ports, network 
 
 Use the `--help` option for detailed information on using KraftCloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

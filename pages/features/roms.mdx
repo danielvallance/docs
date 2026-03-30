@@ -3,11 +3,9 @@ title: ROMs
 navigation_icon: hard-drive
 ---
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
-
-:::caution
+:::caution[**DISCLAIMER**]
 The ROM feature isn't currently enabled for the public Unikraft Cloud offering.
-As such, the [KraftKit CLI tool](/cli/) can't entirely leverage this feature.
+As such, the legacy [KraftKit CLI tool](/docs/cli/kraft/overview) can't entirely leverage this feature.
 For boxes where it's enabled, use it via the [Unikraft Cloud API](/api/platform/v1).
 :::
 
@@ -51,14 +49,8 @@ export UKC_METRO="fra" # or your preferred metro
 
 First, create a base image with a Python HTTP server that loads and executes custom Python programs from a ROM.
 
-<Tabs defaultValue="dockerfile">
-  <TabsList>
-    <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
-    <TabsTrigger value="kraftfile">Kraftfile</TabsTrigger>
-    <TabsTrigger value="server">server.py</TabsTrigger>
-    <TabsTrigger value="wrapper">wrapper.sh</TabsTrigger>
-  </TabsList>
-  <TabsContent value="dockerfile">
+<CodeTabs>
+
 ```dockerfile title="Dockerfile"
 FROM python:3.12 AS build
 
@@ -96,8 +88,6 @@ COPY --from=build /usr/local/lib /usr/local/lib
 COPY ./wrapper.sh /wrapper.sh
 COPY ./server.py /src/server.py
 ```
-  </TabsContent>
-  <TabsContent value="kraftfile">
 ```yaml title="Kraftfile"
 spec: v0.6
 
@@ -107,8 +97,7 @@ rootfs: ./Dockerfile
 
 cmd: [ "/wrapper.sh", "/usr/bin/python3", "/src/server.py" ]
 ```
-  </TabsContent>
-  <TabsContent value="server">
+
 ```python title="server.py"
 import argparse
 import importlib.util
@@ -159,8 +148,7 @@ def parse_args():
 if __name__ == "__main__":
     main(parse_args())
 ```
-  </TabsContent>
-  <TabsContent value="wrapper">
+
 ```bash title="wrapper.sh"
 #!/usr/bin/sh
 
@@ -168,8 +156,7 @@ if __name__ == "__main__":
 /usr/bin/mount -t erofs /dev/ukp_rom_python_function.py /tmp/
 exec "$@"
 ```
-  </TabsContent>
-</Tabs>
+</CodeTabs>
 
 Ensure that the `wrapper.sh` script is executable:
 
@@ -190,9 +177,17 @@ kraft pkg \
 
 Wait a few seconds for propagation and check that the image is present:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft images list
+```
+
+```bash title="kraft"
 kraft cloud image ls
 ```
+
+</CodeTabs>
 
 {/* vale off */}
 ### ROM files
@@ -205,42 +200,32 @@ Create a separate directory for each of the ROMs:
 mkdir -p rom1/fs rom2/fs
 ```
 
-<Tabs defaultValue="function1">
-  <TabsList>
-    <TabsTrigger value="function1">rom 1</TabsTrigger>
-    <TabsTrigger value="kraftfile1">Kraftfile 1</TabsTrigger>
-    <TabsTrigger value="function2">rom 2</TabsTrigger>
-    <TabsTrigger value="kraftfile2">Kraftfile 2</TabsTrigger>
-  </TabsList>
-  <TabsContent value="function1">
+<CodeTabs>
+
 ```python title="rom1/fs/rom.py"
 def function():
     return "Hi from 1st ROM!\n"
 ```
-  </TabsContent>
-  <TabsContent value="kraftfile1">
+
 ```yaml title="rom1/Kraftfile"
 spec: v0.6
 
 roms:
-- ./fs
+  - ./fs
 ```
-  </TabsContent>
-  <TabsContent value="function2">
+
 ```python title="rom2/fs/rom.py"
 def function():
     return "Hi from 2nd ROM!\n"
 ```
-  </TabsContent>
-  <TabsContent value="kraftfile2">
+
 ```yaml title="rom2/Kraftfile"
 spec: v0.6
 
 roms:
-- ./fs
+  - ./fs
 ```
-  </TabsContent>
-</Tabs>
+</CodeTabs>
 
 Package and push the ROMs:
 
@@ -266,9 +251,17 @@ kraft pkg \
 
 Wait a few seconds for propagation and check that the ROMs are present:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft images list
+```
+
+```bash title="kraft"
 kraft cloud image ls
 ```
+
+</CodeTabs>
 
 :::tip
 The `--no-kernel` flag tells `kraft` to package only the ROM files, without the kernel, since this is data that will get attached to another image.
@@ -279,7 +272,7 @@ This example packages the ROMs as EROFS filesystems.
 If packaging the ROMs as a cpio archives (that is, `--rootfs-type cpio`), or as standalone files, you must align their size to 4096 bytes.
 :::
 
-### Services
+### Instances
 
 Create two instances with the same base image and attach different ROMs:
 
@@ -356,10 +349,19 @@ curl -X POST \
 
 Check that the instances are up:
 
-```bash title=""
-kraft cloud instance get test-http-python-rom1
-kraft cloud instance get test-http-python-rom2
-```
+<CodeTabs syncKey="cli-tool">
+
+  ```bash title="unikraft"
+  unikraft instances get test-http-python-rom1
+  unikraft instances get test-http-python-rom2
+  ```
+
+  ```bash title="kraft"
+  kraft cloud instance get test-http-python-rom1
+  kraft cloud instance get test-http-python-rom2
+  ```
+
+</CodeTabs>
 
 Note the `roms` array in the instances configurations.
 Each ROM is available as a readable device at `/dev/ukp_rom_python_function.py` (in the form of an EROFS filesystem in this case), which the server program mounts at `/tmp/rom.py` and executes.
@@ -383,9 +385,17 @@ Hi from 2nd ROM!
 
 When done, remove the instances:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete test-http-python-rom1 test-http-python-rom2
+```
+
+```bash title="kraft"
 kraft cloud instance rm test-http-python-rom1 test-http-python-rom2
 ```
+
+</CodeTabs>
 
 ## Learn more
 

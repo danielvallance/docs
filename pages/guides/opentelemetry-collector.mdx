@@ -12,7 +12,8 @@ telemetry data.
 
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/opentelemetry-collector/` directory:
 
@@ -21,21 +22,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/opentelemetry-collector/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/opentelemetry-collector:latest
+unikraft run --metro=fra -m 1024MiB my-org/opentelemetry-collector:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -M 1024M .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -62,20 +82,36 @@ Feel free to change and redeploy!
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
-razvand@mantis:~/.../examples/opentelemetry-collector$ kraft cloud inst ls
+unikraft instances list
 NAME                           FQDN                                  STATE    STATUS             IMAGE             MEMORY   ARGS                                 BOOT TIME
 opentelemetry-collector-bvtnh                                        running  since 11mins       opentelemetry...  976 MiB  /usr/bin/otelcontribcol --config...  177.62 ms
 ```
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete opentelemetry-collector-bvtnh
+```
+
+```bash title="kraft"
 kraft cloud instance remove opentelemetry-collector-bvtnh
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -145,8 +181,16 @@ Such as adding another export, apart from the debug exporter.
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
