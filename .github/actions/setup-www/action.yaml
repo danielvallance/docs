@@ -38,6 +38,10 @@ inputs:
   posthog-key:
     required: false
     description: The key to authenticate with PostHog.
+  docs-channel:
+    required: false
+    default: prod-staging
+    description: The docs channel to use for the OpenAPI spec.
 
 outputs:
   domain:
@@ -61,7 +65,7 @@ runs:
     id: service
     shell: bash
     run: |
-      set -xe;
+      set -e;
 
       # Create the service if it does not exist.
       _SVC=$(kraft cloud --metro "${{ inputs.metro }}" service get "${{ inputs.name }}" -o raw | jq -r '.data.service_groups[].error')
@@ -96,6 +100,7 @@ runs:
         --build-arg PUBLIC_STATUS_PAGE_SUMMARY_URL="https://status.unikraft.cloud/api/v1/summary" \
         --build-arg PUBLIC_POSTHOG_HOST="${{ inputs.posthog-host }}" \
         --build-arg PUBLIC_POSTHOG_KEY="${{ inputs.posthog-key }}" \
+        --build-arg DOCS_CHANNEL="${{ inputs.docs-channel }}" \
         --memory "${{ inputs.memory }}" \
         --service "${{ inputs.name }}" \
         --image "${{ inputs.name }}" \
@@ -120,6 +125,8 @@ runs:
   - name: Update Deployment
     uses: bobheadxi/deployments@v1
     with:
-      step: start
+      step: finish
       token: ${{ github.token }}
       env: ${{ inputs.environment }}
+      deployment_id: ${{ steps.init-deploy.outputs.deployment_id }}
+      status: ${{ job.status }}

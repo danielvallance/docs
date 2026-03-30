@@ -1,0 +1,17 @@
+name: setup-kraftkit
+
+description: Setup KraftKit.
+
+runs:
+  using: composite
+  steps:
+  - name: Install
+    shell: bash
+    run: |
+      if [[ -z $(command -v kraft) ]]; then
+        _VERSION=$(curl https://get.kraftkit.sh/latest.txt);
+        wget -nv -LO kraft.tar.gz https://github.com/unikraft/kraftkit/releases/download/v${_VERSION}/kraft_${_VERSION}_linux_amd64.tar.gz;
+        tar xzf kraft.tar.gz kraft;
+        sudo mv kraft /usr/bin/;
+        rm kraft.tar.gz;
+      fi

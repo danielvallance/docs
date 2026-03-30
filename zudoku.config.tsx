@@ -1,0 +1,540 @@
+import type { ZudokuConfig } from "zudoku";
+
+const config: ZudokuConfig = {
+  metadata: {
+    title: "%s | Unikraft Cloud Docs",
+    favicon: "/favicon.ico",
+  },
+  basePath: "/docs",
+  site: {
+    logo: {
+      src: { light: "/logo-light.svg", dark: "/logo-dark.svg" },
+      alt: "Zudoku",
+      width: "130px",
+    },
+    showPoweredBy: false,
+  },
+  docs: {
+    files: "/pages/**/*.{md,mdx}",
+    defaultOptions: {
+      showLastModified: true,
+      suggestEdit: {
+        text: "Edit this page",
+        url: "https://github.com/unikraft-cloud/docs/edit/prod-stable/{filePath}",
+      },
+    },
+    llms: {
+      llmsTxt: true, // Generate llms.txt
+      llmsTxtFull: true, // Generate llms-full.txt
+      includeProtected: false, // Exclude protected routes
+    },
+  },
+  syntaxHighlighting: {
+    languages: [
+      "c",
+      "go",
+      "html",
+      "javascript",
+      "json",
+      "python",
+      "rust",
+      "shellscript",
+      "typescript",
+      "yaml",
+    ],
+    themes: {
+      light: "github-light",
+      dark: "github-dark-high-contrast",
+    },
+  },
+  navigation: [
+    {
+      type: "category",
+      label: "Documentation",
+      icon: "book-open-text",
+      items: [
+        {
+          type: "category",
+          label: "Getting Started",
+          icon: "star",
+          collapsed: false,
+          items: [
+            "/introduction",
+            "/faq",
+          ],
+        },
+        {
+          type: "category",
+          label: "Features",
+          icon: "rocket",
+          collapsed: false,
+          items: [
+            "/features/scale-to-zero",
+            "/features/load-balancing",
+            "/features/snapshots",
+            "/features/autoscale",
+            "/features/roms",
+            "/features/autokill",
+            "/features/cron-jobs",
+            "/features/forking",
+          ],
+        },
+        {
+          type: "category",
+          label: "Use Cases",
+          icon: "lightbulb",
+          collapsed: false,
+          items: [
+            "/use-cases/headless-browsers",
+            "/use-cases/mcp-servers",
+            "/use-cases/serverless-databases",
+            "/use-cases/remote-ides",
+            "/use-cases/api-gateways",
+            "/use-cases/webhooks",
+          ],
+        },
+        {
+          type: "category",
+          label: "Cloud Platform",
+          icon: "cloud",
+          collapsed: false,
+          items: [
+            "/platform/metros",
+            "/platform/instances",
+            "/platform/domains",
+            "/platform/certificates",
+            "/platform/services",
+            "/platform/volumes",
+            "/platform/images",
+            "/platform/troubleshooting",
+            "/platform/delete-locks",
+            "/platform/quotas",
+            "/platform/metrics",
+            "/platform/tagging",
+          ],
+        },
+        {
+          type: "category",
+          label: "Integrations",
+          icon: "blocks",
+          collapsed: false,
+          items: [
+            "/integrations/kubernetes",
+            "/integrations/sdks/go",
+          ],
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Guides",
+      icon: "graduation-cap",
+      items: [
+        "/guides/overview",
+        "/guides/bun",
+        "/guides/caddy",
+        "/guides/cpp-boost",
+        "/guides/cpp",
+        "/guides/django",
+        "/guides/dotnet",
+        "/guides/dragonfly",
+        "/guides/duckdb",
+        "/guides/elixir",
+        "/guides/erlang",
+        "/guides/ferretdb",
+        "/guides/flask-sqlite",
+        "/guides/flask",
+        "/guides/go",
+        "/guides/grafana",
+        "/guides/haproxy",
+        "/guides/hugo",
+        "/guides/imaginary",
+        "/guides/java",
+        "/guides/llama2",
+        "/guides/lua",
+        "/guides/mariadb",
+        "/guides/memcached",
+        "/guides/minio",
+        "/guides/mongodb",
+        "/guides/nextjs",
+        "/guides/nginx",
+        "/guides/node",
+        "/guides/opentelemetry-collector",
+        "/guides/perl",
+        "/guides/php",
+        "/guides/postgres",
+        "/guides/prisma",
+        "/guides/puppeteer",
+        "/guides/python",
+        "/guides/rails",
+        "/guides/redis",
+        "/guides/remix",
+        "/guides/ruby",
+        "/guides/rust-rocket",
+        "/guides/rust-tokio",
+        "/guides/rust-actix",
+        "/guides/skipper",
+        "/guides/solidjs",
+        "/guides/spin",
+        "/guides/springboot",
+        "/guides/sveltekit",
+        "/guides/traefik",
+        "/guides/tyk",
+        "/guides/wazero",
+        "/guides/wordpress",
+      ]
+    },
+    {
+      type: "category",
+      label: "Tutorials",
+      icon: "book",
+      items: [
+        "/tutorials/environment-variables",
+        "/tutorials/docker-to-ukc",
+        "/tutorials/instance-metrics",
+        "/tutorials/rootfs-formats",
+        "/tutorials/rootfs-compression",
+        "/tutorials/rootfs-volumes-roms",
+        "/tutorials/scale-to-zero-triggers",
+        "/tutorials/network-communication"
+      ]
+    },
+    {
+      type: "category",
+      label: "CLI Reference",
+      icon: "terminal",
+      items: [
+        "/cli/overview",
+        {
+          type: "category",
+          label: "unikraft",
+          icon: "terminal",
+          collapsed: false,
+          items: [
+            "/cli/unikraft",
+            "/cli/unikraft/login",
+            "/cli/unikraft/logout",
+            "/cli/unikraft/completion",
+            "/cli/unikraft/run",
+            "/cli/unikraft/build",
+            "/cli/unikraft/tui",
+            "/cli/unikraft/upgrade",
+            "/cli/unikraft/version",
+            {
+              type: "category",
+              label: "unikraft config",
+              icon: "settings",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/config",
+                "/cli/unikraft/config/get",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft profile",
+              icon: "user-circle",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/profile",
+                "/cli/unikraft/profile/get",
+                "/cli/unikraft/profile/list",
+                "/cli/unikraft/profile/use",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft metros",
+              icon: "earth",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/metros",
+                "/cli/unikraft/metros/get",
+                "/cli/unikraft/metros/list",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft instances",
+              icon: "rocket",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/instances",
+                "/cli/unikraft/instances/create",
+                "/cli/unikraft/instances/delete",
+                "/cli/unikraft/instances/edit",
+                "/cli/unikraft/instances/get",
+                "/cli/unikraft/instances/list",
+                "/cli/unikraft/instances/logs",
+                "/cli/unikraft/instances/restart",
+                "/cli/unikraft/instances/start",
+                "/cli/unikraft/instances/stop",
+                "/cli/unikraft/instances/wait",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft volumes",
+              icon: "cylinder",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/volumes",
+                "/cli/unikraft/volumes/clone",
+                "/cli/unikraft/volumes/create",
+                "/cli/unikraft/volumes/delete",
+                "/cli/unikraft/volumes/edit",
+                "/cli/unikraft/volumes/get",
+                "/cli/unikraft/volumes/list",
+                "/cli/unikraft/volumes/wait",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft services",
+              icon: "split",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/services",
+                "/cli/unikraft/services/create",
+                "/cli/unikraft/services/delete",
+                "/cli/unikraft/services/edit",
+                "/cli/unikraft/services/get",
+                "/cli/unikraft/services/list",
+                "/cli/unikraft/services/wait",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft certificates",
+              icon: "shield-check",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/certificates",
+                "/cli/unikraft/certificates/create",
+                "/cli/unikraft/certificates/delete",
+                "/cli/unikraft/certificates/get",
+                "/cli/unikraft/certificates/list",
+                "/cli/unikraft/certificates/wait",
+              ],
+            },
+            {
+              type: "category",
+              label: "unikraft images",
+              icon: "package",
+              collapsed: false,
+              items: [
+                "/cli/unikraft/images",
+                "/cli/unikraft/images/copy",
+                "/cli/unikraft/images/get",
+                "/cli/unikraft/images/list",
+              ],
+            },
+          ]
+        },
+        {
+          type: "category",
+          label: "kraft cloud",
+          icon: "terminal",
+          collapsed: false,
+          items: [
+            "/cli/kraft/overview",
+            "/cli/kraft/deploy",
+            "/cli/kraft/quota",
+            "/cli/kraft/tunnel",
+            {
+              type: "category",
+              label: "kraft cloud cert",
+              icon: "shield-check",
+              collapsed: false,
+              items: [
+                "/cli/kraft/cert",
+                "/cli/kraft/cert/create",
+                "/cli/kraft/cert/get",
+                "/cli/kraft/cert/list",
+                "/cli/kraft/cert/remove",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud compose",
+              icon: "book-open",
+              collapsed: false,
+              items: [
+                "/cli/kraft/compose",
+                "/cli/kraft/compose/build",
+                "/cli/kraft/compose/create",
+                "/cli/kraft/compose/down",
+                "/cli/kraft/compose/log",
+                "/cli/kraft/compose/ls",
+                "/cli/kraft/compose/ps",
+                "/cli/kraft/compose/push",
+                "/cli/kraft/compose/start",
+                "/cli/kraft/compose/stop",
+                "/cli/kraft/compose/up",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud image",
+              icon: "package",
+              collapsed: false,
+              items: [
+                "/cli/kraft/image",
+                "/cli/kraft/image/list",
+                "/cli/kraft/image/remove",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud instance",
+              icon: "rocket",
+              collapsed: false,
+              items: [
+                "/cli/kraft/instance",
+                "/cli/kraft/instance/create",
+                "/cli/kraft/instance/get",
+                "/cli/kraft/instance/list",
+                "/cli/kraft/instance/logs",
+                "/cli/kraft/instance/remove",
+                "/cli/kraft/instance/start",
+                "/cli/kraft/instance/stop",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud metro",
+              icon: "earth",
+              collapsed: false,
+              items: [
+                "/cli/kraft/metro",
+                "/cli/kraft/metro/list",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud scale",
+              icon: "arrow-up-1-0",
+              collapsed: false,
+              items: [
+                "/cli/kraft/scale",
+                "/cli/kraft/scale/add",
+                "/cli/kraft/scale/get",
+                "/cli/kraft/scale/init",
+                "/cli/kraft/scale/remove",
+                "/cli/kraft/scale/reset",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud service",
+              icon: "split",
+              collapsed: false,
+              items: [
+                "/cli/kraft/service",
+                "/cli/kraft/service/create",
+                "/cli/kraft/service/get",
+                "/cli/kraft/service/list",
+                "/cli/kraft/service/remove",
+              ],
+            },
+            {
+              type: "category",
+              label: "kraft cloud volume",
+              icon: "cylinder",
+              collapsed: false,
+              items: [
+                "/cli/kraft/volume",
+                "/cli/kraft/volume/attach",
+                "/cli/kraft/volume/create",
+                "/cli/kraft/volume/detach",
+                "/cli/kraft/volume/get",
+                "/cli/kraft/volume/import",
+                "/cli/kraft/volume/list",
+                "/cli/kraft/volume/remove",
+              ],
+            },
+          ]
+        },
+      ],
+    } as any,
+    {
+      type: "link",
+      label: "Platform API",
+      icon: "unplug",
+      to: "/api/platform/v1",
+    },
+  ],
+  search: {
+    type: "pagefind",
+  },
+  redirects: [
+    { from: "/", to: "/introduction" },
+    { from: "/cli", to: "/cli/overview" },
+    { from: "/guides", to: "/guides/overview" },
+  ],
+  apis: [
+    {
+      type: "file",
+      input: "./apis/platform.yaml",
+      path: "/api/platform/v1",
+    },
+  ],
+  theme: {
+    fonts: {
+      sans: {
+        fontFamily: "Inter, sans-serif",
+        url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap",
+      },
+      mono: {
+        fontFamily: "IBM Plex Mono, monospace",
+        url: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap",
+      },
+    },
+    light: {
+      background: "#ffffff", // Main background color
+      foreground: "#020817", // Main text color
+      card: "#ffffff", // Card background color
+      cardForeground: "#020817", // Card text color
+      popover: "#ffffff", // Popover background color
+      popoverForeground: "#020817", // Popover text color
+      primary: "#2563eb", // Primary action color
+      primaryForeground: "#ffffff", // Text color on primary backgrounds
+      secondary: "#f1f5f9", // Secondary action color
+      secondaryForeground: "#020817", // Text color on secondary backgrounds
+      muted: "#f1f5f9", // Muted/subtle background color
+      mutedForeground: "#64748b", // Text color for muted elements
+      accent: "#f1f5f9", // Accent color for highlights
+      accentForeground: "#020817", // Text color on accent backgrounds
+      destructive: "#ef4444", // Color for destructive actions
+      destructiveForeground: "#ffffff", // Text color on destructive backgrounds
+      border: "#cbd5e1", // Border color
+      input: "#e2e8f0", // Input field border color
+      ring: "#0284c7", // Focus ring color
+      radius: "0.4rem", // Border radius value
+    },
+    dark: {
+      background: "#000000", // Main background color
+      foreground: "#dbeafe", // Main text color
+      card: "#000000", // Card background color
+      cardForeground: "#dbeafe", // Card text color
+      popover: "hsl(20 14.3% 4.1%)", // Popover background color
+      popoverForeground: "hsl(60 9.1% 97.8%)", // Popover text color
+      primary: "#2563eb", // Primary action color
+      primaryForeground: "#ffffff", // Text color on primary backgrounds
+      secondary: "var(--color-slate-800)", // Secondary action color
+      secondaryForeground: "hsl(60 9.1% 97.8%)", // Text color on secondary backgrounds
+      muted: "var(--color-slate-900)", // Muted/subtle background color
+      mutedForeground: "var(--color-slate-600)", // Text color for muted elements
+      accent: "var(--color-slate-800)", // Accent color for highlights
+      accentForeground: "hsl(60 9.1% 97.8%)", // Text color on accent backgrounds
+      destructive: "var(--color-rose-800)", // Color for destructive actions
+      destructiveForeground: "hsl(60 9.1% 97.8%)", // Text color on destructive backgrounds
+      border: "#1e293b", // Border color
+      input: "#334155", // Input field border color
+      ring: "var(--color-amber-500)", // Focus ring color
+      radius: "0.4rem", // Border radius value
+    },
+  },
+};
+
+export default config;
