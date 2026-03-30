@@ -1,0 +1,23 @@
+name: pr/preview
+
+on:
+  pull_request:
+    types:
+    - opened
+    - synchronize
+    - reopened
+    - closed
+    branches:
+    - prod-staging
+
+permissions:
+  deployments: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo "pr/preview placeholder"
