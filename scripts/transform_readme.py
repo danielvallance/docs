@@ -26,6 +26,12 @@ ANSI_RESET = '\x1b[0m'
 ANSI_BOLD = '\x1b[1m'
 ANSI_DARK_GRAY = '\x1b[90m'
 ANSI_GREEN = '\x1b[92m'
+ANSI_LIGHT_BLUE = '\x1b[94m'
+
+STATE_COLORS: dict[str, str] = {
+    "running": ANSI_GREEN,
+    "standby": ANSI_LIGHT_BLUE,
+}
 
 # Import statement for Tabs component
 TABS_IMPORT = 'import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"\n\n'
@@ -143,7 +149,7 @@ def color_box_drawing_line(line: str) -> str:
         # Color the label in dark gray (but not the colon)
         label_colored = f'{ANSI_DARK_GRAY}{label}{ANSI_RESET}{colon}'
 
-        # Check if this is the state line and color the value in green
+        # Check if this is the state line and color the value
         if 'state' in label.lower():
             # Color the state value (first word after colon and spaces)
             value_match = re.search(r'^(\s*)(\S+)(.*)$', value)
@@ -151,7 +157,8 @@ def color_box_drawing_line(line: str) -> str:
                 value_spaces = value_match.group(1)
                 state_value = value_match.group(2)
                 rest = value_match.group(3)
-                value = f'{value_spaces}{ANSI_GREEN}{state_value}{ANSI_RESET}{rest}'
+                color = STATE_COLORS.get(state_value.lower(), ANSI_GREEN)
+                value = f'{value_spaces}{color}{state_value}{ANSI_RESET}{rest}'
 
         return leading_space + box_colored + dashes_colored + label_colored + value
     else:
@@ -245,8 +252,9 @@ def color_state_value_in_row(line: str, state_col: int) -> str:
     if len(cols) > state_col:
         raw_val = cols[state_col]
         val = raw_val.strip()
-        if val and ANSI_GREEN not in val:
-            colored = f"{ANSI_GREEN}{val}{ANSI_RESET}"
+        if val and ANSI_GREEN not in val and ANSI_LIGHT_BLUE not in val:
+            color = STATE_COLORS.get(val.lower(), ANSI_GREEN)
+            colored = f"{color}{val}{ANSI_RESET}"
             cols[state_col] = raw_val.replace(val, colored, 1)
 
     # Reconstruct using original separators to preserve spacing
@@ -259,7 +267,7 @@ def color_state_value_in_row(line: str, state_col: int) -> str:
 
 
 def color_state_in_table_blocks(text: str) -> str:
-    """Color state values in table-style fenced blocks (STATE column) with light green."""
+    """Color state values in table-style fenced blocks (STATE column) based on STATE_COLORS."""
     def repl(m):
         fence_start = m.group(1)
         body = m.group(3)
