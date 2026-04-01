@@ -123,9 +123,13 @@ The platform labels all metrics with `uuid` and `name`.
 
 ## Example
 
+Set `UKC_TOKEN` and `UKC_METRO` for the API call:
+
 ```bash title=""
-curl -H "Accept: application/json" \
-  "https://api.unikraft.io/v1/instances/metrics?uuid=66d05e09-1436-4d1f-bbe6-6dc03ae48d7a"
+curl -X GET \
+    -H "Authorization: Bearer $UKC_TOKEN" \
+    -H "Content-Type: application/json" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/instances/metrics?uuid=66d05e09-1436-4d1f-bbe6-6dc03ae48d7a"
 ```
 
 ```json title=""

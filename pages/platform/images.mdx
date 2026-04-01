@@ -82,8 +82,8 @@ Start with the simplest workflow: create an image from a Python app (following t
 ```bash title="unikraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-python3.12
-unikraft build . --output my-org/http-python312:latest
-unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB my-org/http-python312:latest
+unikraft build . --output <my-org>/http-python312:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB <my-org>/http-python312:latest
 ```
 
 ```bash title="kraft"
@@ -103,7 +103,7 @@ The output should look like:
  [90m├[0m[90m──────────[0m [90muuid[0m: e7389eee-9808-4152-b2ec-1f3c0541fd05
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
  [90m├[0m[90m───────────[0m [90murl[0m: https://young-night-5fpf0jj8.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: [username]]/http-python312@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472
+ [90m├[0m[90m─────────[0m [90mimage[0m: <my-org>/http-python312@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472
  [90m├[0m[90m─────[0m [90mboot time[0m: 15.09 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
  [90m├[0m[90m───────[0m [90mservice[0m: young-night-5fpf0jj8
@@ -134,7 +134,7 @@ You should see output like:
 
 ```text title=""
 IMAGE                       TAG     SIZE
-[username]]/http-python312  latest  77 MB
+<my-org>/http-python312  latest  77 MB
 ```
 
 And you can remove an image from the registry via the legacy CLI:
@@ -161,8 +161,8 @@ For the next workflow, start many instances:
 ```bash title="unikraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-python3.12
-unikraft build . --output my-org/http-python312:latest
-unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB --replicas 2 my-org/http-python312:latest
+unikraft build . --output <my-org>/http-python312:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB --replicas 2 <my-org>/http-python312:latest
 ```
 
 ```bash title="kraft"
@@ -219,7 +219,7 @@ In this final workflow, take the existing image and start new instances from it:
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB [username]/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB <my-org>/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
 ```
 
 ```bash title="kraft"
@@ -227,7 +227,7 @@ kraft cloud instance create \
    --start \
    --port 443:8080 \
    -M 512 \
-   [username]/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
+   <my-org>/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
 ```
 
 </CodeTabs>
@@ -301,5 +301,5 @@ The response includes `url`, `tags`, `initrd_or_rom`, `size_in_bytes`, args` and
 
 ## Learn more
 
-* The legacy [CLI reference](/docs/cli/kraft/overview)
-* Unikraft Cloud's [REST API reference](/api/platform/v1)
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
+* Unikraft Cloud's [REST API reference](/api/platform/v1).

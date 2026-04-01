@@ -5,7 +5,7 @@ navigation_icon: hard-drive
 
 :::caution[**DISCLAIMER**]
 The ROM feature isn't currently enabled for the public Unikraft Cloud offering.
-As such, the legacy [KraftKit CLI tool](/docs/cli/kraft/overview) can't entirely leverage this feature.
+As such, the CLI can't entirely leverage this feature.
 For boxes where it's enabled, use it via the [Unikraft Cloud API](/api/platform/v1).
 :::
 
@@ -170,7 +170,7 @@ Package and push the base image:
 kraft pkg \
   --plat kraftcloud \
   --arch x86_64 \
-  --name index.unikraft.io/"$UKC_USER"/http-python:latest \
+  --name "$UKC_USER"/http-python:latest \
   --rootfs-type erofs \
   --push .
 ```
@@ -235,7 +235,7 @@ kraft pkg \
   --no-kernel \
   --plat kraftcloud \
   --arch x86_64 \
-  --name index.unikraft.io/"$UKC_USER"/my-rom1:latest \
+  --name "$UKC_USER"/my-rom1:latest \
   --rootfs-type erofs \
   --push .
 
@@ -244,7 +244,7 @@ kraft pkg \
   --no-kernel \
   --plat kraftcloud \
   --arch x86_64 \
-  --name index.unikraft.io/"$UKC_USER"/my-rom2:latest \
+  --name "$UKC_USER"/my-rom2:latest \
   --rootfs-type erofs \
   --push .
 ```
@@ -399,6 +399,6 @@ kraft cloud instance rm test-http-python-rom1 test-http-python-rom2
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [instance create](/cli/instance/create) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the [instances API](/api/platform/v1/instances).
 * The `kraft pkg` [command reference](https://unikraft.org/docs/cli/reference/kraft/pkg) for packaging images and ROMs.

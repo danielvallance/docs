@@ -8,7 +8,7 @@ This guide shows how to deploy an app and link it to a domain you own (for examp
 :::note
 Unikraft Cloud can take a few seconds before issuing the certificate.
 If there are misconfigurations or DNS changes that your external DNS provider hasn't propagated yet, this can take much longer.
-You can check the validation status of the certificate with the CLI (more on this command below).
+You can check the validation status of the certificate with the CLI (more on this below).
 The controller retries at these intervals: [1,5,10,30] minutes, then [1,6,12,24] hours, then it fails.
 :::
 
@@ -88,8 +88,8 @@ Unikraft Cloud does this through the domain flag:
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/nginx:latest
-unikraft run --metro=fra -p 443:8080/http+tls --domain mydomain.com my-org/nginx:latest
+unikraft build . --output <my-org>/nginx:latest
+unikraft run --metro=fra -p 443:8080/http+tls --domain mydomain.com <my-org>/nginx:latest
 ```
 
 ```bash title="kraft"
@@ -135,5 +135,5 @@ curl https://mydomain.com
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/cli/), in particular the [deploy](/cli/deploy) and [instance](/cli/instance) subcommands
-* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the sections on [instances](/api/platform/v1/instances) and [service groups](/api/platform/v1/service-groups)
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
+* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the sections on [instances](/api/platform/v1/instances) and [service groups](/api/platform/v1/service-groups).

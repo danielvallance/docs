@@ -14,7 +14,7 @@ To access the instance metrics, you must have the **`developer`** permission rol
 
 ## Retrieving metrics
 
-You can retrieve the metrics of one or more instances by making a `GET` request to the `/v1/instances/metrics` endpoint.
+You can retrieve the metrics of one or more instances by making a `GET` request to the `/instances/metrics` endpoint.
 The request body must contain an array of instance UUIDs or names.
 Use a tool like `curl` for ad-hoc queries, or configure your monitoring system to consume the endpoint's Prometheus-formatted output.
 
@@ -59,7 +59,7 @@ This command will create the NGINX instance with scale-to-zero enabled:
 ```
 
 Now, request the metrics for that instance.
-Set `UKC_TOKEN` and `UKC_METRO` for the API call (the `unikraft` CLI uses profiles instead).
+Set `UKC_TOKEN` and `UKC_METRO` for the API calls:
 
 <Tabs defaultValue="json">
     <TabsList>

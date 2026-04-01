@@ -3,14 +3,16 @@ title: FAQ
 navigation_icon: circle-question-mark
 ---
 
-#### What's Unikraft?
+{/* vale off */}
+#### What is Unikraft?
+{/* vale on */}
 
 Unikraft is the company behind Unikraft Cloud, a next-generation compute platform that leverages microVM technology.
 It delivers millisecond cold boots and scale-to-zero autoscaling so you never pay for idle resources.
 
 
 {/* vale off */}
-#### What's a microVM?
+#### What is a microVM?
 
 Definitionally, a microVM is any virtual machine launched with Firecracker, an open source Virtual Machine Monitor (VMM) from Amazon, originally done for AWS Lambda.
 {/* vale on */}
@@ -65,10 +67,13 @@ You'll need a Dockerfile and Kraftfile.
 See any of the apps/langs guides [here](/guides/bun) to see examples.
 
 
-#### What's `kraft`?
+{/* vale off */}
+#### What is `kraft`?
+{/* vale on */}
 
-`kraft` is Unikraft Cloud's [open source CLI tool written in Go](https://github.com/unikraft/kraftkit).
+`kraft` is Unikraft Cloud's legacy [open source CLI tool written in Go](https://github.com/unikraft/kraftkit).
 You can control Unikraft Cloud with it as well as build unikernels and try things out locally.
+If you want to interact with the latest features of Unikraft Cloud, you should use the new [open source `unikraft` CLI tool](https://github.com/unikraft/cli), written in Go as well.
 
 
 #### How's millisecond scale-to-zero achieved?
@@ -136,7 +141,7 @@ Unikraft can provide cost savings in many ways:
 #### What's the relationship between the Unikraft open source project and Unikraft Cloud?
 
 Unikraft OSS allows you to build and run unikernels locally via `kraft run` (and even hack the Unikraft OS itself if you like tinkering!).
-When you're ready to deploy, use the `unikraft` CLI (or the legacy `kraft cloud` CLI).
+When you're ready to deploy to cloud, use the `unikraft` CLI (or the legacy `kraft cloud` CLI).
 
 
 #### Are you a replacement for Docker?
@@ -171,12 +176,12 @@ Contact information is available for more details.
 
 Yes.
 Head on over to [unikraft.org](https://unikraft.org/docs/cli/install) to install the legacy `kraft` tool, and use `kraft run` to build, package and run your app locally.
-When you're ready to deploy to cloud, use the `unikraft` CLI profiles or the legacy `kraft cloud` CLI.
+When you're ready to deploy to cloud, use the [`unikraft`](https://github.com/unikraft/cli) CLI or the legacy `kraft cloud` CLI.
 
 
 #### Does Unikraft Cloud work on Mac/Windows/Linux?
 
-Yes, the kraft tool can run on Mac, Windows or Linux.
+Yes, the CLI can run on Mac, Windows or Linux.
 
 
 #### How can you track instances on Unikraft Cloud?
@@ -185,7 +190,9 @@ Unikraft provides full log support for all users.
 Paying customers get access to Prometheus metrics.
 
 
-#### What's a unikernel?
+{/* vale off */}
+#### What is a unikernel?
+{/* vale on */}
 
 A unikernel is a specialized virtual machine.
 Each target app gets a distro and kernel containing only the code it needs.
@@ -215,14 +222,14 @@ Other unikernel projects exist, but most are research efforts, unmaintained, or 
 [Yes!](https://github.com/unikraft-cloud/terraform-provider-ukc)
 
 
-#### When should you use Kraftkit stable and/or staging?
+#### When should you use the CLI stable and/or staging?
 
-You should use stable versions when initially trying out the Unikraft Platform and its features.
+You should use stable versions when initially trying out the Unikraft Cloud Platform and its features.
 Any time you encounter a problem, it's good to first try out the latest staging version before forwarding the problem as it might have been already fixed.
-There's also a chance that Kraft staging contains changes available only on non-stable nodes.
+There's also a chance that staging contains changes available only on non-stable nodes.
 
 
-#### What keywords does Kraftkit ignore from a Dockerfile?
+#### What keywords does the CLI ignore from a Dockerfile?
 
 This is the current list of ignored keywords: `EXPOSE`, `HEALTHCHECK`, `ONBUILD`, `SHELL`, `STOPSIGNAL`, `VOLUME`.
 The `USER` keyword is relevant for running subsequent `RUN` instructions in the Dockerfile, but not for the `ENTRYPOINT` and `CMD` commands.
@@ -263,7 +270,7 @@ This should be first experimented or discussed with a Unikraft Engineer to verif
 
 An image is specifically a pair of a kernel and a rootfs bundled together as different layers of an OCI package.
 To keep things light, certain optimizations are in place to not repush existing kernels and to reuse them from your account.
-If these aren't automatically detected, kraft pushes the kernel again.
+If these aren't automatically detected, the CLI pushes the kernel again.
 
 At the same time, things like ROMs use the same packaging systems, but push images with a missing kernel and only a rootfs.
 These have specific metadata that identifies them as ROMs.

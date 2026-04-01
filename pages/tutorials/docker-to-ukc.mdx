@@ -103,8 +103,8 @@ This confirms that the runtime, filesystem, and command line are valid.
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/docker-port:latest
-unikraft run --metro=fra -p 443:<container-port> -m 512MiB my-org/docker-port:latest
+unikraft build . --output <my-org>/docker-port:latest
+unikraft run --metro=fra -p 443:<container-port> -m 512MiB <my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"
@@ -246,8 +246,8 @@ This often gives better cold-boot behaviour and lower memory pressure than `CPIO
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/docker-port:latest
-unikraft run --metro=fra -p 443:<container-port> -m 256MiB my-org/docker-port:latest
+unikraft build . --output <my-org>/docker-port:latest
+unikraft run --metro=fra -p 443:<container-port> -m 256MiB <my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"
@@ -283,11 +283,11 @@ The most reliable method at deployment time is to pass them through the CLI with
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/docker-port:latest
+unikraft build . --output <my-org>/docker-port:latest
 unikraft run --metro=fra -p 443:<container-port> -m 256MiB \
   -e APP_ENV=production \
   -e LOG_LEVEL=info \
-  my-org/docker-port:latest
+  <my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"
@@ -342,11 +342,11 @@ The simplest way to test scale-to-zero is to deploy with an explicit scale-to-ze
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/docker-port:latest
+unikraft build . --output <my-org>/docker-port:latest
 unikraft run --metro=fra -p 443:<container-port> -m 256MiB \
   --scale-to-zero \
   --scale-to-zero-cooldown-time-ms=5000 \
-  my-org/docker-port:latest
+  <my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"

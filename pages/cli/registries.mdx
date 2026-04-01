@@ -22,8 +22,8 @@ The platform handles synchronization between them.
 The platform addresses images using the standard OCI reference format:
 
 ```
-index.unikraft.io/<username>/<name>:<tag>
-index.<node-name>.unikraft.cloud/<username>/<name>:<tag>
+index.unikraft.io/<my-org>/<name>:<tag>
+index.<node-name>.unikraft.cloud/<my-org>/<name>:<tag>
 ```
 
 For example:
@@ -36,7 +36,7 @@ index.node1.unikraft.cloud/alice/http-python312:latest
 index.node1.unikraft.cloud/alice/http-python312@sha256:278cb8b1...
 ```
 
-The `<username>` segment is your Unikraft Cloud account name, available as the `UKC_USER` environment variable in most guides.
+The `<my-org>` segment is your Unikraft Cloud organization, available as the `UKC_USER` environment variable in most guides.
 Tags are arbitrary strings.
 The platform defaults to `latest` when you don't specify a tag.
 You can also refer to images by digest to pin to an exact version.
@@ -82,12 +82,12 @@ The simplest way to push an image is to use the CLI to build, package, push, and
 
 <CodeTabs syncKey="registry">
   ```bash title="central registry"
-  unikraft build . --output index.unikraft.io/<username>/<instance-name>:latest
-  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.unikraft.io/<username>/<instance-name>:latest
+  unikraft build . --output index.unikraft.io/<my-org>/<image-name>:latest
+  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.unikraft.io/<my-org>/<image-name>:latest
   ```
   ```bash title="local registry"
-  unikraft build . --output index.<node-name>.unikraft.cloud/<username>/<instance-name>:latest
-  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.<node-name>.unikraft.cloud/<username>/<instance-name>:latest
+  unikraft build . --output index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
+  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
   ```
 </CodeTabs>
 
@@ -222,6 +222,6 @@ When creating an instance directly from an existing image, reference it by tag o
 
 ## Learn more
 
-* [Images](/platform/images): build, package, and deploy workflow
-* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview)
-* Unikraft Cloud's [REST API reference](/api/platform/v1)
+* [Images](/platform/images): build, package, and deploy workflow.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
+* Unikraft Cloud's [REST API reference](/api/platform/v1).

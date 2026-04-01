@@ -64,9 +64,13 @@ These define the minimum and maximum values you can specify when creating indivi
 
 ## Example
 
+Set `UKC_TOKEN` and `UKC_METRO` for the API call:
+
 ```bash title=""
-curl -H "Authorization: Bearer $UKC_TOKEN" \
-  "https://api.unikraft.io/v1/users/quotas"
+curl -X GET \
+    -H "Authorization: Bearer $UKC_TOKEN" \
+    -H "Content-Type: application/json" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/users/quotas"
 ```
 
 ```json title=""
