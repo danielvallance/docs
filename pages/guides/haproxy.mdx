@@ -9,7 +9,8 @@ HAProxy is a free and open source software that provides a high availability loa
 
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/haproxy/` directory:
 
@@ -18,21 +19,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/haproxy/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/haproxy:latest
+unikraft run --metro=fra -p 443:8404/http+tls -m 256MiB my-org/haproxy:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 443:8404 -M 256 .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -59,9 +79,17 @@ To test, point your browser at the `/stats` endpoint (for example, `https://cool
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME           FQDN                                  STATE    CREATED AT    IMAGE                               MEMORY   ARGS                               BOOT TIME
 haproxy-rfx6z  cool-paper-svzzr3qq.fra.unikraft.app  running  1 minute ago  haproxy@sha256:32296847231c1515...  256 MiB  /usr/bin/haproxy -f /etc/hapro...  26596us
@@ -69,9 +97,17 @@ haproxy-rfx6z  cool-paper-svzzr3qq.fra.unikraft.app  running  1 minute ago  hapr
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete haproxy-rfx6z
+```
+
+```bash title="kraft"
 kraft cloud instance remove haproxy-rfx6z
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -111,8 +147,16 @@ FROM scratch
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

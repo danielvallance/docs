@@ -17,33 +17,55 @@ Avoid placing apps that expose different ports in the same service.
 :::
 
 
-If you use the `kraft cloud deploy` command, part of the output lists a service, for example:
+If you use the deploy or run flow, part of the output lists a service, for example:
 
 ```ansi title=""
  [90m├[0m[90m─[0m [90mservice[0m: frosty-sky-vz8kwsm
  ```
 
-Because `kraft cloud deploy` is a single command to deploy a service, it automatically creates a service and attaches the new instance to it.
-The rest of this guide shows how to create a service first, then use `kraft cloud deploy` to create and attach instances to it.
+Because the deploy or run flow is a single command to deploy a service, it automatically creates a service and attaches the new instance to it.
+The rest of this guide shows how to create a service first, then use the CLI to create and attach instances to it.
 
-First, create a new service with the `kraft cloud service` command:
+First, create a new service with the CLI:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft services create \
+  --set name=my-service \
+  --set metro=fra \
+  --set services=443:8080/tls+http
+```
+
+```bash title="kraft"
 kraft cloud service create --name my-service 443:8080/http+tls
 ```
+
+</CodeTabs>
 
 This creates a new service named `my-service` listening on port 443.
 Unikraft Cloud terminates TLS and sends HTTP to port 8080.
 This example assumes that the app opens port 8080.
 
-Now use `kraft cloud deploy` with the `--service` flag to attach the instance to the `my-service` service.
+Now use the CLI with the service flag to attach the instance to the `my-service` service.
 For example, from the [Go web server guide](/guides/go):
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/http-go1.21/
+unikraft build . --output <my-org>/http-go121:latest
+unikraft run --metro=fra --service my-service -m 256MiB <my-org>/http-go121:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-go1.21/
 kraft cloud deploy --service my-service -M 256 .
 ```
+
+</CodeTabs>
 
 This creates a new Go web server instance and immediately attaches it to the `my-service` service.
 The output shows the instance address and other details:
@@ -80,7 +102,7 @@ hello, world!
 
 :::tip
 
-If you specify a port with the `-p` option when using `kraft cloud deploy`, the command creates a service automatically.
+If you specify a port with the publish flag when using the deploy or run flow, the command creates a service automatically.
 In that case the platform deletes the service when the instance ends, and you can't define the service name.
 
 :::
@@ -89,9 +111,17 @@ That's it.
 
 In the end, if you want to remove a service, use:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft services delete my-service
+```
+
+```bash title="kraft"
 kraft cloud service remove my-service
 ```
+
+</CodeTabs>
 
 ## Handlers
 
@@ -135,9 +165,22 @@ For example, the following creates the service `my-service` with three published
 - Port 80 with the `http` and `redirect` handlers (HTTP mode).
 - Port 10000 with only the `tls` handler (TCP mode).
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft services create \
+  --set name=my-service \
+  --set metro=fra \
+  --set services=443:8080/tls+http \
+  --set services=80:8080/http+redirect \
+  --set services=10000:10000/tls
+```
+
+```bash title="kraft"
 kraft cloud service create --name my-service 443:8080/http+tls 80:8080/http+redirect 10000:10000/tls
 ```
+
+</CodeTabs>
 
 ## `UDP` Support
 
@@ -215,14 +258,14 @@ You can set both fields at service group creation time and update them later wit
 
 A service group is **persistent** when your user account owns it rather than a specific instance.
 
-- A service group created with `kraft cloud service create` (or `POST /services`) is persistent.
+- A service group created with the CLI (or `POST /services`) is persistent.
   It survives independently of any instances attached to it.
-- A service group created implicitly via `kraft cloud deploy -p …` (shorthand port forwarding) belongs to the instance.
+- A service group created implicitly via the publish flag on instance creation belongs to the instance.
   The platform deletes it when you delete that instance.
 
 The `GET /services/{name}` response includes a `persistent` field (`bool`) that indicates which case applies.
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/cli/), in particular the [service](/cli/service) subcommand
-* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [service groups](/api/platform/v1/service-groups)
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
+* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [service groups](/api/platform/v1/service-groups).

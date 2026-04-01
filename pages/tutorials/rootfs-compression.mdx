@@ -32,23 +32,27 @@ Still, if many files aren't accessed in boot, the cold boot time might decrease 
 ## Packaging a Compressed rootfs
 
 Packaging a compressed rootfs is different depending on the format used.
-The [`kraft` CLI](/cli/) implements `CPIO` compression directly, while `EROFS` compression must happen externally using the `mkfs.erofs` tool.
+The legacy [`kraft` CLI](https://unikraft.org/docs/cli/install) implements `CPIO` compression directly, while `EROFS` compression must happen externally using the `mkfs.erofs` tool.
 
 ### CPIO Compression
 
-To package a compressed `CPIO` rootfs using `kraft`, you can use the `--compress` flag when running the `kraft pkg` or `kraft cloud deploy` command.
+To package a compressed `CPIO` rootfs using the legacy CLI, you can use the `--compress` flag when running the `kraft pkg` or `kraft cloud deploy` command.
 This uses `gzip` compression to compress the initrd file before packaging it into a `OCI` image and uploading it to the Unikraft Cloud platform.
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud deploy \
     --rootfs-type cpio \
     --compress \
     ...
 ```
 
+</CodeTabs>
+
 ### EROFS Compression
 
-Currently, `kraft` has no direct support for compressing `EROFS` rootfses.
+Currently, the legacy CLI has no direct support for compressing `EROFS` rootfses.
 To package a compressed `EROFS` rootfs, you need to use the `mkfs.erofs` tool before packaging it with `kraft`.
 
 To do this you will also have to first export the image built from the `Dockerfile` into a `tar` archive:
@@ -65,14 +69,18 @@ In this example the level is `9` (maximum) and the algorithm is `lz4hc` (high co
 mkfs.erofs --all-root -b 4096 -d2 -E noinline_data -z lz4hc,9 rootfs.erofs --tar=rootfs rootfs.tar
 ```
 
-Finally, you can package and deploy the compressed EROFS rootfs using kraft:
+Finally, you can package and deploy the compressed EROFS rootfs using the legacy CLI:
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud deploy \
     --rootfs-type erofs \
     --rootfs ./rootfs.erofs \
     ...
 ```
+
+</CodeTabs>
 ## Performance of Compressed rootfs vs. Uncompressed rootfs Images
 
 To illustrate the performance differences between compressed and uncompressed rootfses, below you can see the same [`node-22` image](https://github.com/unikraft-cloud/examples/tree/main/node-playwright-chromium) packaged and deployed four times:
@@ -174,5 +182,5 @@ If limited by size constraints, try using compressed `EROFS` rootfses with a fas
 
 * The [rootfs formats tutorial](/tutorials/rootfs-formats) for understanding the differences between `CPIO` and `EROFS`.
 * The [`mkfs.erofs` documentation](https://man.archlinux.org/man/extra/erofs-utils/mkfs.erofs.1.en) for more information on creating compressed `EROFS` file systems.
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * The `kraft pkg` [command reference](https://unikraft.org/docs/cli/reference/kraft/pkg) for packaging images.

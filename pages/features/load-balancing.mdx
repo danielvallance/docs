@@ -32,14 +32,25 @@ In case there are no other instances available, the load balancer blocks excess 
 
 ## Setup
 
-To set load balancing up, first use `kraft cloud deploy` with the `-p` flag to create the service as part of the instance creation.
+To set load balancing up, first use the deploy or run flow with the publish flag to create the service as part of the instance creation.
 For example, use NGINX as the app:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/nginx/
+unikraft build . --output <my-org>/nginx:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB <my-org>/nginx:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
 kraft cloud deploy -p 443:8080 -M 256 .
 ```
+
+</CodeTabs>
 
 This single command will (a) create a service via the `-p` flag and (b) start an NGINX instance:
 
@@ -61,10 +72,19 @@ This single command will (a) create a service via the `-p` flag and (b) start an
 
 With this in place, it's now time to start a second instance and attach it to the created service (in this case, named `wandering-shape-n6mhimgn`):
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+cd examples/nginx/
+unikraft run --metro=fra --service wandering-shape-n6mhimgn -m 256MiB <my-org>/nginx:latest
+```
+
+```bash title="kraft"
 cd examples/nginx/
 kraft cloud deploy --service wandering-shape-n6mhimgn -M 256 .
 ```
+
+</CodeTabs>
 
 :::tip
 If a prompt appears saying "deployment already exists: what would you like to do with the 1 existing instances," choose `keep`.
@@ -91,9 +111,17 @@ The command's output should look like this:
 Both the `url` and `service` fields in the 2 instances are the same.
 To check that it worked, run the following command:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft services list
+```
+
+```bash title="kraft"
 kraft cloud service list -o list
 ```
+
+</CodeTabs>
 
 You should see output such as:
 
@@ -111,13 +139,21 @@ Note the two instances (their UUIDs) under the `instances` field.
 You're now load balancing across 2 NGINX instances!
 
 :::tip
-Currently it's impossible to set the service's name via `kraft cloud deploy`.
-If you'd like to set the service's name, first use the `kraft cloud service` command to create the service.
-You can use the `--service` flag of `kraft cloud deploy` to attach the instance to the service, as outlined in this [guide](/platform/services).
+Currently it's impossible to set the service's name via the deploy or run flow.
+If you'd like to set the service's name, first use the CLI to create the service.
+You can use the `--service` flag to attach the instance to the service, as outlined in this [guide](/platform/services).
 :::
 
 :::tip
-To ensure that stopping an instance doesn't drop existing connections, use Unikraft Cloud's draining feature by stopping an instance through `kraft cloud instance stop -w <TIMEOUT_MS>`
+To ensure that stopping an instance doesn't drop existing connections, use Unikraft Cloud's draining feature by stopping an instance with a drain timeout.
+
+<CodeTabs>
+
+```bash title="kraft"
+kraft cloud instance stop -w <TIMEOUT_MS>
+```
+
+</CodeTabs>
 :::
 
 ## Load balancing algorithm
@@ -144,5 +180,5 @@ This is because `i-3` now becomes the only instance with only 1 connection (assu
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the services subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the section on services.

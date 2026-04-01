@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 This guide explains how to create and deploy a llama2 inference server and expose an API to it.
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/llama2/` directory:
 
@@ -16,21 +17,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/llama2/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/llama2:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 1024MiB my-org/llama2:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 443:8080 -M 1024 .
 ```
+
+</CodeTabs>
 
 Note that in this example the system assigns 1GB of memory.
 The amount required will vary depending on the model (the section below covers how to deploy different models).
@@ -69,9 +89,17 @@ Lily went to the tower and pushed the rock with the stick. The rock moved! She w
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME                  FQDN                                  STATE    CREATED AT    IMAGE                                        MEMORY   ARGS                            BOOT TIME
 llama2-cl5bw          funky-rain-xds8dxbg.fra.unikraft.app   running  1 minute ago  llama2@sha256:5af77e73819...                 1.0 GiB  8080                            38286us
@@ -79,9 +107,17 @@ llama2-cl5bw          funky-rain-xds8dxbg.fra.unikraft.app   running  1 minute a
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete llama2-cl5bw
+```
+
+```bash title="kraft"
 kraft cloud instance remove llama2-cl5bw
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -165,8 +201,16 @@ curl -o - https://funky-rain-xds8dxbg.fra.unikraft.app/api/llama2 -d '{ "model":
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

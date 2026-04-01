@@ -15,13 +15,14 @@ When you set a delete lock on a resource, any attempt to delete it returns an er
 
 Delete locks apply to:
 - Instances
-- [Instance templates](TODO: link to instance templates doc)
+- Instance templates
 - Volumes
-- [Volume templates](TODO: link to volume templates doc)
+- Volume templates
 
 ## Enabling a delete lock
 
-You can set a delete lock on a resource via a `PATCH` operation:
+You can set a delete lock on a resource via a `PATCH` operation.
+Set `UKC_TOKEN` and `UKC_METRO` for the API calls:
 
 <Tabs defaultValue="instance">
   <TabsList>
@@ -35,7 +36,7 @@ You can set a delete lock on a resource via a `PATCH` operation:
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/instances" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/instances" \
     -d "[{
         'name': '<instance-name>',
         'prop': 'delete_lock',
@@ -49,7 +50,7 @@ curl -X PATCH \
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/instance/templates" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/instance/templates" \
     -d "[{
         'name': '<instance-template-name>',
         'prop': 'delete_lock',
@@ -63,7 +64,7 @@ curl -X PATCH \
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/volumes" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/volumes" \
     -d "[{
         'name': '<volume-name>',
         'prop': 'delete_lock',
@@ -77,7 +78,7 @@ curl -X PATCH \
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/volume/templates" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/volume/templates" \
     -d "[{
         'name': '<volume-template-name>',
         'prop': 'delete_lock',
@@ -104,7 +105,7 @@ Before you can delete a resource, you need to remove the delete lock by setting 
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/instances" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/instances" \
     -d "[{
         'name': '<instance-name>',
         'prop': 'delete_lock',
@@ -118,7 +119,7 @@ curl -X PATCH \
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/instance/templates" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/instance/templates" \
     -d "[{
         'name': '<instance-template-name>',
         'prop': 'delete_lock',
@@ -132,7 +133,7 @@ curl -X PATCH \
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/volumes" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/volumes" \
     -d "[{
         'name': '<volume-name>',
         'prop': 'delete_lock',
@@ -146,7 +147,7 @@ curl -X PATCH \
 curl -X PATCH \
     -H "Authorization: Bearer $UKC_TOKEN" \
     -H "Content-Type: application/json" \
-    "https://api.$UKC_METRO.unikraft.cloud/volume/templates" \
+    "https://api.$UKC_METRO.unikraft.cloud/v1/volume/templates" \
     -d "[{
         'name': '<volume-template-name>',
         'prop': 'delete_lock',
@@ -165,5 +166,5 @@ curl -X PATCH \
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the sections on [instances](/api/platform/v1/instances) and [volumes](/api/platform/v1/volumes).

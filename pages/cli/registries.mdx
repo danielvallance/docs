@@ -22,8 +22,8 @@ The platform handles synchronization between them.
 The platform addresses images using the standard OCI reference format:
 
 ```
-index.unikraft.io/<username>/<name>:<tag>
-index.<node-name>.unikraft.cloud/<username>/<name>:<tag>
+index.unikraft.io/<my-org>/<name>:<tag>
+index.<node-name>.unikraft.cloud/<my-org>/<name>:<tag>
 ```
 
 For example:
@@ -36,7 +36,7 @@ index.node1.unikraft.cloud/alice/http-python312:latest
 index.node1.unikraft.cloud/alice/http-python312@sha256:278cb8b1...
 ```
 
-The `<username>` segment is your Unikraft Cloud account name, available as the `UKC_USER` environment variable in most guides.
+The `<my-org>` segment is your Unikraft Cloud organization, available as the `UKC_USER` environment variable in most guides.
 Tags are arbitrary strings.
 The platform defaults to `latest` when you don't specify a tag.
 You can also refer to images by digest to pin to an exact version.
@@ -44,71 +44,75 @@ You can also refer to images by digest to pin to an exact version.
 ## Authentication
 
 Registry authentication uses the same API token as the rest of the platform.
-Set `UKC_TOKEN` before running any `kraft` command:
+The new CLI uses profiles, while the legacy CLI reads `UKC_TOKEN` directly.
 
-```bash title=""
-export UKC_TOKEN=<your-token>
-```
+<CodeTabs syncKey="cli-tool">
 
-`kraft` reads this token automatically and uses it for both the platform API and registry operations.
-You will also need to use the `kraft login` command for `kraft pkg` operations:
+  ```bash title="unikraft"
+  unikraft login
+  ```
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```bash title=""
-    kraft login -u "$UKC_USER" -t "$UKC_TOKEN" index.unikraft.io
-    ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```bash title=""
-    kraft login -u "$UKC_USER" -t "$UKC_TOKEN" index.<node-name>.unikraft.cloud
-    ```
-  </TabsContent>
-</Tabs>
+  ```bash title="kraft"
+  export UKC_TOKEN=<your-token>
+  ```
+
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only used by the legacy CLI.
+
+You will also need to use the legacy CLI login command for `kraft pkg` operations:
+
+<CodeTabs syncKey="registry">
+
+  ```bash title="central registry"
+  kraft login -u "$UKC_USER" -t "$UKC_TOKEN" index.unikraft.io
+  ```
+
+  ```bash title="local registry"
+  kraft login -u "$UKC_USER" -t "$UKC_TOKEN" index.<node-name>.unikraft.cloud
+  ```
+
+</CodeTabs>
 
 ## Pushing images
 
-### Via `kraft cloud deploy` (recommended)
+### Via the CLI (recommended)
 
-The simplest way to push an image is `kraft cloud deploy`, which builds, packages, pushes, and starts an instance in one command:
+The simplest way to push an image is to use the CLI to build, package, push, and start an instance in one flow:
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```bash title=""
-    kraft cloud deploy -p 443:8080 -M 256 --name <instance-name> .
-    ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```bash title=""
-    kraft cloud deploy -p 443:8080 -M 256 --name <instance-name> --image index.<node-name>.unikraft.cloud/<username>/<instance-name> .
-    ```
-  </TabsContent>
-</Tabs>
+<CodeTabs syncKey="registry">
+  ```bash title="central registry"
+  unikraft build . --output index.unikraft.io/<my-org>/<image-name>:latest
+  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.unikraft.io/<my-org>/<image-name>:latest
+  ```
+  ```bash title="local registry"
+  unikraft build . --output index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
+  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
+  ```
+</CodeTabs>
 
 During deployment you will see output confirming the push:
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```ansi title=""
-    [+] packaging index.unikraft.io/alice/my-app:latest...  done!
-    [+] pushing  index.unikraft.io/alice/my-app:latest (kraftcloud/x86_64)...  done!
-    ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```ansi title=""
-    [+] packaging index.<node-name>.unikraft.cloud/alice/my-app:latest...  done!
-    [+] pushing  index.<node-name>.unikraft.cloud/alice/my-app:latest (kraftcloud/x86_64)...  done!
-    ```
-  </TabsContent>
-</Tabs>
+<CodeTabs syncKey="registry">
+
+  ```ansi title="central registry"
+  [+] packaging index.unikraft.io/alice/my-app:latest...  done!
+  [+] pushing  index.unikraft.io/alice/my-app:latest (kraftcloud/x86_64)...  done!
+  ```
+
+  ```ansi title="local registry"
+  [+] packaging index.<node-name>.unikraft.cloud/alice/my-app:latest...  done!
+  [+] pushing  index.<node-name>.unikraft.cloud/alice/my-app:latest (kraftcloud/x86_64)...  done!
+  ```
+</CodeTabs>
 
 ### Via `kraft pkg --push`
 
-For more control, for example when packaging [ROMs](/features/roms) or base images, use `kraft pkg` with the `--push` flag:
+For more control, for example when packaging [ROMs](/features/roms) or base images, use the legacy CLI with the `--push` flag:
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```bash title=""
+<CodeTabs syncKey="registry">
+
+    ```bash title="central registry"
     kraft pkg \
       --plat kraftcloud \
       --arch x86_64 \
@@ -116,9 +120,8 @@ For more control, for example when packaging [ROMs](/features/roms) or base imag
       --push \
       .
     ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```bash title=""
+
+    ```bash title="local registry"
     kraft pkg \
       --plat kraftcloud \
       --arch x86_64 \
@@ -126,51 +129,57 @@ For more control, for example when packaging [ROMs](/features/roms) or base imag
       --push \
       .
     ```
-  </TabsContent>
-</Tabs>
+
+</CodeTabs>
 
 ## Listing images
 
-```bash title=""
-kraft cloud image ls
-```
+<CodeTabs syncKey="cli-tool">
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```text title=""
-    NAME                               VERSION SIZE
-    alice/http-python312               latest  77 MB
-    alice/my-app                       latest  42 MB
-    ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```text title=""
-    NAME                                           VERSION SIZE
-    alice/http-python312                           latest  77 MB
-    index.<node-name>.unikraft.cloud/alice/my-app  latest  42 MB
-    ```
-  </TabsContent>
-</Tabs>
+  ```bash title="unikraft"
+  unikraft images list
+  ```
+
+  ```bash title="kraft"
+  kraft cloud image ls
+  ```
+
+</CodeTabs>
+
+<CodeTabs syncKey="registry">
+    
+  ```text title="central registry"
+  NAME                               VERSION SIZE
+  alice/http-python312               latest  77 MB
+  alice/my-app                       latest  42 MB
+  ```
+
+  ```text title="local registry"
+  NAME                                           VERSION SIZE
+  alice/http-python312                           latest  77 MB
+  index.<node-name>.unikraft.cloud/alice/my-app  latest  42 MB
+  ```
+
+</CodeTabs>
 
 :::note
-There may be a delay of a few minutes between pushing or removing an image and `kraft cloud image ls` reflecting the change.
+There may be a delay of a few minutes between pushing or removing an image and the image list reflecting the change.
 :::
 
 ## Removing images
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```bash title=""
-    kraft cloud img rm my-app
-    ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```bash title=""
-    # Not supported yet for direct pushing to node registries.
-    # Remove images from the node itself periodically.
-    ```
-  </TabsContent>
-</Tabs>
+<CodeTabs syncKey="cli-tool">
+
+  ```bash title="unikraft"
+  # Not supported yet for direct pushing to node registries.
+  # Remove images from the node itself periodically.
+  ```
+
+  ```bash title="kraft"
+  kraft cloud img rm my-app
+  ```
+
+</CodeTabs>
 
 ## Kernel layer deduplication
 
@@ -181,39 +190,38 @@ This makes iterative pushes faster and cheaper on bandwidth.
 
 [ROMs](/features/roms) follow the same packaging system but go out without a kernel layer.
 They only have a rootfs.
-They appear in `kraft cloud image ls` alongside regular images.
+They appear in the image list alongside regular images.
 
 ## Image addresses in instance creation
 
 When creating an instance directly from an existing image, reference it by tag or digest:
 
-<Tabs defaultValue="central">
-  <TabsContent  value="central">
-    ```bash title=""
+<CodeTabs syncKey="registry">
+
+    ```bash title="central registry"
     # By tag
-    kraft cloud instance create --port 443:8080 --start -M 256 \
+    unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
       index.unikraft.io/alice/my-app:latest
 
     # By digest (exact version pinning)
-    kraft cloud instance create --port 443:8080 --start -M 256 \
+    unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
       index.unikraft.io/alice/my-app@sha256:278cb8b1...
     ```
-  </TabsContent>
-  <TabsContent  value="node">
-    ```bash title=""
+
+    ```bash title="local registry"
     # By tag
-    kraft cloud instance create --port 443:8080 --start -M 256 \
+    unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
       index.<node-name>.unikraft.cloud/alice/my-app:latest
 
     # By digest (exact version pinning)
-    kraft cloud instance create --port 443:8080 --start -M 256 \
+    unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
       index.<node-name>.unikraft.cloud/alice/my-app@sha256:278cb8b1...
     ```
-  </TabsContent>
-</Tabs>
+
+</CodeTabs>
 
 ## Learn more
 
-* [Images](/platform/images): build, package, and deploy workflow
-* The `kraft cloud` [CLI reference](/cli/)
-* Unikraft Cloud's [REST API reference](/api/platform/v1)
+* [Images](/platform/images): build, package, and deploy workflow.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
+* Unikraft Cloud's [REST API reference](/api/platform/v1).

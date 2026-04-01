@@ -9,7 +9,8 @@ Memcached is an in-memory key-value store for small chunks of arbitrary data (st
 
 To run it, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/memcached/` directory:
 
@@ -18,21 +19,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/memcached/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/memcached:latest
+unikraft run --metro=fra -p 11211:11211/tls -m 256MiB my-org/memcached:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 11211:11211/tls -M 256 .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -55,11 +75,15 @@ The output shows the instance address and other details:
 In this case, the instance name is `memcached-arkv7` which is different for each run.
 
 
-To test the deployment, first forward the port with the `kraft cloud tunnel` command:
+To test the deployment, first forward the port with the legacy CLI tunnel command:
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud tunnel 11211:memcached-arkv7:11211
 ```
+
+</CodeTabs>
 
 Now, on a separate console, run the following commands to test that it works (you should see output when incrementing):
 
@@ -88,9 +112,17 @@ For example when a Memcached instance serves as a cache server to another instan
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME             FQDN                                       STATE    CREATED AT      IMAGE                            MEMORY   ARGS                             BOOT TIME
 memcached-arkv7  weathered-smoke-hehsdinv.fra.unikraft.app  running  11 minutes ago  memcached@sha256:f53cdbce4...    256 MiB  /usr/bin/memcached -u root       19266us
@@ -98,9 +130,17 @@ memcached-arkv7  weathered-smoke-hehsdinv.fra.unikraft.app  running  11 minutes 
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete memcached-arkv7
+```
+
+```bash title="kraft"
 kraft cloud instance remove memcached-arkv7
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -142,8 +182,16 @@ FROM scratch
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

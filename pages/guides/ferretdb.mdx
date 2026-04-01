@@ -2,13 +2,12 @@
 title: FerretDB
 ---
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
-
 This guide shows you how to use [FerretDB](https://www.ferretdb.com/) an open source proxy that translates MongoDB wire protocol queries to SQL.
 
 To run it, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples).
 
@@ -18,32 +17,62 @@ To run it, follow these steps:
 
    This guide uses both the `postgres16.2/` example and the `ferretdb/` example.
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/platform/metros) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 This guide deploys FerretDB as a frontend and PostgreSQL as a database server, running them together inside a [service](/platform/services).
 For that, follow these steps:
 
 1. Run an instance of PostgreSQL using the `postgres16.2/` example:
 
-   ```bash
+   <CodeTabs syncKey="cli-tool">
+
+   ```bash title="unikraft"
+   cd postgres16.2/
+   unikraft build . --output my-org/postgres16-2:latest
+   unikraft run --metro=fra -m 1024MiB -e POSTGRES_PASSWORD=unikraft --name postgres my-org/postgres16-2:latest
+   ```
+
+   ```bash title="kraft"
    cd postgres16.2/
    kraft cloud deploy -M 1Gi -e POSTGRES_PASSWORD=unikraft --name postgres .
    ```
 
+   </CodeTabs>
+
 1. Run an instance of FerretDB:
 
-   ```bash
+   <CodeTabs syncKey="cli-tool">
+
+   ```bash title="unikraft"
+   cd ../ferretdb/
+   unikraft build . --output my-org/ferretdb:latest
+   unikraft run --metro=fra -p 27017:27017/tls -m 512MiB -e FERRETDB_HANDLER=pg -e FERRETDB_POSTGRESQL_address=postgres://postgres.internal:5432 -e FERRETDB_LISTEN_ADDR=0.0.0.0:27017 my-org/ferretdb:latest
+   ```
+
+   ```bash title="kraft"
    cd ../ferretdb/
    kraft cloud deploy -p 27017:27017/tls -M 512 -e FERRETDB_HANDLER=pg -e FERRETDB_POSTGRESQL_address=postgres://postgres.internal:5432 -e FERRETDB_LISTEN_ADDR=0.0.0.0:27017 .
    ```
+
+   </CodeTabs>
 
 ```ansi
 [●] Deployed successfully!
@@ -63,11 +92,15 @@ For that, follow these steps:
 
 In this case, the instance name is `ferretdb-rdj6z` which is different for each run.
 
-To test the deployment, first forward the port with the `kraft cloud tunnel` command:
+To test the deployment, first forward the port with the legacy CLI tunnel command:
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud tunnel 27017:memcached-arkv7:27017
 ```
+
+</CodeTabs>
 
 Then, on a separate console, you can use the `mongosh` client to connect to the server using the `postgres` username and the `unikraft` password configured above:
 
@@ -107,9 +140,17 @@ For example, when a PostgreSQL instance serves as a database server to another i
 
 At this point, you can list information about the PostgreSQL and FerretDB instances:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 
 ```text
 NAME            FQDN                                          STATE    CREATED AT      IMAGE                               MEMORY   ARGS                                      BOOT TIME
@@ -119,32 +160,65 @@ postgres                                                      running  14 minute
 
 When done, you can remove the FerretDB and the Postgres instances:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete ferretdb-rdj6z
+unikraft instances delete postgres
+```
+
+```bash title="kraft"
 kraft cloud instance remove ferretdb-rdj6z
 kraft cloud instance remove postgres
 ```
+
+</CodeTabs>
 
 ## Customize your deployment
 
 One example customization is to use [volumes](/platform/volumes) with PostgreSQL for persistence.
 For that, you would first create a volume:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft volumes create --set name=ferret-postgres --set size=200 --set metro=fra
+```
+
+```bash title="kraft"
 kraft cloud volume create --name ferret-postgres --size 200
 ```
 
+</CodeTabs>
+
 And then, when, starting the PostgreSQL instance, you would attach the volume to a mount point:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft run --metro=fra -m 1024MiB -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres --name postgres -v ferret-postgres:/volume my-org/postgres16-2:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -M 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres --name postgres -v ferret-postgres:/volume .
 ```
+
+</CodeTabs>
 
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

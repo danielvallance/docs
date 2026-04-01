@@ -2,13 +2,12 @@
 title: Prisma
 ---
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
-
 This app comes from [Prisma's REST API Example](https://github.com/prisma/prisma-examples/tree/latest/javascript/rest-express) and shows how to create a **REST API** using [Express](https://expressjs.com/) and [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client) and deploy it onto Unikraft Cloud.
 It uses a SQLite database file with some initial dummy data which you can find at [`./prisma/store.db`](./prisma/store.db).
  To run it, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/node18-prisma-rest-express/` directory:
 
@@ -17,21 +16,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/node18-prisma-rest-express/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/node18-prisma:latest
+unikraft run --metro=fra -p 443:3000/http+tls -m 512MiB my-org/node18-prisma:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -M 512 -p 443:3000 .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -68,9 +86,17 @@ curl https://funky-sun-4bf8v7g9.fra.unikraft.app/users
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 
 ```text
 NAME                  FQDN                                   STATE    CREATED AT    IMAGE                   MEMORY   ARGS                              BOOT TIME
@@ -79,9 +105,17 @@ node18-prisma-hdof1   funky-sun-4bf8v7g9.fra.unikraft.app    running  1 minute a
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete node18-prisma-hdof1
+```
+
+```bash title="kraft"
 kraft cloud instance remove node18-prisma-hdof1
 ```
+
+</CodeTabs>
 
 If you would like to test the server locally before deploying to Unikraft Cloud, follow the instructions [here](https://github.com/kraftcloud/examples/tree/main/node18-prisma-rest-express).
 
@@ -334,8 +368,16 @@ datasource db {
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

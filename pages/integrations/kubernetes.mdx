@@ -29,6 +29,8 @@ $ helm install kraftlet \
   --set ukc.token=$UKC_TOKEN \
   oci://ghcr.io/unikraft-cloud/helm-charts/kraftlet
 ```
+The `UKC_METRO` and `UKC_TOKEN` variables are only for these values and the legacy CLI.
+The `unikraft` CLI uses profiles instead.
 
 You can check if Kraftlet is running by checking its pods:
 ```bash title=""
@@ -127,9 +129,17 @@ Your app is now managed from the Kubernetes cluster, but is actually running on 
 
 To check the instances, run:
 
-``` shell
+<CodeTabs syncKey="cli-tool">
+
+```shell title="unikraft"
+$ unikraft instances list
+```
+
+```shell title="kraft"
 $ kraft cloud instance list
 ```
+
+</CodeTabs>
 
 Which will return a list of instances created from pods above:
 
@@ -145,11 +155,19 @@ As you can see, all instances have the same FQDN.
 This is because Kraftlet created a corresponding Unikraft Cloud service for the Kubernetes service defined in YAML above.
 You can check the created service with the following command:
 
+<CodeTabs syncKey="cli-tool">
+
+```shell title="unikraft"
+$ unikraft services list
 ```
+
+```shell title="kraft"
 $ kraft cloud service list
 NAME        FQDN                                  SERVICES           INSTANCES                                                            CREATED AT     PERSISTENT
 my-service  my-service-orjlyrac.fra.unikraft.app  443:8080/tls+http  my-app-78c766fb67-k2dgk-nginx my-app-78c766fb67-tkkxq-nginx my-a...  6 minutes ago  true
 ```
+
+</CodeTabs>
 
 You can now manage your app running in Unikraft Cloud via Kubernetes resources!
 
@@ -185,11 +203,19 @@ my-claim   Bound    pv-7ab06383-ac03-4a81-968a-1b0cff03c23a   10Mi       RWO    
 
 Also, you can check the volumes on the Unikraft Cloud:
 
+<CodeTabs syncKey="cli-tool">
+
+```shell title="unikraft"
+$ unikraft volumes list
 ```
+
+```shell title="kraft"
 $ kraft cloud volume list
 NAME      CREATED AT     SIZE    ATTACHED TO  MOUNTED BY  STATE      PERSISTENT
 my-claim  5 minutes ago  10 MiB                           available  true
 ```
+
+</CodeTabs>
 
 At the moment, the volume isn't attached or mounted by an instance.
 To create an instance that would use the volume, you can create a Kubernetes Pod that would reference the PVC:
@@ -223,19 +249,35 @@ spec:
 
 If you check the instances again, you will see a new instance created from the Pod:
 
+<CodeTabs syncKey="cli-tool">
+
+```shell title="unikraft"
+$ unikraft instances list
 ```
+
+```shell title="kraft"
 $ kraft cloud instance list
 NAME             FQDN                                       STATE    STATUS      IMAGE                                      MEMORY   VCPUS  ARGS                                     BOOT TIME
 nginx-pod-nginx  fragrant-breeze-llesxdta.fra.unikraft.app  running  since 1min  nginx@sha256:49d8fb7a9934a87e93f9eb326...  128 MiB  1      /usr/bin/nginx -c /etc/nginx/nginx.conf  15.14 ms
 ```
 
+</CodeTabs>
+
 And if you check the volume now, you will see it's attached and mounted by the created instance:
 
+<CodeTabs syncKey="cli-tool">
+
+```shell title="unikraft"
+$ unikraft volumes list
 ```
+
+```shell title="kraft"
 $ kraft cloud volume list
 NAME      CREATED AT     SIZE    ATTACHED TO      MOUNTED BY       STATE    PERSISTENT
 my-claim  8 minutes ago  10 MiB  nginx-pod-nginx  nginx-pod-nginx  mounted  true
 ```
+
+</CodeTabs>
 
 ## Kraftlet internals
 
@@ -251,7 +293,7 @@ When Kraftlet maps a Kubernetes Service port to a Unikraft Cloud service, it der
 | `443` | `tls + http` |
 | Any other port | `tls` |
 
-This is why the example above produces `443:8080/tls+http` in `kraft cloud service list`.
+This is why the example above produces `443:8080/tls+http` in the service list.
 Kraftlet infers `tls+http` from port 443.
 
 ### Multi-container pods

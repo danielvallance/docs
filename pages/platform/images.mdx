@@ -4,15 +4,15 @@ navigation_icon: package
 ---
 
 Unikraft Cloud uses a **registry** to store images used to instantiate apps.
-At a high level, you use `kraft` to build and push an image to the registry, and then ask the controller to start an app from it.
+At a high level, you use the CLI to build and push an image to the registry, and then ask the controller to start an app from it.
 
 1. **build**: `kraft` builds the app locally according to a `Dockerfile`.
 1. **pkg**: `kraft` packages the app locally into an OCI image.
 1. **push**: `kraft` pushes the OCI image to the Unikraft Cloud registry.
 1. **create**: The controller instantiates your app from the image according to a `Kraftfile`.
 
-The simplest way to run this workflow is to use `kraft cloud deploy`, which combines all steps into one command.
-Internally, the deploy command calls other subcommands.
+The simplest way to run this workflow is to use a single deploy or run command, which combines all steps into one flow.
+Internally, the command calls other subcommands.
 The service in the diagram is the mechanism to connect apps to the Internet.
 Read more in the [services guide](/platform/services).
 
@@ -75,13 +75,24 @@ This guide uses a Python [app](/guides/python) as an example to show three workf
 
 ### Create an image and an instance from it
 
-Start with the simplest workflow: create an image from a Python app (following the Python app [guide](/guides/python)) and start an instance from it with a single `kraft cloud deploy` command:
+Start with the simplest workflow: create an image from a Python app (following the Python app [guide](/guides/python)) and start an instance from it:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/http-python3.12
+unikraft build . --output <my-org>/http-python312:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB <my-org>/http-python312:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-python3.12
 kraft cloud deploy -p 443:8080 -M 512 .
 ```
+
+</CodeTabs>
 
 The output should look like:
 
@@ -92,7 +103,7 @@ The output should look like:
  [90m├[0m[90m──────────[0m [90muuid[0m: e7389eee-9808-4152-b2ec-1f3c0541fd05
  [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
  [90m├[0m[90m───────────[0m [90murl[0m: https://young-night-5fpf0jj8.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: [username]]/http-python312@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472
+ [90m├[0m[90m─────────[0m [90mimage[0m: <my-org>/http-python312@sha256:278cb8b14f9faf9c2702dddd8bfb6124912d82c11b4a2c6590b6e32fc4049472
  [90m├[0m[90m─────[0m [90mboot time[0m: 15.09 ms
  [90m├[0m[90m────────[0m [90mmemory[0m: 512 MiB
  [90m├[0m[90m───────[0m [90mservice[0m: young-night-5fpf0jj8
@@ -107,37 +118,60 @@ The controller fetches the image from the registry to start the instance.
 
 You can see your images by running the following command:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft images list
+```
+
+```bash title="kraft"
 kraft cloud image ls
 ```
+
+</CodeTabs>
 
 You should see output like:
 
 ```text title=""
 IMAGE                       TAG     SIZE
-[username]]/http-python312  latest  77 MB
+<my-org>/http-python312  latest  77 MB
 ```
 
-And you can remove an image from the registry via:
+And you can remove an image from the registry via the legacy CLI:
 
-```bash title=""
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud img rm http-python312
 ```
 
+</CodeTabs>
+
 :::note
-There may be a delay of a few minutes between removing an image from the registry and `kraft cloud image ls` reflecting the change.
+There may be a delay of a few minutes between removing an image from the registry and the image list reflecting the change.
 :::
 
 
 ### Create an image and many instances from it
 
-For the next workflow, use `kraft cloud deploy` again, this time with the `-R` flag to start many instances:
+For the next workflow, start many instances:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/http-python3.12
+unikraft build . --output <my-org>/http-python312:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB --replicas 2 <my-org>/http-python312:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-python3.12
 kraft cloud deploy -p 443:8080 -M 512 -R 2 .
 ```
+
+</CodeTabs>
 
 ```ansi title=""
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
@@ -157,9 +191,17 @@ kraft cloud deploy -p 443:8080 -M 512 -R 2 .
 
 Check that it worked by listing all instances with:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 
 ```text title=""
 NAME                  FQDN                                      STATE    CREATED AT      IMAGE                     MEMORY   ARGS                             BOOT TIME
@@ -172,15 +214,23 @@ Three instances run: the original plus two replicas.
 
 ### Create instances from an existing image
 
-In this final workflow, take the existing image and start new instances using the `kraft cloud instance` command:
+In this final workflow, take the existing image and start new instances from it:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB <my-org>/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
+```
+
+```bash title="kraft"
 kraft cloud instance create \
    --start \
    --port 443:8080 \
    -M 512 \
-   [username]/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
+   <my-org>/http-python312@sha256:1b815914eb568a06ca4bbfdfb7d6cf484a9e9a0947ba8e0e0f1664d972a25bca
 ```
+
+</CodeTabs>
 
 You now have a new instance created from the existing image.
 
@@ -251,5 +301,5 @@ The response includes `url`, `tags`, `initrd_or_rom`, `size_in_bytes`, args` and
 
 ## Learn more
 
-* The `kraft cloud` [CLI reference](/cli/)
-* Unikraft Cloud's [REST API reference](/api/platform/v1)
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
+* Unikraft Cloud's [REST API reference](/api/platform/v1).

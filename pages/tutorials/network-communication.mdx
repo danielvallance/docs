@@ -36,7 +36,7 @@ This communication is best suited for service-to-service communication, microser
 For example, you wouldn't want to expose your database publicly, but you would want your app to be able to connect to it internally.
 
 :::note
-When using [`kraft cloud tunnel`](/cli/tunnel) to connect to your instances you are using the internal network to reach your instance.
+When using the legacy CLI tunnel command to connect to your instances you are using the internal network to reach your instance.
 The command creates a public-facing instance that tunnels your requests to the private instance over the internal network.
 This is a good way to keep your instances private while still being able to access them from your local machine.
 :::
@@ -52,4 +52,4 @@ By leveraging both types of communication, you can deploy a robust and efficient
 * [Load balancing](/features/load-balancing) of services.
 * [Platform services](/platform/services) and how they work.
 * [Scale to zero triggers](/tutorials/scale-to-zero-triggers) for automatic instance scaling.
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [tunnel](/cli/tunnel) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).

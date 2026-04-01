@@ -39,7 +39,7 @@ Finally, `DAX` enables sharing the same rootfs image between many instances, inc
 
 ## Packaging the Rootfs
 
-The [KraftKit CLI tool](/cli/) supports both formats out of the box.
+The legacy `kraft` CLI supports both formats out of the box.
 With it, you can package a rootfs from these sources:
 - a simple file
 - a directory
@@ -59,7 +59,9 @@ Below are two attempts at creating and starting an instance from the same [image
 
 ### EROFS deployment
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud deploy \
     -p 443:8080 \
     -M 900Mi \
@@ -67,6 +69,8 @@ kraft cloud deploy \
     --keep-file-owners \
     demo/node-playwright-chromium
 ```
+
+</CodeTabs>
 
 ```ansi title="Create Instance EROFS"
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
@@ -86,13 +90,17 @@ kraft cloud deploy \
 
 ### CPIO deployment
 
-```bash
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud deploy \
     -p 443:8080 \
     -M 900Mi \
     --rootfs-type cpio \
     demo/node-playwright-chromium
 ```
+
+</CodeTabs>
 
 ```ansi title="Create Instance CPIO"
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
@@ -124,5 +132,5 @@ Bottom-line is, using `EROFS` is recommended in every case where possible, as th
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) subcommand.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * The `kraft pkg` [command reference](https://unikraft.org/docs/cli/reference/kraft/pkg) for packaging images.

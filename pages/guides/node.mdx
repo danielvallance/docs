@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 This guide explains how to create and deploy a simple Node-based HTTP web server.
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/http-node21/` directory:
 
@@ -16,21 +17,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/http-node21/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy the app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/http-node21:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB my-org/http-node21:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -p 443:8080 -M 256 .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -64,9 +84,17 @@ Hello, World!
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME               FQDN                                   STATE    CREATED AT      IMAGE                                   MEMORY   ARGS                              BOOT TIME
 http-node21-ubl8g  ancient-haze-sd3wwi0x.fra.unikraft.app  running  50 seconds ago  http-node21@sha256:de174e3703c79a04...  256 MiB  /usr/bin/node /usr/src/server.js  31654us
@@ -74,9 +102,17 @@ http-node21-ubl8g  ancient-haze-sd3wwi0x.fra.unikraft.app  running  50 seconds a
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete http-node21-ubl8g
+```
+
+```bash title="kraft"
 kraft cloud instance remove http-node21-ubl8g
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -281,8 +317,16 @@ See also other Node examples: [`node18-prisma-rest-express`](https://github.com/
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).

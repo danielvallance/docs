@@ -185,7 +185,7 @@ This feature is currently under active development and may change in future rele
 Currently, internal traffic via Private FQDNs doesn't trigger the scale-to-zero wake-up mechanism.
 Services attempting to reach a standby instance via its Private FQDN will fail to wake it.
 To ensure wake-on-request behavior for creating service-to-service communication, use the instance's **Public FQDN**.
-Note that this also applies to [`kraft cloud tunnel`](/cli/tunnel), which relies on internal connectivity.
+Note that this also applies to the legacy [CLI tunnel](/docs/cli/kraft/tunnel) command, which relies on internal connectivity.
 
 
 ## Getting started
@@ -211,11 +211,22 @@ You can disable scale-to-zero either by setting the label to `false`, or with th
 
 Since Unikraft Cloud has scale-to-zero on by default, all you need to do is to start an instance normally:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+git clone https://github.com/unikraft-cloud/examples
+cd examples/nginx/
+unikraft build . --output <my-org>/nginx:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 128MiB <my-org>/nginx:latest
+```
+
+```bash title="kraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
 kraft cloud deploy -p 443:8080 -M 256 .
 ```
+
+</CodeTabs>
 
 This command will create the NGINX instance with scale-to-zero enabled:
 
@@ -235,12 +246,20 @@ This command will create the NGINX instance with scale-to-zero enabled:
  [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
 ```
 
-Note that at first the system lists the status as `running` in the output of the `kraft cloud deploy` command.
+Note that at first the system lists the status as `running` in the output of the deploy or run flow.
 Check the instance's status:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instances list
 ```
+
+</CodeTabs>
 
 You should see output like:
 
@@ -250,13 +269,18 @@ nginx-1a747  twilight-gorilla-ui5b6kwt.fra.unikraft.app  [94mstandby[0m
 ```
 
 Notice the state is now set to `standby`?
-At first `kraft cloud deploy` sets the state to `running`, but then Unikraft Cloud puts the instance immediately to sleep (more accurately, it stops it, but it keeps state to start it again when needed).
+At first the deploy or run flow sets the state to `running`.
+Unikraft Cloud then puts the instance to sleep (it stops it, but keeps state to start it again when needed).
 
-You can also check that scale-to-zero gets enabled through the `kraft cloud scale` command:
+You can also check that scale-to-zero gets enabled through the legacy CLI scale command:
 
-```bash title=""
+<CodeTabs>
+
+```bash title="kraft"
 kraft cloud scale get twilight-gorilla-ui5b6kw
 ```
+
+</CodeTabs>
 
 which outputs:
 
@@ -284,11 +308,19 @@ curl https://twilight-gorilla-ui5b6kwt.fra.unikraft.app
 ```
 
 You should get an NGINX response with no noticeable delay.
-For fun, try to use the following command to see if you can catch the instance's `STATE` field changing from `standby` to `running`
+For fun, try to use the following command to see if you can catch the instance's `STATE` field changing from `standby` to `running`:
 
-```bash title=""
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list --watch
+```
+
+```bash title="kraft"
 watch --color -n 0.5 kraft cloud instance list
 ```
+
+</CodeTabs>
 
 If you `curl` enough, you should see the `STATE` turn to a green `running` from
 time to time:
@@ -308,7 +340,7 @@ For more on autoscale please see the autoscale [guide](/features/autoscale).
 
 ## Learn more
 
-* The `kraft cloud` [command-line tool reference](/cli/), and in particular the [deploy](/cli/deploy) and [instance create](/cli/instance/create) subcommands.
+* The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the [scale-to-zero schema](/api/platform/v1/~schemas#instance-scale-to-zero).
 
 

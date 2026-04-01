@@ -2,13 +2,12 @@
 title: Traefik
 ---
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
-
 This example uses the [`Traefik`](https://traefik.io/traefik/) cloud native app proxy.
 
 To run this example, follow these steps:
 
-1. Install the [`kraft` CLI tool](/docs/introduction) and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
 1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/traefik/` directory:
 
@@ -17,21 +16,40 @@ git clone https://github.com/kraftcloud/examples
 cd examples/traefik/
 ```
 
-Make sure to log into Unikraft Cloud by setting your token and a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
 # Set Unikraft Cloud access token
 export UKC_TOKEN=token
 # Set metro to Frankfurt, DE
 export UKC_METRO=fra
 ```
 
+</CodeTabs>
+
+The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
+
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft build . --output my-org/traefik:latest
+unikraft run --metro=fra -p 443:80/http+tls -p 8080:8080/tls -m 512MiB my-org/traefik:latest
+```
+
+```bash title="kraft"
 kraft cloud deploy -M 512 -p 443:80/tls+http -p 8080:8080/tls .
 ```
+
+</CodeTabs>
 
 The output shows the instance address and other details:
 
@@ -72,9 +90,17 @@ Please change default.toml as needed.
 
 You can list information about the instance by running:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
 kraft cloud instance list
 ```
+
+</CodeTabs>
 ```text
 NAME              FQDN                                    STATE    CREATED AT     IMAGE                           MEMORY   ARGS                                           BOOT TIME
 traefik-wqe7e     holy-cherry-rye39b1x.fra.unikraft.app   running  8 minutes ago  traefik@sha256:f6dd913a8...     512 MiB  /usr/bin/traefik -configFile /etc/traefik/...  53661us
@@ -82,9 +108,17 @@ traefik-wqe7e     holy-cherry-rye39b1x.fra.unikraft.app   running  8 minutes ago
 
 When done, you can remove the instance:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft instances delete traefik-wqe7e
+```
+
+```bash title="kraft"
 kraft cloud instance remove traefik-wqe7e
 ```
+
+</CodeTabs>
 
 ## Customize your app
 
@@ -94,8 +128,16 @@ To customize Traefik app you can change the `default.toml` configuration file.
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-```bash
+<CodeTabs syncKey="cli-tool">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
 kraft cloud --help
 ```
 
-Or visit the [CLI Reference](/docs/cli).
+</CodeTabs>
+
+Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
