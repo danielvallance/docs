@@ -29,8 +29,11 @@ The ROM workflow consists of two main components:
 This separation allows you to maintain one base image while deploying many different instances with different data.
 
 :::note
-The app running inside the base image is responsible to read the data from the attached ROM devices.
+By default, the app running inside the base image needs to mount the attached ROM device.
 ROM blobs appear as block devices at paths like `/dev/ukp_rom_<rom_name>`, where `<rom_name>` is the ROM name you specify when creating the instance.
+
+For convenience, you can use **automounting** by setting the `at` field on a ROM entry.
+When `at` is present, the platform automatically mounts the ROM at the given path before the instance starts, so your app can read files from it directly without any manual mount step.
 :::
 
 ## Setup
@@ -84,7 +87,7 @@ COPY --from=build /etc/ld.so.cache /etc/ld.so.cache
 # Python (and other) libraries
 COPY --from=build /usr/local/lib /usr/local/lib
 
-# Python application
+# Python app
 COPY ./wrapper.sh /wrapper.sh
 COPY ./server.py /src/server.py
 ```
@@ -157,6 +160,10 @@ if __name__ == "__main__":
 exec "$@"
 ```
 </CodeTabs>
+
+:::tip
+If you use the `at` field when attaching the ROM (see [Automounting](#automounting)), the platform handles the mount for you and you can remove `wrapper.sh` and the `mount`/`mkdir` calls entirely.
+:::
 
 Ensure that the `wrapper.sh` script is executable:
 
@@ -366,6 +373,31 @@ Check that the instances are up:
 Note the `roms` array in the instances configurations.
 Each ROM is available as a readable device at `/dev/ukp_rom_python_function.py` (in the form of an EROFS filesystem in this case), which the server program mounts at `/tmp/rom.py` and executes.
 
+## Automounting
+
+Instead of mounting the ROM device manually inside the guest, you can set the optional `at` field on any ROM entry.
+The platform will then mount the ROM at the specified path before the instance starts.
+
+```json title="POST /instances"
+{
+  "image": "...",
+  "roms": [
+    {
+      "name": "python_function.py",
+      "image": "myuser/my-rom1:latest",
+      "at": "/tmp"
+    }
+  ]
+}
+```
+
+{/* vale off */}
+With this configuration the EROFS filesystem is mounted at `/tmp` automatically, so `/tmp/rom.py` is available to the app without any `mount` call in a wrapper script.
+In this case you can simplify or remove the `wrapper.sh` from the base image, since the platform handles the mount for you.
+{/* vale on */}
+
+The `at` field is optional--omitting it leaves the ROM as a raw block device at `/dev/ukp_rom_<name>` and the guest remains responsible for mounting it.
+
 ### Testing
 
 Query the instances to call the Python function from the ROM.
@@ -402,3 +434,4 @@ kraft cloud instance rm test-http-python-rom1 test-http-python-rom2
 * The [CLI reference](/docs/cli/unikraft) and the legacy [CLI reference](/docs/cli/kraft/overview).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the [instances API](/api/platform/v1/instances).
 * The `kraft pkg` [command reference](https://unikraft.org/docs/cli/reference/kraft/pkg) for packaging images and ROMs.
+* The [systemd `mount` man page](https://www.man7.org/linux/man-pages/man8/mount.8.html) for filesystem mount options relevant to manual mounting scenarios.
