@@ -3,8 +3,8 @@ title: Cron Jobs / Scheduled Wake-ups
 navigation_icon: clock
 ---
 
-Scheduled operations let you automatically start, stop, or delete instances on a calendar-based schedule.
-Each scheduled operation specifies a name, a calendar expression, and an action (`start`, `stop`, or `delete`).
+Scheduled operations let you automatically start, stop, delete, or exec a command in instances on a calendar-based schedule.
+Each scheduled operation specifies a name, a calendar expression, and an action (`start`, `stop`, `delete`, or `exec`).
 
 Each instance stores its own schedules, and cloning preserves them.
 
@@ -50,6 +50,22 @@ For example, to start an instance every day at 09:00 UTC and stop it at 18:00 UT
 }
 ```
 
+To run a command inside the instance every night at midnight, use the `exec` action with an `args` array:
+
+```json title="POST /instances"
+{
+  "image": "...",
+  "schedules": [
+    {
+      "name": "nightly-cleanup",
+      "when": "*-*-* 00:00:00",
+      "action": "exec",
+      "args": ["/bin/sh", "-c", "rm -rf /tmp/*"]
+    }
+  ]
+}
+```
+
 ## Updating schedules of an existing instance
 
 Add, set, or remove scheduled operations via `PATCH`:
@@ -63,6 +79,23 @@ Add, set, or remove scheduled operations via `PATCH`:
       "name": "weekend-stop",
       "when": "Sat,Sun *-*-* 20:00:00",
       "action": "stop"
+    }
+  ]
+}
+```
+
+Add an `exec` schedule the same way, but include `args` with the command to run:
+
+```json title="PATCH /instances/{uuid}"
+{
+  "prop": "schedules",
+  "op": "add",
+  "value": [
+    {
+      "name": "hourly-healthcheck",
+      "when": "*-*-* *:00:00",
+      "action": "exec",
+      "args": ["/usr/bin/healthcheck"]
     }
   ]
 }
@@ -85,6 +118,23 @@ Add, set, or remove scheduled operations via `PATCH`:
 | `start` | Start the instance at the scheduled time |
 | `stop` | Stop the instance at the scheduled time |
 | `delete` | Delete the instance at the scheduled time |
+| `exec` | Execute a command inside the instance at the scheduled time. Requires the `args` field. |
+
+### The `args` field
+
+The `args` field is an array of strings specifying the command to run when using the `exec` action.
+The first element is the executable and the remaining elements are its arguments.
+
+```json
+{
+  "name": "daily-report",
+  "when": "*-*-* 06:00:00",
+  "action": "exec",
+  "args": ["/usr/bin/python3", "/app/report.py", "--daily"]
+}
+```
+
+No need to specify it for all other actions.
 
 ## Notes
 
@@ -94,4 +144,4 @@ Add, set, or remove scheduled operations via `PATCH`:
 
 ## Learn more
 
-* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [instances](/api/platform/v1/instances)
+* Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [instances](/api/platform/v1/instances).
