@@ -10,6 +10,7 @@ Behavior:
   into:
   :::note\n  line1\n  line2\n  :::
 - Rewrite absolute docs URLs back to site-relative paths
+- Group adjacent titled code blocks into <CodeTabs> wrappers with syncKey
 - Append a Source block when EXAMPLE_NAME is provided
 
 Usage: transform_readme.py INPUT_FILE OUTPUT_FILE [EXAMPLE_NAME]
@@ -117,6 +118,45 @@ def rewrite_urls(text: str) -> str:
     # General rule for any other /docs/ link
     text = re.sub(r"https://unikraft.com/docs/([^\s\)]+)", r"/\1", text)
     return text
+
+
+def convert_code_tabs(text: str) -> str:
+    """Group adjacent code blocks containing title="..." inside a <CodeTabs> wrapper."""
+    block_pattern = re.compile(r"(```([^\n]*?title=\"([^\"]+)\"[^\n]*)\n.*?\n```)", flags=re.S)
+    
+    matches = list(block_pattern.finditer(text))
+    if not matches:
+        return text
+        
+    groups = []
+    current_group = [matches[0]]
+    
+    for i in range(1, len(matches)):
+        prev = current_group[-1]
+        curr = matches[i]
+        
+        # Check if only whitespace or the word "or" exists between blocks
+        between = text[prev.end():curr.start()].strip().lower()
+        if between in ["", "or"]:
+            current_group.append(curr)
+        else:
+            groups.append(current_group)
+            current_group = [curr]
+    groups.append(current_group)
+    
+    out = text
+    for group in reversed(groups):
+        if len(group) > 1:
+            blocks = [m.group(1) for m in group]
+            
+            # Reconstruct the matched area with <CodeTabs> and syncKey
+            tabs_str = '<CodeTabs syncKey="cli">\n\n' + "\n\n".join(blocks) + "\n\n</CodeTabs>"
+            
+            start = group[0].start()
+            end = group[-1].end()
+            out = out[:start] + tabs_str + out[end:]
+            
+    return out
 
 
 def color_bracket_and_bullet(line: str) -> str:
@@ -333,6 +373,7 @@ def main(argv: list[str] | None = None) -> int:
     content = insert_tabs_import(content, title)
     content = convert_admonitions(content)
     content = rewrite_urls(content)
+    content = convert_code_tabs(content)
     content = color_deployed_block(content)
     content = color_state_in_table_blocks(content)
 
