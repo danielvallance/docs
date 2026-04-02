@@ -1,6 +1,7 @@
 ---
-title: NGINX
+title: "Nginx"
 ---
+
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
@@ -10,19 +11,19 @@ Nginx can be used with Unikraft / Unikraft Cloud to serve static web content.
 To run this example, follow these steps:
 
 1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
-   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/nginx/` directory:
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/nginx/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
 ```
 
-Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft login
@@ -37,19 +38,17 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
-
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/nginx:latest
-unikraft run --metro=fra -p 443:8080/http+tls -m 128MiB my-org/nginx:latest
+unikraft build . --output <my-org>/nginx:latest
+unikraft run --metro=fra -p 443:8080/tls+http -m 256M <my-org>/nginx:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -p 443:8080 .
+kraft cloud deploy -p 443:8080/tls+http -M 256M .
 ```
 
 </CodeTabs>
@@ -59,17 +58,17 @@ The output shows the instance address and other details:
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
  [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: nginx-67zbu
- [90m├[0m[90m──────────[0m [90muuid[0m: 8a8bc1b9-0af6-420e-a426-190dc2da9eaa
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://nameless-fog-0tvh1uov.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: sha256:f51ecc121c9ca34abb88a2bc6a69765501304f7893f7e85af15fbec3dc86e2bd
- [90m├[0m[90m─────[0m [90mboot time[0m: 11.13ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 128 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: nameless-fog-0tvh1uov
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: nginx-67zbu.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.3.3
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: nginx-67zbu
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 8a8bc1b9-0af6-420e-a426-190dc2da9eaa
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://nameless-fog-0tvh1uov.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: nginx@sha256:f51ecc121c9ca34abb88a2bc6a69765501304f7893f7e85af15fbec3dc86e2bd
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 11.13ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: nameless-fog-0tvh1uov
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: nginx-67zbu.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.3.3
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
 ```
 
 In this case, the instance name is `nginx-67zbu` and the address is `https://nameless-fog-0tvh1uov.fra.unikraft.app`.
@@ -80,6 +79,7 @@ Use `curl` to query the Unikraft Cloud instance of Nginx.
 ```bash
 curl https://nameless-fog-0tvh1uov.fra.unikraft.app
 ```
+
 ```text
 <!DOCTYPE html>
 <html>
@@ -90,7 +90,7 @@ curl https://nameless-fog-0tvh1uov.fra.unikraft.app
 
 You can list information about the instance by running:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances list
@@ -101,14 +101,15 @@ kraft cloud instance list
 ```
 
 </CodeTabs>
-```text
-NAME                           FQDN                                      STATE    CREATED AT     IMAGE                               MEMORY   ARGS                                     BOOT TIME
-nginx-67zbu                    nameless-fog-0tvh1uov.fra.unikraft.app    running  5 minutes ago  nginx@sha256:f51ecc121c9ca34abb...  128 MiB  /usr/bin/nginx -c /etc/nginx/nginx.conf  11129us
+
+```ansi
+[1mNAME[0m         [1mFQDN[0m                                    [1mSTATE[0m    [1mSTATUS[0m         [1mIMAGE[0m                               [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                                     [1mBOOT TIME[0m
+nginx-67zbu  nameless-fog-0tvh1uov.fra.unikraft.app  [92mrunning[0m  5 minutes ago  nginx@sha256:f51ecc121c9ca34abb...  256 MiB  1      /usr/bin/nginx -c /etc/nginx/nginx.conf  11129us
 ```
 
 When done, you can remove the instance:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances delete nginx-67zbu
@@ -127,82 +128,6 @@ To customize the Nginx app, update the files in the repository, listed below:
 * `Kraftfile`: the Unikraft Cloud specification
 * `rootfs/wwwroot/index.html`: the index page of the content served
 * `rootfs/conf/nginx.conf`: the Nginx configuration file
-
-<Tabs defaultValue="kraftfile">
-  <TabsContent  value="Kraftfile">
-    ```yaml
-    spec: v0.6
-
-    runtime: nginx:latest
-
-    rootfs: ./rootfs
-    ```
-  </TabsContent>
-  <TabsContent  value="rootfs/wwwroot/index.html">
-    ```html
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <title>Welcome to nginx!</title>
-    <style>
-        body {
-            width: 35em;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-        }
-    </style>
-    </head>
-    <body>
-    <h1>Welcome to nginx!</h1>
-    <p>If you see this page, the nginx web server is successfully installed and
-    working. Further configuration is required.</p>
-
-    <p>For online documentation and support please refer to
-    <a href="http://nginx.org/">nginx.org</a>.<br/>
-    Commercial support is available at
-    <a href="http://nginx.com/">nginx.com</a>.</p>
-
-    <p><em>Thank you for using nginx.</em></p>
-    </body>
-    </html>
-    ```
-  </TabsContent>
-  <TabsContent  value="rootfs/conf/nginx.conf">
-    ```text
-    worker_processes  1;
-    daemon            off;
-    master_process    off;
-    user root root;
-
-    events {
-      worker_connections  64;
-    }
-
-    http {
-      include mime.types;
-      default_type app/octet-stream;
-
-      open_file_cache           max=10000 inactive=30s;
-      open_file_cache_min_uses  2;
-      open_file_cache_errors    on;
-
-      error_log stderr error;
-      access_log off;
-
-      keepalive_timeout     10s;
-      keepalive_requests    10000;
-      send_timeout          10s;
-
-      server {
-        listen              8080;
-        server_name         localhost;
-        root                /wwwroot;
-        index               index.html;
-      }
-    }
-    ```
-  </TabsContent>
-</Tabs>
 
 Update the contents of the `rootfs/wwwroot/` directory to serve different static web content.
 For example, you could change the contents of `rootfs/wwwroot/index.html` to:
@@ -230,7 +155,7 @@ You can set a new webroot (different than `wwwroot`), or a different internal po
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft --help
@@ -242,4 +167,4 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
+Or visit the [CLI Reference](/cli/unikraft) or the legacy [CLI Reference](https://unikraft.org/docs/cli/kraft/overview).

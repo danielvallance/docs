@@ -1,0 +1,154 @@
+---
+title: "Go HTTP Server"
+---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide explains how to create and deploy a simple Go-based HTTP web server.
+To run this example, follow these steps:
+
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/httpserver-go1.21/` directory:
+
+```bash
+git clone https://github.com/unikraft-cloud/examples
+cd examples/httpserver-go1.21/
+```
+
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+</CodeTabs>
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/httpserver-go1.21:latest
+unikraft run --metro=fra -p 443:8080/tls+http -m 256M <my-org>/httpserver-go1.21:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -p 443:8080/tls+http -M 256M .
+```
+
+</CodeTabs>
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-go1.21-9a2wv
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 8bb34040-9434-4a28-bd1e-c24ee532e2da
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://red-dew-jtk6yxk1.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: httpserver-go1.21@sha256:b16d61bb7898e764d8c11ab5a0b995e8c25a25b5ff89e161fc994ebf25a75680
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 11.05 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: red-dew-jtk6yxk1
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: httpserver-go1.21-9a2wv.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.3.3
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /server
+```
+
+In this case, the instance name is `httpserver-go1.21-9a2wv` and the address is `https://red-dew-jtk6yxk1.fra.unikraft.app`.
+They're different for each run.
+
+Use `curl` to query the Unikraft Cloud instance of the Go-based HTTP web server:
+
+```bash
+curl https://red-dew-jtk6yxk1.fra.unikraft.app
+```
+
+```text
+hello, world!
+```
+
+You can list information about the instance by running:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
+kraft cloud instance list
+```
+
+</CodeTabs>
+
+```ansi
+[1mNAME[0m                     [1mFQDN[0m                               [1mSTATE[0m    [1mSTATUS[0m        [1mIMAGE[0m                                          [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m     [1mBOOT TIME[0m
+httpserver-go1.21-9a2wv  red-dew-jtk6yxk1.fra.unikraft.app  [92mrunning[0m  1 minute ago  httpserver-go1.21@sha256:b16d61bb7898e764d...  256 MiB  1      /server  9324us
+```
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete httpserver-go1.21-9a2wv
+```
+
+```bash title="kraft"
+kraft cloud instance remove httpserver-go1.21-9a2wv
+```
+
+</CodeTabs>
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `server.go`: the actual Go HTTP server implementation
+* `Kraftfile`: the Unikraft Cloud specification
+* `Dockerfile`: the Docker-specified app filesystem
+
+The following options are available for customizing the app:
+
+* If you only update the implementation in the `server.go` source file, you don't need to make any other changes.
+
+* If you create any new source files, copy them into the app filesystem by using the `COPY` command in the `Dockerfile`.
+
+* If you add new source code files, build them using the corresponding `go build` command.
+
+* If you build a new executable, update the `cmd` line in the `Kraftfile` and replace `/server` with the path to the new executable.
+
+* More extensive changes may require extending the `Dockerfile` ([see `Dockerfile` syntax reference](https://docs.docker.com/engine/reference/builder/)).
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
+kraft cloud --help
+```
+
+</CodeTabs>
+
+Or visit the [CLI Reference](/cli/unikraft) or the legacy [CLI Reference](https://unikraft.org/docs/cli/kraft/overview).

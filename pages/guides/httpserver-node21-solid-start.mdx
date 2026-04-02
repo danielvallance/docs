@@ -1,0 +1,133 @@
+---
+title: "SolidJS HTTP Server"
+---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide shows how to deploy a [Solid Start](https://start.solidjs.com) app.
+To do so, follow these steps:
+
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/httpserver-node21-solid-start/` directory:
+
+```bash
+git clone https://github.com/unikraft-cloud/examples
+cd examples/httpserver-node21-solid-start/
+```
+
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+</CodeTabs>
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/httpserver-node21-solid-start:latest
+unikraft run --metro=fra -p 443:3000/tls+http -m 512M <my-org>/httpserver-node21-solid-start:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -p 443:3000/tls+http -M 512M .
+```
+
+</CodeTabs>
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-node21-solid-start-lvoa2
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 4e6ccb1f-0533-4dc1-be67-eca8dfc1f8c6
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://long-star-1tms9h1z.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: httpserver-node21-solid-start@sha256:eb2e79b2fc5c28bb43923a1fc4931db94ebc3f939a6fbe00d06189c0ae2e02fd
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 67.65 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: long-star-1tms9h1z
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: httpserver-node21-solid-start-lvoa2.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.6.8
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/node /usr/src/server/index.mjs
+```
+
+In this case, the instance name is `httpserver-node21-solid-start-lvoa2` and the address is `https://long-star-1tms9h1z.fra.unikraft.app`.
+They're different for each run.
+You can now point your browser at the address to see your deployed instance.
+
+You can list information about the instance by running:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
+kraft cloud instance list
+```
+
+</CodeTabs>
+
+```ansi
+[1mNAME[0m                                 [1mFQDN[0m                                 [1mSTATE[0m    [1mSTATUS[0m         [1mIMAGE[0m                                    [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                              [1mBOOT TIME[0m
+httpserver-node21-solid-start-lvoa2  long-star-1tms9h1z.fra.unikraft.app  [92mrunning[0m  1 minutes ago  httpserver-node21-solid-start@sha256...  512 MiB  1      /usr/bin/node /usr/src/server...  67.65 ms
+```
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete httpserver-node21-solid-start-lvoa2
+```
+
+```bash title="kraft"
+kraft cloud instance remove httpserver-node21-solid-start-lvoa2
+```
+
+</CodeTabs>
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification
+* `Dockerfile`: the Docker-specified app filesystem
+* `src/`: server source files
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
+kraft cloud --help
+```
+
+</CodeTabs>
+
+Or visit the [CLI Reference](/cli/unikraft) or the legacy [CLI Reference](https://unikraft.org/docs/cli/kraft/overview).

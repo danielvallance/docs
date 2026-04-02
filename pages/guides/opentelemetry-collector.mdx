@@ -2,30 +2,29 @@
 title: "OpenTelemetry Collector"
 ---
 
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
-This example uses [OpenTelemetry
-Collector](https://opentelemetry.io/docs/collector/), a vendor-agnostic
+This example uses [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/), a vendor-agnostic
 implementation of how to receive, process and export telemetry data.
-OpenTelemetry Collector works with Unikraft / Unikraft Cloud to process
-telemetry data.
+OpenTelemetry Collector works with Unikraft / Unikraft Cloud to process telemetry data.
 
 To run this example, follow these steps:
 
 1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
-   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/opentelemetry-collector/` directory:
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/opentelemetry-collector/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/opentelemetry-collector/
 ```
 
-Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft login
@@ -40,19 +39,17 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
-
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/opentelemetry-collector:latest
-unikraft run --metro=fra -m 1024MiB my-org/opentelemetry-collector:latest
+unikraft build . --output <my-org>/opentelemetry-collector:latest
+unikraft run --metro=fra -p 443:4318/tls+http -m 1536M <my-org>/opentelemetry-collector:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -M 1024M .
+kraft cloud deploy -p 443:4318/tls+http -M 1536M .
 ```
 
 </CodeTabs>
@@ -62,14 +59,14 @@ The output shows the instance address and other details:
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
  [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: opentelemetry-collector-bvtnh
- [90m├[0m[90m──────────[0m [90muuid[0m: 40e8b154-b3b6-4312-ae69-2cdb794b15e4
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mstarting[0m
- [90m├[0m[90m─────────[0m [90mimage[0m: opentelemetry-collector@sha256:64f73ea5fe208f54e5212f57979f24bebcf36276495462c52b380d15dd539ced
- [90m├[0m[90m────────[0m [90mmemory[0m: 976 MiB
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: opentelemetry-collector-bvtnh.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.3.3
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/otelcontribcol --config /etc/otel/config.yaml
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: opentelemetry-collector-bvtnh
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 40e8b154-b3b6-4312-ae69-2cdb794b15e4
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: opentelemetry-collector@sha256:64f73ea5fe208f54e5212f57979f24bebcf36276495462c52b380d15dd539ced
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 1536 MiB
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: opentelemetry-collector-bvtnh.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.3.3
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/otelcontribcol --config /etc/otel/config.yaml
 ```
 
 In this case, the instance name is `opentelemetry-collector-bvtnh`.
@@ -82,7 +79,7 @@ Feel free to change and redeploy!
 
 You can list information about the instance by running:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances list
@@ -93,15 +90,15 @@ kraft cloud instance list
 ```
 
 </CodeTabs>
-```text
-unikraft instances list
-NAME                           FQDN                                  STATE    STATUS             IMAGE             MEMORY   ARGS                                 BOOT TIME
-opentelemetry-collector-bvtnh                                        running  since 11mins       opentelemetry...  976 MiB  /usr/bin/otelcontribcol --config...  177.62 ms
+
+```ansi
+[1mNAME[0m                           [1mFQDN[0m  [1mSTATE[0m    [1mSTATUS[0m        [1mIMAGE[0m             [1mMEMORY[0m    [1mVCPUS[0m  [1mARGS[0m                                 [1mBOOT TIME[0m
+opentelemetry-collector-bvtnh        running  [92msince 11mins[0m  opentelemetry...  1536 MiB  1      /usr/bin/otelcontribcol --config...  177.62 ms
 ```
 
 When done, you can remove the instance:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances delete opentelemetry-collector-bvtnh
@@ -117,63 +114,6 @@ kraft cloud instance remove opentelemetry-collector-bvtnh
 
 To customize the OpenTelemetry Collector app, update `Kraftfile` or, more likely, the `rootfs/etc/otel/config.yaml` files:
 
-<Tabs defaultValue="kraftfile">
-  <TabsList>
-    <TabsTrigger value="kraftfile">Kratfile</TabsTrigger>
-    <TabsTrigger value="config">rootfs/etc/otel/config.yaml</TabsTrigger>
-  </TabsList>
-  <TabsContent value="kraftfile">
-    ```yaml
-spec: v0.6
-
-runtime: opentelemetry-collector:latest
-
-rootfs: ./rootfs
-    ```
-  </TabsContent>
-  <TabsContent value="config">
-    ```yaml title=""
-receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: "0.0.0.0:4317"
-      http:
-        endpoint: "0.0.0.0:4318"
-
-exporters:
-  debug:
-    verbosity: detailed
-
-processors:
-  batch:
-
-extensions:
-  health_check:
-
-service:
-  extensions: [health_check]
-  # Disable the self telemetry which requires process-level data
-  telemetry:
-    metrics:
-      level: none
-  pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [debug]
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [debug]
-    logs:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [debug]
-    ```
-  </TabsContent>
-</Tabs>
-
 You can update the `rootfs/etc/otel/config.yaml` file as detailed in the [documentation](https://opentelemetry.io/docs/collector/configuration/).
 Such as adding another export, apart from the debug exporter.
 
@@ -181,7 +121,7 @@ Such as adding another export, apart from the debug exporter.
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft --help
@@ -193,4 +133,4 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
+Or visit the [CLI Reference](/cli/unikraft) or the legacy [CLI Reference](https://unikraft.org/docs/cli/kraft/overview).

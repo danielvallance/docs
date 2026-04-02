@@ -1,0 +1,154 @@
+---
+title: "Hugo"
+---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide shows you how to use [Hugo](https://gohugo.io/commands/hugo_server/), a high performance webserver, with the [ananke](https://github.com/budparr/gohugo-theme-ananke.git) theme.
+
+To run it, follow these steps:
+
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/hugo0.122/` directory:
+
+```bash
+git clone https://github.com/unikraft-cloud/examples
+cd examples/hugo0.122/
+```
+
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+</CodeTabs>
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/hugo0.122:latest
+unikraft run --metro=fra -p 443:1313/tls+http -m 512M <my-org>/hugo0.122:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -p 443:1313/tls+http -M 512M .
+```
+
+</CodeTabs>
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: hugo0122-zpabu
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: dfc6e06c-76cc-4aa1-a053-c4eded0d2456
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://morning-rain-jikpfy3t.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: hugo0122@sha256:68d20fdb707076b1cd0f2848b17cc75670d8a92b740edb9417aeb8463fef7f19
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 77.17 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: morning-rain-jikpfy3t
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: hugo0122-zpabu.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.6.4
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/hugo server --bind=0.0.0.0 --source /site
+```
+
+In this case, the instance name is `hugo0122-zpabu` and the address is `https://morning-rain-jikpfy3t.fra.unikraft.app`.
+They're different for each run.
+
+Use `curl` to query the Unikraft Cloud instance of Hugo.
+
+```bash
+curl https://morning-rain-jikpfy3t.fra.unikraft.app
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+[...]
+```
+
+You can list information about the instance by running:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
+kraft cloud instance list
+```
+
+</CodeTabs>
+
+```ansi
+[1mNAME[0m            [1mFQDN[0m                                    [1mSTATE[0m    [1mSTATUS[0m        [1mIMAGE[0m                                                     [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                             [1mBOOT TIME[0m
+hugo0122-zpabu  morning-rain-jikpfy3t.fra.unikraft.app  [92mrunning[0m  1 minute ago  hugo0122@sha256:68d20fdb707076b1cd0f2848b17cc75670d8a...  512 MiB  1      /usr/bin/hugo server --bind=...  77166us
+```
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete hugo0122-zpabu
+```
+
+```bash title="kraft"
+kraft cloud instance remove hugo0122-zpabu
+```
+
+</CodeTabs>
+
+## Customize your app
+
+To customize the Hugo app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification
+* `site/`: sample site content
+* `Dockerfile`: In case you need to add files to your instance's rootfs
+
+Update the contents of the `site/` directory to serve different static web content.
+
+After re-deploying the Hugo image on Unikraft Cloud, using `curl` or a browser to query it will present the new page contents.
+
+Tools like [`Jekyll`](https://jekyllrb.com/) or [`Hugo`](https://gohugo.io/) can generate the static web content located in the `site/` offline.
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
+kraft cloud --help
+```
+
+</CodeTabs>
+
+Or visit the [CLI Reference](/cli/unikraft) or the legacy [CLI Reference](https://unikraft.org/docs/cli/kraft/overview).

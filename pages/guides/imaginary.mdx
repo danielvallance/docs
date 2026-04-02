@@ -1,25 +1,28 @@
 ---
-title: Imaginary
+title: "Imaginary"
 ---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
 This example uses [`imaginary`](https://github.com/h2non/imaginary), an HTTP microservice for high-level image processing.
 
 To run this example, follow these steps:
 
 1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
-   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/imaginary/` directory:
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/imaginary/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/imaginary/
 ```
 
-Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft login
@@ -34,19 +37,17 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
-
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/imaginary:latest
-unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB my-org/imaginary:latest
+unikraft build . --output <my-org>/imaginary:latest
+unikraft run --metro=fra -p 443:8088/tls+http -m 256M <my-org>/imaginary:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -p 443:8080 -M 256 .
+kraft cloud deploy -p 443:8088/tls+http -M 256M .
 ```
 
 </CodeTabs>
@@ -56,17 +57,17 @@ The output shows the instance address and other details:
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
  [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: imaginary-mwb4y
- [90m├[0m[90m──────────[0m [90muuid[0m: 8cf18bf7-2bf6-4f23-be07-f9c234c7962d
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://divine-wind-1ycjvhqs.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: sha256:673834bc531038bb621266f7fd635a04e559050cbe82876df811fd4b975ea4fe
- [90m├[0m[90m─────[0m [90mboot time[0m: 32.26 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 256 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: divine-wind-1ycjvhqs
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: imaginary-mwb4y.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.3.3
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/imaginary -p 8080
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: imaginary-mwb4y
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 8cf18bf7-2bf6-4f23-be07-f9c234c7962d
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://divine-wind-1ycjvhqs.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: imaginary@sha256:673834bc531038bb621266f7fd635a04e559050cbe82876df811fd4b975ea4fe
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 32.26 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: divine-wind-1ycjvhqs
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: imaginary-mwb4y.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.3.3
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/imaginary -p 8080
 ```
 
 In this case, the instance name is `imaginary-mwb4y` and the address is `https://divine-wind-1ycjvhqs.fra.unikraft.app`.
@@ -78,6 +79,7 @@ You will get a health status of the service:
 ```bash
 curl -s https://divine-wind-1ycjvhqs.fra.unikraft.app/health | jq
 ```
+
 ```json
 {
   "uptime": 414,
@@ -101,7 +103,7 @@ The API provides endpoints, together with parameters, for different image proces
 
 You can list information about the instance by running:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances list
@@ -112,14 +114,15 @@ kraft cloud instance list
 ```
 
 </CodeTabs>
-```text
-NAME             FQDN                                   STATE    CREATED AT      IMAGE                                         MEMORY   ARGS                        BOOT TIME
-imaginary-mwb4y  divine-wind-1ycjvhqs.fra.unikraft.app  running  54 seconds ago  sha256:673834bc531038bb621266f7fd635a04e5...  256 MiB  /usr/bin/imaginary -p 8080  32262us
+
+```ansi
+[1mNAME[0m             [1mFQDN[0m                                   [1mSTATE[0m    [1mSTATUS[0m          [1mIMAGE[0m                                         [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                        [1mBOOT TIME[0m
+imaginary-mwb4y  divine-wind-1ycjvhqs.fra.unikraft.app  [92mrunning[0m  54 seconds ago  imaginary@sha256:673834bc531038bb621266f7...  256 MiB  1      /usr/bin/imaginary -p 8080  32262us
 ```
 
 When done, you can remove the instance:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances delete imaginary-mwb4y
@@ -148,7 +151,7 @@ You can update the `cmd` line with [command line option for Imaginary](https://g
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft --help
@@ -160,4 +163,4 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
+Or visit the [CLI Reference](/cli/unikraft) or the legacy [CLI Reference](https://unikraft.org/docs/cli/kraft/overview).
