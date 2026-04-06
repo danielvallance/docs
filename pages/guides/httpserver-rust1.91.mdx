@@ -1,0 +1,133 @@
+---
+title: "Rust HTTP Server"
+---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This guide explains how to create and deploy a Rust app.
+To run this example, follow these steps:
+
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/httpserver-rust1.91` directory:
+
+```bash
+git clone https://github.com/unikraft-cloud/examples
+cd examples/httpserver-rust1.91/
+```
+
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+</CodeTabs>
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/httpserver-rust1.91:latest
+unikraft run --metro=fra -p 443:8080/tls+http -m 384M <my-org>/httpserver-rust1.91:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -p 443:8080/tls+http -M 384M .
+```
+
+</CodeTabs>
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-rust191-pinzf
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 8acb3d35-38ba-4929-81de-950340662c14
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmetro[0m: fra
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mdomain[0m: https://snowy-feather-k4pfgl8t.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: httpserver-rust191@sha256:7725556f4db01037438c08d5f934eabe89f33c172b4ae6c7424b3286351619e9
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 384 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: snowy-feather-k4pfgl8t
+ [90m├[0m [90mprivate ip[0m: 10.0.2.53
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /server
+```
+
+In this case, the instance name is `httpserver-rust191-pinzf` and the address is `snowy-feather-k4pfgl8t.fra.unikraft.app`.
+They're different for each run.
+
+Use `curl` to query the Unikraft Cloud instance:
+
+```bash
+curl https://snowy-feather-k4pfgl8t.fra.unikraft.app
+```
+
+```text
+Hello, World!
+```
+
+You can list information about the instance by running:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
+kraft cloud instance list
+```
+
+</CodeTabs>
+
+```ansi
+[1mNAME[0m                      [1mFQDN[0m                                     [1mSTATE[0m    [1mSTATUS[0m   [1mIMAGE[0m                                                                        [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m     [1mBOOT TIME[0m
+httpserver-rust191-pinzf  snowy-feather-k4pfgl8t.fra.unikraft.app  [94mstandby[0m  standby  httpserver-rust191@sha256:7725556f4db01037438c08d5f934eabe89f33c172b4ae6...  384 MiB  1      /server  11672us
+```
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete httpserver-rust191-pinzf
+```
+
+```bash title="kraft"
+kraft cloud instance remove httpserver-rust191-pinzf
+```
+
+</CodeTabs>
+
+## Learn more
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
+kraft cloud --help
+```
+
+</CodeTabs>
+
+Or visit the [CLI Reference](/cli/unikraft) or the [legacy CLI Reference](/cli/kraft/overview).

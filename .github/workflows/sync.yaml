@@ -53,8 +53,8 @@ jobs:
       with:
         token: ${{ secrets.GH_PAT }}
         base: ${{ inputs.docs_branch || 'main' }}
-        commit-message: "sync: Update guides from examples repository"
-        title: "sync: Update guides from examples repository"
+        commit-message: "chore: Update guides from examples repository"
+        title: "chore: Update guides from examples repository"
         body: |
           Automated sync of example READMEs from [`unikraft/examples@${{ inputs.examples_branch }}`](https://github.com/unikraft/examples/tree/${{ inputs.examples_branch }}).
 

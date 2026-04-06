@@ -1,6 +1,7 @@
 ---
-title: MariaDB
+title: "MariaDB"
 ---
+
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
@@ -8,19 +9,19 @@ This guide shows you how to use [MariaDB](https://mariadb.org), one of the most 
 To run it, follow these steps:
 
 1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
-   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/mariadb/` directory:
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/mariadb/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/mariadb
 ```
 
-Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft login
@@ -35,19 +36,17 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
-
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/mariadb:latest
-unikraft run --metro=fra -p 3306:3306/tls -m 1Gi my-org/mariadb:latest
+unikraft build . --output <my-org>/mariadb:latest
+unikraft run --metro=fra -p 3306:3306/tls -m 1G -e MARIADB_ROOT_PASSWORD="unikraft" <my-org>/mariadb:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -p 3306:3306/tls -M 1024 .
+kraft cloud deploy -p 3306:3306/tls -M 1G --env MARIADB_ROOT_PASSWORD="unikraft" .
 ```
 
 </CodeTabs>
@@ -57,30 +56,28 @@ The output shows the instance address and other details:
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
  [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: mariadb-w2g2z
- [90m├[0m[90m──────────[0m [90muuid[0m: ba696c22-adff-4fba-88b9-d1b790ca2357
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m──────────[0m [90mfqdn[0m: twilight-sun-82lt4ddk.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: mariadb@sha256:6e31d28b351eb12a070e3074f0a500532d0a494332947e9d8dbfa093d2d551fd
- [90m├[0m[90m─────[0m [90mboot time[0m: 159.06 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: twilight-sun-82lt4ddk
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: mariadb-w2g2z.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.3
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/sbin/mariadbd --user=root --log-bin
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: mariadb-w2g2z
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: ba696c22-adff-4fba-88b9-d1b790ca2357
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mfqdn[0m: twilight-sun-82lt4ddk.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: mariadb@sha256:6e31d28b351eb12a070e3074f0a500532d0a494332947e9d8dbfa093d2d551fd
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 159.06 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 1024 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: twilight-sun-82lt4ddk
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: mariadb-w2g2z.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.6.3
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/sbin/mariadbd --user=root --log-bin
 ```
 
 In this case, the instance name is `mariadb-w2g2z` which is different for each run.
 
-To test the deployment, first forward the port with the legacy CLI tunnel command.
+To test the deployment, first forward the port with the `kraft cloud tunnel` command.
 
-<CodeTabs>
-
-```bash title="kraft"
+```bash
 kraft cloud tunnel 3306:mariadb-w2g2z:3306
 ```
 
-</CodeTabs>
+The `kraft cloud tunnel` command is only supported by the legacy CLI.
 
 You can now, on a separate console, use the `mysql` command line tool to test that the set up works:
 
@@ -103,16 +100,14 @@ count(*)
 
 To disconnect, kill the `tunnel` command using `Ctrl+c`.
 
-:::note
-This guide uses the legacy tunnel command only when a service doesn't support TLS and isn't HTTP-based.
-TLS/SNI determines the correct instance to send traffic to.
-Also note that the `tunnel` command isn't needed when connecting via an instance's private IP/FQDN.
-For example when the MariaDB instance serves as a database server to another instance that acts as a frontend and which **does** support TLS.
-:::
+> **Note:**
+> This guide uses `kraft cloud tunnel` only when a service doesn't support TLS and isn't HTTP-based (TLS/SNI determines the correct instance to send traffic to).
+> Also note that the `tunnel` command isn't needed when connecting via an instance's private IP/FQDN.
+> For example when the MariaDB instance serves as a database server to another instance that acts as a frontend and which **does** support TLS.
 
 You can list information about the instance by running:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances list
@@ -123,21 +118,61 @@ kraft cloud instance list
 ```
 
 </CodeTabs>
-```text
-NAME           FQDN                                    STATE    CREATED AT    IMAGE         MEMORY   ARGS                             BOOT TIME
-mariadb-w2g2z  twilight-sun-82lt4ddk.fra.unikraft.app  running  1 minute ago  mariadb@s...  1.0 GiB  /usr/sbin/mariadbd --user=ro...  159065us
+
+```bash
+kraft cloud instance list
+```
+
+```ansi
+[1mNAME[0m           [1mFQDN[0m                                    [1mSTATE[0m    [1mSTATUS[0m        [1mIMAGE[0m         [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                             [1mBOOT TIME[0m
+mariadb-w2g2z  twilight-sun-82lt4ddk.fra.unikraft.app  [92mrunning[0m  1 minute ago  mariadb@s...  1.0 GiB  1      /usr/sbin/mariadbd --user=ro...  159065us
 ```
 
 When done, you can remove the instance:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft instances delete mariadb-w2g2z
+unikraft instance remove mariadb-w2g2z
 ```
 
 ```bash title="kraft"
 kraft cloud instance remove mariadb-w2g2z
+```
+
+</CodeTabs>
+
+> **Tip:**
+> This example uses the [`idle` scale-to-zero policy](/api/platform/v1/instances#scaletozero_policy) by default (see the `labels` section in the `Kraftfile`).
+
+## Using volumes
+
+You can use [volumes](/platform/volumes) for data persistence for your MariaDB instance.
+For that you would first create a volume:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft volume create --set name=mariadb-store --set size=512M
+```
+
+```bash title="kraft"
+kraft cloud volume create --name mariadb-store --size 512
+```
+
+</CodeTabs>
+
+Then start the MariaDB instance and mount that volume:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/mariadb:latest
+unikraft run --metro=fra -p 3306:3306/tls -m 1G -e MARIADB_ROOT_PASSWORD="unikraft" --volume mariadb-store:/var/lib <my-org>/mariadb:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -M 1G -p 3306:3306/tls --env MARIADB_ROOT_PASSWORD="unikraft" --volume mariadb-store:/var/lib .
 ```
 
 </CodeTabs>
@@ -149,38 +184,11 @@ To customize the app, update the files in the repository, listed below:
 * `Kraftfile`: the Unikraft Cloud specification, including command-line arguments
 * `Dockerfile`: In case you need to add files to your instance's rootfs
 
-<Tabs defaultValue="kraftfile">
-  <TabsContent  value="Kraftfile">
-    ```yaml
-spec: v0.6
-
-runtime: mariadb:latest
-
-rootfs: ./Dockerfile
-
-cmd: ["/usr/sbin/mariadbd", "--user=root", "--log-bin"]
-    ```
-  </TabsContent>
-  <TabsContent  value="Dockerfile">
-```Dockerfile
-FROM debian:bookworm AS build
-
-RUN set -xe \
-    echo "Your code here"
-
-FROM scratch
-
-# Your files here
-# COPY --from=build / /
-```
-  </TabsContent>
-</Tabs>
-
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft --help
@@ -192,4 +200,4 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
+Or visit the [CLI Reference](/cli/unikraft) or the [legacy CLI Reference](/cli/kraft/overview).

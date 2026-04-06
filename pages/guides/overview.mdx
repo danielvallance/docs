@@ -1,123 +1,156 @@
 ---
-title: Guides
-navigation_icon: book-open-text
+title: "Guides Overview"
 ---
 
-This section contains step-by-step guides for deploying popular languages, frameworks, databases, and tools on Unikraft Cloud.
+This page lists all available guides for deploying applications and services on Unikraft Cloud, grouped by category.
+These guides mimic the [examples](https://github.com/unikraft-cloud/examples) repository, and are constantly updated with new content.
 
-Every guide points to a ready-to-run example in the **[`unikraft-cloud/examples`](https://github.com/unikraft-cloud/examples)** repository on GitHub.
-Clone it once and you'll have all examples at your fingertips:
+{/* vale off */}
 
-```bash
-git clone https://github.com/unikraft-cloud/examples
-```
+## HTTP Servers
 
-Each example directory contains a `Kraftfile` and a `Dockerfile` that are the only files you need to deploy.
-Refer to the individual guide for the exact `kraft cloud deploy` command and a walkthrough of the configuration.
+Deploy HTTP servers written in your language of choice on Unikraft Cloud.
 
-## Languages & runtimes
+### C / C++
 
-| Guide | Runtime |
-|---|---|
-| [Bun](/guides/bun) | Bun |
-| [C (HTTP debug server)](/guides/http-c-debug) | GCC / C |
-| [C++ (Boost)](/guides/httpserver-boost1.74-g++13.2) | g++ 13.2 / Boost 1.74 |
-| [C++ (g++)](/guides/httpserver-g++13.2) | g++ 13.2 |
-| [C++ (gcc)](/guides/httpserver-gcc13.2) | GCC 13.2 |
-| [Elixir 1.16](/guides/httpserver-elixir1.16) | Elixir 1.16 |
-| [Elixir 1.17](/guides/http-elixir1.17) | Elixir 1.17 |
-| [Erlang 26.2](/guides/httpserver-erlang26.2) | Erlang 26.2 |
-| [Go 1.21](/guides/httpserver-go1.21) | Go 1.21 |
-| [Java 17](/guides/httpserver-java17) | Java 17 |
-| [Java 21](/guides/http-java21) | Java 21 |
-| [Lua 5.1](/guides/httpserver-lua5.1) | Lua 5.1 |
-| [.NET 8.0](/guides/httpserver-dotnet8.0) | .NET 8.0 |
-| [Node.js 21](/guides/httpserver-nodejs21) | Node.js 21 |
-| [Node.js 25](/guides/http-node25) | Node.js 25 |
-| [Perl 5.38](/guides/httpserver-perl5.38) | Perl 5.38 |
-| [Perl 5.42](/guides/http-perl5.42) | Perl 5.42 |
-| [PHP 8.2](/guides/httpserver-php8.2) | PHP 8.2 |
-| [Python 3.12](/guides/httpserver-python3.12) | Python 3.12 |
-| [Ruby 3.2](/guides/httpserver-ruby3.2) | Ruby 3.2 |
-| [Rust 1.73](/guides/httpserver-rust1.73) | Rust 1.73 |
-| [Rust 1.75](/guides/httpserver-rust1.75) | Rust 1.75 |
-| [Rust 1.79 (Axum, scale-to-zero)](/guides/http-rust-1.79-axum-scale-to-zero) | Rust 1.79 / Axum |
-| [Rust 1.81 (Rocket)](/guides/httpserver-rust1.81-rocket0.5) | Rust 1.81 / Rocket 0.5 |
-| [Rust 1.87 (Actix Web)](/guides/httpserver-rust1.87-actix-web4) | Rust 1.87 / Actix Web 4 |
-| [Rust 1.91](/guides/http-rust1.91) | Rust 1.91 |
-| [Wazero (Go / WASM)](/guides/wazero-import-go) | Wazero / Go |
-| [WebAssembly (Spin / WAGI)](/guides/spin-wagi-http) | Spin / WAGI |
+- [C HTTP Server](/guides/httpserver-gcc13.2)
+- [C++ HTTP Server](/guides/httpserver-g++13.2)
+- [C++ Boost HTTP Server](/guides/httpserver-boost1.74-g++13.2)
+- [SSH and HTTP Server with C and Debugging Tools](/guides/httpserver-c-debug)
 
-## Frameworks & full-stack apps
+### .NET
 
-| Guide | Stack |
-|---|---|
-| [AllKaraoke (Node 24)](/guides/node24-karaoke) | Node.js 24 |
-| [Django 5.0](/guides/httpserver-python3.12-django5.0) | Python 3.12 / Django 5.0 |
-| [Express.js 4.18](/guides/expressjs4.18-node21) | Node.js 21 / Express 4.18 |
-| [Express.js 4.19 + Prisma](/guides/prisma-expressjs4.19-node18) | Node.js 18 / Prisma |
-| [FastAPI 0.121](/guides/http-python3.12-FastAPI-0.121.3) | Python 3.12 / FastAPI |
-| [Flask 3.0 + Python 3.12 + SQLite](/guides/flask3.0-python3.12-sqlite3) | Python 3.12 / Flask 3.0 |
-| [Flask 3.0 + SQLite](/guides/python3.12-flask3.0-sqlite) | Python 3.12 / Flask 3.0 |
-| [Flask + Redis](/guides/database-redis7.2) | Python / Flask / Redis 7.2 |
-| [Hugo 0.122](/guides/hugo0.122) | Hugo 0.122 |
-| [Next.js (Node 21)](/guides/node21-nextjs) | Node.js 21 / Next.js |
-| [Puppeteer (Node)](/guides/node-express-puppeteer) | Node.js / Puppeteer |
-| [Rails (Ruby 3.2)](/guides/ruby3.2-rails) | Ruby 3.2 / Rails |
-| [Remix (Node 21)](/guides/node21-remix) | Node.js 21 / Remix |
-| [SolidStart (Node 21)](/guides/node21-solid-start) | Node.js 21 / SolidStart |
-| [Spring Boot 3.2 (Java 17)](/guides/java17-springboot3.2.x) | Java 17 / Spring Boot 3.2 |
-| [SvelteKit (Node 21)](/guides/node21-sveltekit) | Node.js 21 / SvelteKit |
-| [Vite + nginx](/guides/nginx-vite-vanilla) | Node.js / Vite / nginx |
-| [Webhook handler (GitHub / Node)](/guides/webhook-github-node) | Node.js |
-| [WordPress (all-in-one)](/guides/wordpress-all-in-one) | WordPress / PHP |
+- [.NET HTTP Server](/guides/httpserver-dotnet10.0)
 
-## Databases & storage
+### Elixir / Erlang
 
-| Guide | Technology |
-|---|---|
-| [DragonflyDB](/guides/dragonflydb) | DragonflyDB |
-| [DuckDB (Go 1.21)](/guides/duckdb-go1.21) | Go 1.21 / DuckDB |
-| [MariaDB](/guides/mariadb) | MariaDB |
-| [Memcached 1.6](/guides/memcached1.6) | Memcached 1.6 |
-| [MinIO](/guides/minio) | MinIO |
-| [MongoDB](/guides/mongodb) | MongoDB |
-| [PostgreSQL](/guides/postgres) | PostgreSQL |
-| [Redis 7.2](/guides/database-redis7.2) | Redis 7.2 |
+- [Elixir HTTP Server](/guides/httpserver-elixir1.16)
+- [Erlang HTTP Server](/guides/httpserver-erlang26.2)
 
-## Networking & infrastructure
+### Go
 
-| Guide | Technology |
-|---|---|
-| [Caddy 2.7 (Go 1.21)](/guides/caddy2.7-go1.21) | Caddy 2.7 |
-| [Grafana](/guides/grafana) | Grafana |
-| [HAProxy](/guides/haproxy) | HAProxy |
-| [nginx](/guides/nginx) | nginx |
-| [OpenTelemetry Collector](/guides/opentelemetry-collector) | OpenTelemetry |
-| [Skipper 0.18](/guides/skipper0.18) | Skipper 0.18 |
-| [Traefik](/guides/traefik) | Traefik |
-| [vsftpd](/guides/vsftpd) | vsftpd |
+- [Go HTTP Server](/guides/httpserver-go1.21)
 
-## AI & LLMs
+### Java
 
-| Guide | Technology |
-|---|---|
-| [MCP server (arXiv)](/guides/mcp-server-arxiv) | Node.js / MCP |
-| [MCP server (simple)](/guides/mcp-server-simple) | Node.js / MCP |
+- [Java HTTP Server](/guides/httpserver-java21)
+- [Spring Boot HTTP Server](/guides/httpserver-java17-springboot3.2.x)
 
-## Developer tools & utilities
+### JavaScript / TypeScript
 
-| Guide | Technology |
-|---|---|
-| [Chromium (Chrome DevTools Protocol)](/guides/chromium-cdp) | Chromium / CDP |
-| [code-server](/guides/code-server) | VS Code in the browser |
-| [Debian SSH](/guides/debian-ssh) | Debian / SSH |
-| [Imaginary](/guides/imaginary) | Imaginary |
-| [noVNC](/guides/vnc-browser) | Virtual Network Computing (VNC) |
+- [Node HTTP Server](/guides/httpserver-node25)
+- [Bun HTTP Server](/guides/httpserver-bun)
+- [Express HTTP Server](/guides/httpserver-expressjs4.18-node21)
+- [Puppeteer HTTP Server](/guides/httpserver-node-express-puppeteer)
+- [Prisma HTTP Server](/guides/httpserver-prisma-expressjs4.19-node18)
+- [Next.js HTTP Server](/guides/httpserver-node21-nextjs)
+- [Remix HTTP Server](/guides/httpserver-node21-remix)
+- [SolidJS HTTP Server](/guides/httpserver-node21-solid-start)
+- [SvelteKit HTTP Server](/guides/httpserver-node21-sveltekit)
+- [Vite HTTP Server](/guides/httpserver-nginx-vite-vanilla)
 
-## Learn more
+### Lua
 
-- **[`unikraft-cloud/examples` on GitHub](https://github.com/unikraft-cloud/examples)**: browse all example source files
-- [Tutorials](/tutorials/): deeper dives into specific Unikraft Cloud capabilities
-- [Use cases](/use-cases/): architecture patterns and production scenarios
-- [CLI Reference](/cli/): full `kraft` CLI documentation
+- [Lua HTTP Server](/guides/httpserver-lua5.1)
+
+### Perl
+
+- [Perl HTTP Server](/guides/httpserver-perl5.42)
+
+### PHP
+
+- [PHP HTTP Server](/guides/httpserver-php8.2)
+
+### Python
+
+- [Python HTTP Server](/guides/httpserver-python3.12)
+- [Django HTTP Server](/guides/httpserver-python3.12-django5.0)
+- [FastAPI HTTP Server](/guides/httpserver-python3.12-FastAPI-0.121.3)
+- [Flask HTTP Server](/guides/httpserver-python3.12-flask3.0)
+- [Flask and SQLite HTTP Server](/guides/httpserver-python3.12-flask3.0-sqlite)
+
+### Ruby
+
+- [Ruby HTTP Server](/guides/httpserver-ruby3.2)
+
+### Rust
+
+- [Rust HTTP Server](/guides/httpserver-rust1.91)
+- [Rust (Tokio) HTTP Server](/guides/httpserver-rust1.75-tokio)
+- [Rust (Rocket) HTTP Server](/guides/httpserver-rust1.81-rocket0.5)
+- [Rust (Actix Web) HTTP Server](/guides/httpserver-rust1.87-actix-web4)
+
+## Web Servers & Reverse Proxies
+
+Serve static content or route traffic with popular web server and proxy tools.
+
+- [Caddy](/guides/caddy2.7-go1.21)
+- [HAProxy](/guides/haproxy)
+- [Nginx](/guides/nginx)
+- [Skipper](/guides/skipper0.18)
+- [Traefik](/guides/traefik)
+
+## Databases & Caching
+
+Run databases and caching layers on Unikraft Cloud.
+
+- [DragonflyDB](/guides/dragonflydb)
+- [DuckDB with Go](/guides/duckdb-go1.21)
+- [MariaDB](/guides/mariadb)
+- [Memcached](/guides/memcached1.6)
+- [MongoDB](/guides/mongodb)
+- [PostgreSQL](/guides/postgres)
+
+## Storage & Media
+
+Host object storage and image processing services.
+
+- [MinIO](/guides/minio)
+- [Imaginary](/guides/imaginary)
+
+## WebAssembly Runtimes
+
+Run WebAssembly workloads on Unikraft Cloud.
+
+- [Spin (WAGI)](/guides/spin-wagi-http)
+- [Wazero](/guides/wazero-import-go)
+
+## AI & MCP Servers
+
+Deploy Model Context Protocol (MCP) servers and AI-enabled services.
+
+- [Simple MCP Server](/guides/mcp-server-simple)
+- [ArXiv MCP Server](/guides/mcp-server-arxiv)
+
+## Observability & Monitoring
+
+Collect metrics and visualise them with standard tools.
+
+- [Grafana](/guides/grafana)
+- [OpenTelemetry Collector](/guides/opentelemetry-collector)
+
+## Developer Tools & Remote Access
+
+Access remote development environments and file transfer services.
+
+- [Visual Studio Code Server](/guides/visual-studio-code-server)
+- [noVNC](/guides/novnc-browser)
+- [Debian SSH Server](/guides/debian-ssh)
+- [vsftpd](/guides/vsftpd)
+
+## Full-Stack Applications & CMS
+
+Deploy complete web applications and content management systems.
+
+- [WordPress](/guides/wordpress-all-in-one)
+- [Ruby on Rails](/guides/ruby3.2-rails)
+- [Hugo](/guides/hugo0.122)
+
+## Integration & Automation
+
+Examples for webhooks, background jobs, and creative applications.
+
+- [GitHub Webhook Receiver](/guides/github-webhook-node)
+- [Node AllKaraoke](/guides/node24-karaoke)
+
+{/* vale on */}

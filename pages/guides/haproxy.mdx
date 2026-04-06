@@ -1,28 +1,29 @@
 ---
-title: HAProxy
+title: "HAProxy"
 ---
+
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
-This guides shows you how to use [HAProxy](https://www.haproxy.org).
+This guide shows you how to use [HAProxy](https://www.haproxy.org).
 HAProxy is a free and open source software that provides a high availability load balancer and reverse proxy for TCP and HTTP-based apps that spreads requests across many servers.
 
 To run this example, follow these steps:
 
 1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
-   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/haproxy/` directory:
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/haproxy/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/haproxy/
 ```
 
-Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft login
@@ -37,19 +38,17 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
-
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/haproxy:latest
-unikraft run --metro=fra -p 443:8404/http+tls -m 256MiB my-org/haproxy:latest
+unikraft build . --output <my-org>/haproxy:latest
+unikraft run --metro=fra -p 443:8404/tls+http -m 256M <my-org>/haproxy:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -p 443:8404 -M 256 .
+kraft cloud deploy -p 443:8404/tls+http -M 256M .
 ```
 
 </CodeTabs>
@@ -59,17 +58,17 @@ The output shows the instance address and other details:
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
  [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: haproxy-rfx6z
- [90m├[0m[90m──────────[0m [90muuid[0m: 09bd081e-e082-4f73-8ba8-531123a39e2e
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://cool-paper-svzzr3qq.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: haproxy@sha256:32296847231c151506820ec4914c1d7416e5b7200caf07c1e40eaa3ea5033d21
- [90m├[0m[90m─────[0m [90mboot time[0m: 26.60 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 256 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: cool-paper-svzzr3qq
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: haproxy-rfx6z.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.5
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/bin/haproxy -f /etc/haproxy/haproxy.conf
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: haproxy-rfx6z
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 09bd081e-e082-4f73-8ba8-531123a39e2e
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://cool-paper-svzzr3qq.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: haproxy@sha256:32296847231c151506820ec4914c1d7416e5b7200caf07c1e40eaa3ea5033d21
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 26.60 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: cool-paper-svzzr3qq
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: haproxy-rfx6z.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.6.5
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/haproxy -f /etc/haproxy/haproxy.conf
 ```
 
 In this case, the instance name is `haproxy-rfx6z` and the address is `https://cool-paper-svzzr3qq.fra.unikraft.app`.
@@ -79,7 +78,7 @@ To test, point your browser at the `/stats` endpoint (for example, `https://cool
 
 You can list information about the instance by running:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances list
@@ -90,14 +89,15 @@ kraft cloud instance list
 ```
 
 </CodeTabs>
-```text
-NAME           FQDN                                  STATE    CREATED AT    IMAGE                               MEMORY   ARGS                               BOOT TIME
-haproxy-rfx6z  cool-paper-svzzr3qq.fra.unikraft.app  running  1 minute ago  haproxy@sha256:32296847231c1515...  256 MiB  /usr/bin/haproxy -f /etc/hapro...  26596us
+
+```ansi
+[1mNAME[0m           [1mFQDN[0m                                  [1mSTATE[0m    [1mSTATUS[0m        [1mIMAGE[0m                               [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                               [1mBOOT TIME[0m
+haproxy-rfx6z  cool-paper-svzzr3qq.fra.unikraft.app  [92mrunning[0m  1 minute ago  haproxy@sha256:32296847231c1515...  256 MiB  1      /usr/bin/haproxy -f /etc/hapro...  26596us
 ```
 
 When done, you can remove the instance:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances delete haproxy-rfx6z
@@ -116,38 +116,11 @@ To customize the app, update the files in the repository, listed below:
 * `Kraftfile`: the Unikraft Cloud specification, including command-line arguments
 * `Dockerfile`: In case you need to add files to your instance's rootfs
 
-<Tabs defaultValue="kraftfile">
-  <TabsContent  value="Kraftfile">
-    ```yaml
-spec: v0.6
-
-runtime: haproxy:latest
-
-rootfs: ./Dockerfile
-
-cmd: ["/usr/bin/haproxy", "-f", "/etc/haproxy/haproxy.conf"]
-    ```
-  </TabsContent>
-  <TabsContent  value="Dockerfile">
-```Docker
-FROM debian:bookworm AS build
-
-RUN set -xe; \
-    echo "Your code here";
-
-FROM scratch
-
-# Copy your files here
-# COPY --from=build / /
-```
-  </TabsContent>
-</Tabs>
-
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft --help
@@ -159,4 +132,4 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
+Or visit the [CLI Reference](/cli/unikraft) or the [legacy CLI Reference](/cli/kraft/overview).

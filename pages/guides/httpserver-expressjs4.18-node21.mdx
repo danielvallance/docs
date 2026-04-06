@@ -1,0 +1,175 @@
+---
+title: "Express HTTP Server"
+---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+[Express](https://expressjs.com/) is a fast, unopinionated, minimalist web framework for Node.js.
+
+To run this example, follow these steps:
+
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/httpserver-expressjs4.18-node21` directory:
+
+```bash
+git clone https://github.com/unikraft-cloud/examples
+cd examples/httpserver-expressjs4.18-node21/
+```
+
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+</CodeTabs>
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/httpserver-expressjs4.18-node21:latest
+unikraft run --metro=fra -p 443:3000/tls+http -m 512M <my-org>/httpserver-expressjs4.18-node21:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -p 443:3000/tls+http -M 512M .
+```
+
+</CodeTabs>
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-expressjs4.18-node21-lb3p2
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mdomain[0m: https://calm-ocean-r9x4mk7v.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: httpserver-expressjs4.18-node21@sha256:2e7d3f1a9c4b8e05d6f2a3b7c1e4d8f0a2b5c9e3d7f1a4b8
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 512 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: calm-ocean-r9x4mk7v
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: httpserver-expressjs4.18-node21-lb3p2.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.3.4
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/node /usr/src/server.js
+```
+
+In this case, the instance name is `httpserver-expressjs4.18-node21-lb3p2` and the address is `https://calm-ocean-r9x4mk7v.fra.unikraft.app`.
+They're different for each run.
+
+Use `curl` to query the Unikraft Cloud instance of the Express.js-based HTTP web server:
+
+```bash
+curl https://calm-ocean-r9x4mk7v.fra.unikraft.app
+```
+
+```text
+Hello, World!
+```
+
+You can list information about the instance by running:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
+kraft cloud instance list
+```
+
+</CodeTabs>
+
+```ansi
+[1mNAME[0m                                   [1mFQDN[0m                        [1mSTATE[0m    [1mSTATUS[0m       [1mIMAGE[0m                                        [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                              [1mBOOT TIME[0m
+httpserver-expressjs4.18-node21-lb3p2  calm-ocean-r9x4mk7v.fra...  [92mrunning[0m  since 3mins  httpserver-expressjs4.18-node21@sha256:2...  512 MiB  1      /usr/bin/node /usr/src/server.js  312.45 ms
+```
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete httpserver-expressjs4.18-node21-lb3p2
+```
+
+```bash title="kraft"
+kraft cloud instance remove httpserver-expressjs4.18-node21-lb3p2
+```
+
+</CodeTabs>
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification
+* `Dockerfile`: the Docker-specified app filesystem
+* `app/index.js`: the Express.js server implementation
+
+Lines in the `Kraftfile` have the following roles:
+
+* `spec: v0.6`: The current `Kraftfile` specification version is `0.6`.
+
+* `runtime: base-compat:latest`: The kernel to use.
+
+* `rootfs: ./Dockerfile`: Build the app root filesystem using the `Dockerfile`.
+
+* `cmd: ["/usr/bin/node", "/usr/src/server.js"]`: Use `/usr/bin/node /usr/src/server.js` as the starting command of the instance.
+
+Lines in the `Dockerfile` have the following roles:
+
+* `FROM node:21-alpine AS build`: Build the app using the Node.js 21 Alpine image.
+
+* `COPY ...`: Copy required files to the app filesystem: the `node` binary executable, libraries, configuration files, and the Express.js app.
+
+* `RUN npm install`: Install Express.js and other dependencies.
+
+The following options are available for customizing the app:
+
+* If you only update the implementation in the `app/index.js` source file, you don't need to make any other changes.
+
+* If you want to add extra files, you need to copy them into the filesystem using the `COPY` command in the `Dockerfile`.
+
+* If you want to replace `app/index.js` with a different source file, update the `cmd` line in the `Kraftfile` and replace `/usr/src/server.js` with the path to your new source file.
+
+* More extensive changes may require extending the `Dockerfile` ([see `Dockerfile` syntax reference](https://docs.docker.com/engine/reference/builder/)).
+
+## Learn more
+
+- [Express's Documentation](https://expressjs.com/en/5x/api.html)
+- [Unikraft Cloud's Documentation](https://unikraft.cloud/docs/)
+- [Building `Dockerfile` images with `Buildkit`](https://unikraft.org/guides/building-dockerfile-images-with-buildkit)
+
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
+kraft cloud --help
+```
+
+</CodeTabs>
+
+Or visit the [CLI Reference](/cli/unikraft) or the [legacy CLI Reference](/cli/kraft/overview).

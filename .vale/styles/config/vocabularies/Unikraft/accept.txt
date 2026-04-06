@@ -280,6 +280,7 @@ FTP
 (?i)vite
 (?i)VS Code
 (?i)vscode
+(?i)vsftpd
 (?i)Vue
 (?i)Vuex
 (?i)wagi

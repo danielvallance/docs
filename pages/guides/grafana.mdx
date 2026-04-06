@@ -1,6 +1,7 @@
 ---
-title: Grafana
+title: "Grafana"
 ---
+
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
@@ -9,19 +10,19 @@ This guide shows you how to use [Grafana](https://grafana.com), the open source 
 To run it, follow these steps:
 
 1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
-   Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
 
-1. Clone the [`examples` repository](https://github.com/kraftcloud/examples) and `cd` into the `examples/grafana/` directory:
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/grafana/` directory:
 
 ```bash
-git clone https://github.com/kraftcloud/examples
+git clone https://github.com/unikraft-cloud/examples
 cd examples/grafana/
 ```
 
-Make sure to log into Unikraft Cloud and pick a [metro](/metros#available) close to you.
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft login
@@ -36,19 +37,17 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
-
 When done, invoke the following command to deploy this app on Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft build . --output my-org/grafana:latest
-unikraft run --metro=fra -p 443:3000/http+tls -m 1024MiB my-org/grafana:latest
+unikraft build . --output <my-org>/grafana:latest
+unikraft run --metro=fra -p 443:3000/tls+http -m 2G <my-org>/grafana:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -p 443:3000 -M 1024 .
+kraft cloud deploy -p 443:3000/tls+http -M 2G .
 ```
 
 </CodeTabs>
@@ -58,17 +57,17 @@ The output shows the instance address and other details:
 ```ansi
 [90m[[0m[92m●[0m[90m][0m Deployed successfully!
  [90m│[0m
- [90m├[0m[90m──────────[0m [90mname[0m: grafana-sikrv
- [90m├[0m[90m──────────[0m [90muuid[0m: 1d8f0b36-39ff-45a2-8baa-664640c60885
- [90m├[0m[90m─────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────────[0m [90murl[0m: https://icy-sea-i6m5fwyk.fra.unikraft.app
- [90m├[0m[90m─────────[0m [90mimage[0m: grafana@sha256:484d6f98cdc321443188b8f2900035182dffdb45069f3cd087dcb6851ddff3bc
- [90m├[0m[90m─────[0m [90mboot time[0m: 502.65 ms
- [90m├[0m[90m────────[0m [90mmemory[0m: 1024 MiB
- [90m├[0m[90m───────[0m [90mservice[0m: dawn-water-4jlnvgpy
- [90m├[0m[90m──[0m [90mprivate fqdn[0m: grafana-mgby4.internal
- [90m├[0m[90m────[0m [90mprivate ip[0m: 172.16.6.6
- [90m└[0m[90m──────────[0m [90margs[0m: /usr/share/grafana/bin/grafana server -homepath /usr/share/grafana/
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: grafana-sikrv
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 1d8f0b36-39ff-45a2-8baa-664640c60885
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mrunning[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90murl[0m: https://icy-sea-i6m5fwyk.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: grafana@sha256:484d6f98cdc321443188b8f2900035182dffdb45069f3cd087dcb6851ddff3bc
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mboot time[0m: 502.65 ms
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 2048 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: dawn-water-4jlnvgpy
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: grafana-mgby4.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.6.6
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/share/grafana/bin/grafana server -homepath /usr/share/grafana/
 ```
 
 In this case, the instance name is `grafana-sikrv` and the address is `https://icy-sea-i6m5fwyk.fra.unikraft.app`.
@@ -79,7 +78,7 @@ The default account/password are `admin/admin` (the system will prompt you to ch
 
 You can list information about the instance by running:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances list
@@ -90,14 +89,15 @@ kraft cloud instance list
 ```
 
 </CodeTabs>
-```text
-NAME             FQDN                              STATE    CREATED AT      IMAGE                            MEMORY   ARGS                             BOOT TIME
-memcached-arkv7  weathered-smoke-hehsdinv.fra....  running  11 minutes ago  memcached@sha256:f53cdbce4...    256 MiB  /usr/bin/memcached -u root       19266us
+
+```ansi
+[1mNAME[0m           [1mFQDN[0m                               [1mSTATE[0m    [1mSTATUS[0m          [1mIMAGE[0m                        [1mMEMORY[0m    [1mVCPUS[0m  [1mARGS[0m                                      [1mBOOT TIME[0m
+grafana-sikrv  icy-sea-i6m5fwyk.fra.unikraft.app  [92mrunning[0m  11 minutes ago  grafana@sha256:484d6f98c...  2048 MiB  1      /usr/share/grafana/bin/grafana server...  502651us
 ```
 
 When done, you can remove the instance:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft instances delete grafana-sikrv
@@ -116,33 +116,6 @@ To customize the app, update the files in the repository, listed below:
 * `Kraftfile`: the Unikraft Cloud specification, including command-line arguments
 * `Dockerfile`: In case you need to add files to your instance's rootfs
 
-<Tabs defaultValue="kraftfile">
-  <TabsContent  value="Kraftfile">
-    ```yaml
-spec: v0.6
-
-runtime: grafana:latest
-
-rootfs: ./Dockerfile
-
-cmd: ["/usr/share/grafana/bin/grafana", "server", "-homepath", "/usr/share/grafana/"]
-    ```
-  </TabsContent>
-  <TabsContent  value="Dockerfile">
-```Dockerfile
-FROM debian:bookworm AS build
-
-RUN set -xe; \
-    echo "Your code here"
-
-FROM scratch
-
-# Your files here
-# COPY --from=build / /
-```
-  </TabsContent>
-</Tabs>
-
 The following options are available for customizing the app:
 
 * If you create any new source files, copy them into the app filesystem by using the `COPY` command in the `Dockerfile`.
@@ -156,7 +129,7 @@ The following options are available for customizing the app:
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
 
-<CodeTabs syncKey="cli-tool">
+<CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft --help
@@ -168,4 +141,4 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the legacy [CLI Reference](/docs/cli/kraft/overview).
+Or visit the [CLI Reference](/cli/unikraft) or the [legacy CLI Reference](/cli/kraft/overview).

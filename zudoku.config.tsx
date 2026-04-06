@@ -87,10 +87,10 @@ const config: ZudokuConfig = {
           items: [
             "/use-cases/headless-browsers",
             "/use-cases/mcp-servers",
-            "/use-cases/serverless-databases",
-            "/use-cases/remote-ides",
             "/use-cases/api-gateways",
+            "/use-cases/serverless-databases",
             "/use-cases/webhooks",
+            "/use-cases/remote-ides",
           ],
         },
         {
@@ -101,16 +101,16 @@ const config: ZudokuConfig = {
           items: [
             "/platform/metros",
             "/platform/instances",
+            "/platform/services",
             "/platform/domains",
             "/platform/certificates",
-            "/platform/services",
             "/platform/volumes",
             "/platform/images",
-            "/platform/troubleshooting",
-            "/platform/delete-locks",
             "/platform/quotas",
             "/platform/metrics",
             "/platform/tagging",
+            "/platform/delete-locks",
+            "/platform/troubleshooting",
           ],
         },
         {
@@ -130,58 +130,69 @@ const config: ZudokuConfig = {
       label: "Guides",
       icon: "graduation-cap",
       items: [
-        "/guides/overview",
-        "/guides/bun",
-        "/guides/caddy",
-        "/guides/cpp-boost",
-        "/guides/cpp",
-        "/guides/django",
-        "/guides/dotnet",
-        "/guides/dragonfly",
-        "/guides/duckdb",
-        "/guides/elixir",
-        "/guides/erlang",
-        "/guides/ferretdb",
-        "/guides/flask-sqlite",
-        "/guides/flask",
-        "/guides/go",
-        "/guides/grafana",
-        "/guides/haproxy",
-        "/guides/hugo",
-        "/guides/imaginary",
-        "/guides/java",
-        "/guides/llama2",
-        "/guides/lua",
-        "/guides/mariadb",
-        "/guides/memcached",
-        "/guides/minio",
-        "/guides/mongodb",
-        "/guides/nextjs",
-        "/guides/nginx",
-        "/guides/node",
-        "/guides/opentelemetry-collector",
-        "/guides/perl",
-        "/guides/php",
-        "/guides/postgres",
-        "/guides/prisma",
-        "/guides/puppeteer",
-        "/guides/python",
-        "/guides/rails",
-        "/guides/redis",
-        "/guides/remix",
-        "/guides/ruby",
-        "/guides/rust-rocket",
-        "/guides/rust-tokio",
-        "/guides/rust-actix",
-        "/guides/skipper",
-        "/guides/solidjs",
-        "/guides/spin",
-        "/guides/springboot",
-        "/guides/sveltekit",
-        "/guides/traefik",
-        "/guides/tyk",
-        "/guides/wazero",
-        "/guides/wordpress",
+        //TODO: Please keep this list sorted by titles, not filenames !!
+        "/guides/overview", // Guides Overview
+        "/guides/httpserver-dotnet10.0", // .NET HTTP Server
+        "/guides/mcp-server-arxiv", // ArXiv MCP Server
+        "/guides/httpserver-bun", // Bun HTTP Server
+        "/guides/httpserver-gcc13.2", // C HTTP Server
+        "/guides/httpserver-boost1.74-g++13.2", // C++ Boost HTTP Server
+        "/guides/httpserver-g++13.2", // C++ HTTP Server
+        "/guides/caddy2.7-go1.21", // Caddy
+        "/guides/debian-ssh", // Debian SSH server
+        "/guides/httpserver-python3.12-django5.0", // Django HTTP Server
+        "/guides/dragonflydb", // DragonflyDB
+        "/guides/duckdb-go1.21", // DuckDB with Go
+        "/guides/httpserver-elixir1.16", // Elixir HTTP Server
+        "/guides/httpserver-erlang26.2", // Erlang HTTP Server
+        "/guides/httpserver-expressjs4.18-node21", // Express HTTP Server
+        "/guides/httpserver-python3.12-FastAPI-0.121.3", // FastAPI HTTP Server
+        "/guides/httpserver-python3.12-flask3.0-sqlite", // Flask and SQLite HTTP Server
+        "/guides/httpserver-python3.12-flask3.0", // Flask HTTP Server
+        "/guides/github-webhook-node", // GitHub Webhook receiver
+        "/guides/httpserver-go1.21", // Go HTTP Server
+        "/guides/grafana", // Grafana
+        "/guides/haproxy", // HAProxy
+        "/guides/hugo0.122", // Hugo
+        "/guides/imaginary", // Imaginary
+        "/guides/httpserver-java21", // Java HTTP Server
+        "/guides/httpserver-lua5.1", // Lua HTTP Server
+        "/guides/mariadb", // MariaDB
+        "/guides/memcached1.6", // Memcached
+        "/guides/minio", // Minio
+        "/guides/mongodb", // MongoDB
+        "/guides/httpserver-node21-nextjs", // Next.js HTTP Server
+        "/guides/nginx", // Nginx
+        "/guides/node24-karaoke", // Node AllKaraoke
+        "/guides/httpserver-node25", // Node HTTP Server
+        "/guides/novnc-browser", // noVNC
+        "/guides/opentelemetry-collector", // OpenTelemetry Collector
+        "/guides/httpserver-perl5.42", // Perl HTTP Server
+        "/guides/httpserver-php8.2", // PHP HTTP Server
+        "/guides/postgres", // PostgreSQL
+        "/guides/httpserver-prisma-expressjs4.19-node18", // Prisma HTTP Server
+        "/guides/httpserver-node-express-puppeteer", // Puppeteer HTTP Server
+        "/guides/httpserver-python3.12", // Python HTTP Server
+        "/guides/httpserver-node21-remix", // Remix HTTP Server
+        "/guides/httpserver-ruby3.2", // Ruby HTTP Server
+        "/guides/ruby3.2-rails", // Ruby on Rails
+        "/guides/httpserver-rust1.87-actix-web4", // Rust (Actix Web) HTTP Server
+        "/guides/httpserver-rust1.81-rocket0.5", // Rust (Rocket) HTTP Server
+        "/guides/httpserver-rust1.75-tokio", // Rust (Tokio) HTTP Server
+        "/guides/httpserver-rust1.91", // Rust HTTP Server
+        "/guides/mcp-server-simple", // Simple MCP Server
+        "/guides/skipper0.18", // Skipper
+        "/guides/httpserver-node21-solid-start", // SolidJS HTTP Server
+        "/guides/spin-wagi-http", // Spin
+        "/guides/httpserver-java17-springboot3.2.x", // Spring Boot HTTP Server
+        "/guides/httpserver-c-debug", // SSH and HTTP Server with C and Debugging Tools
+        "/guides/httpserver-node21-sveltekit", // SvelteKit HTTP Server
+        "/guides/traefik", // Traefik
+        "/guides/visual-studio-code-server", // Visual Studio Code Server
+        "/guides/httpserver-nginx-vite-vanilla", // Vite HTTP Server
+        "/guides/vsftpd", // vsftpd
+        "/guides/wazero-import-go", // Wazero
+        "/guides/wordpress-all-in-one", // Wordpress
       ]
     },
     {
@@ -189,13 +200,13 @@ const config: ZudokuConfig = {
       label: "Tutorials",
       icon: "book",
       items: [
-        "/tutorials/environment-variables",
         "/tutorials/docker-to-ukc",
-        "/tutorials/instance-metrics",
+        "/tutorials/environment-variables",
         "/tutorials/rootfs-formats",
         "/tutorials/rootfs-compression",
         "/tutorials/rootfs-volumes-roms",
         "/tutorials/scale-to-zero-triggers",
+        "/tutorials/instance-metrics",
         "/tutorials/network-communication"
       ]
     },

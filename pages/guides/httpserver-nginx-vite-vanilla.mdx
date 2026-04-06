@@ -1,0 +1,188 @@
+---
+title: "Vite HTTP Server"
+---
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
+
+This example demonstrates how to run a [Vite](https://vite.dev) project targeting production on Unikraft Cloud.
+The deployment doesn't perform any server-side rendering and instead serves the resulting artifacts statically (via `npm run build`) using [`nginx`](https://github.com/unikraft-cloud/examples/nginx).
+To use Vite in server-side rendering (SSR) mode or via the `dev` subcommand on a NodeJS runtime, please see the [`httpserver-node-vite-vanilla`](https://github.com/unikraft-cloud/examples/httpserver-node-vite-vanilla) sibling project.
+
+To run this example, follow these steps:
+
+1. Install the CLI and a container runtime engine, for example [Docker](https://docs.docker.com/engine/install/).
+   Use the [unikraft CLI](/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+
+2. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/httpserver-nginx-vite-vanilla` directory:
+
+```bash
+git clone https://github.com/unikraft-cloud/examples
+cd examples/httpserver-nginx-vite-vanilla/
+```
+
+Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
+This guide uses `fra` (Frankfurt, 🇩🇪):
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft login
+```
+
+```bash title="kraft"
+# Set Unikraft Cloud access token
+export UKC_TOKEN=token
+# Set metro to Frankfurt, DE
+export UKC_METRO=fra
+```
+
+</CodeTabs>
+
+When done, invoke the following command to deploy this app on Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft build . --output <my-org>/httpserver-nginx-vite-vanilla:latest
+unikraft run --metro=fra -p 443:8080/tls+http -m 256M <my-org>/httpserver-nginx-vite-vanilla:latest
+```
+
+```bash title="kraft"
+kraft cloud deploy -p 443:8080/tls+http -M 256M .
+```
+
+</CodeTabs>
+
+The output shows the instance address and other details:
+
+```ansi
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-nginx-vite-vanilla-2rk6p
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: d4e5f6a7-b8c9-0123-defa-234567890123
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mdomain[0m: https://swift-lake-m4n8vqzp.fra.unikraft.app
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: httpserver-nginx-vite-vanilla@sha256:9c5f2d8b4e7a1c3f6d9b2e5a8c1f4d7a0b3e6c9f2d5a8b1e4c7f0d3a6b9c2
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: swift-lake-m4n8vqzp
+ [90m├[0m[90m─[0m[90m─[0m [90mprivate fqdn[0m: httpserver-nginx-vite-vanilla-2rk6p.internal
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 172.16.3.7
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90margs[0m: /usr/bin/nginx -c /etc/nginx/nginx.conf
+```
+
+In this case, the instance name is `httpserver-nginx-vite-vanilla-2rk6p` and the address is `https://swift-lake-m4n8vqzp.fra.unikraft.app`.
+They're different for each run.
+
+Use `curl` to query the Unikraft Cloud instance of the Vite instance:
+
+```bash
+curl https://swift-lake-m4n8vqzp.fra.unikraft.app
+```
+
+```text
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    ...
+  </head>
+  ...
+</html>
+```
+
+You can list information about the instance by running:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances list
+```
+
+```bash title="kraft"
+kraft cloud instance list
+```
+
+</CodeTabs>
+
+```ansi
+[1mNAME[0m                                 [1mFQDN[0m                                  [1mSTATE[0m    [1mSTATUS[0m       [1mIMAGE[0m                                        [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m                                     [1mBOOT TIME[0m
+httpserver-nginx-vite-vanilla-2rk6p  swift-lake-m4n8vqzp.fra.unikraft.app  [92mrunning[0m  since 3mins  httpserver-nginx-vite-vanilla@sha256:9c5...  256 MiB  1      /usr/bin/nginx -c /etc/nginx/nginx.conf  198.62 ms
+```
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete httpserver-nginx-vite-vanilla-2rk6p
+```
+
+```bash title="kraft"
+kraft cloud instance remove httpserver-nginx-vite-vanilla-2rk6p
+```
+
+</CodeTabs>
+
+## Customize your app
+
+To customize the app, update the files in the repository, listed below:
+
+* `Kraftfile`: the Unikraft Cloud specification
+* `Dockerfile`: the Docker-specified app filesystem
+* `src/`: the Vite app source files
+
+Lines in the `Kraftfile` have the following roles:
+
+* `spec: v0.6`: The current `Kraftfile` specification version is `0.6`.
+
+* `runtime: nginx:latest`: The nginx kernel to use.
+
+* `rootfs: ./Dockerfile`: Build the app root filesystem using the `Dockerfile`.
+
+* `cmd: ["/usr/bin/nginx", "-c", "/etc/nginx/nginx.conf"]`: Use nginx to serve the built static files as the starting command of the instance.
+
+Lines in the `Dockerfile` have the following roles:
+
+* `FROM node:23 AS build`: Build the Vite project using the Node.js 23 image.
+
+* `RUN npm ci; npm run build`: Install dependencies and build the Vite project for production.
+
+* `FROM scratch`: Build the runtime filesystem from a minimal base image.
+
+* `COPY --from=build /app/dist /wwwroot`: nginx serves the built Vite artifacts from `/wwwroot`.
+
+The following options are available for customizing the app:
+
+* If you only update the source files in `src/`, you don't need to make any other changes.
+
+* If you want to add extra files, you need to copy them into the filesystem using the `COPY` command in the `Dockerfile`.
+
+* More extensive changes may require extending the `Dockerfile` ([see `Dockerfile` syntax reference](https://docs.docker.com/engine/reference/builder/)).
+
+## Learn more
+
+- [Nginx's Documentation](https://nginx.org/en/docs)
+- [Vite's Documentation](https://vite.dev/guide/)
+- [Unikraft Cloud's Documentation](https://unikraft.cloud/docs/)
+- [Building `Dockerfile` images with `Buildkit`](https://unikraft.org/guides/building-dockerfile-images-with-buildkit)
+
+
+Use the `--help` option for detailed information on using Unikraft Cloud:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft --help
+```
+
+```bash title="kraft"
+kraft cloud --help
+```
+
+</CodeTabs>
+
+Or visit the [CLI Reference](/cli/unikraft) or the [legacy CLI Reference](/cli/kraft/overview).
