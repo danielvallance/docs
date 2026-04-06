@@ -87,10 +87,10 @@ const config: ZudokuConfig = {
           items: [
             "/use-cases/headless-browsers",
             "/use-cases/mcp-servers",
-            "/use-cases/serverless-databases",
-            "/use-cases/remote-ides",
             "/use-cases/api-gateways",
+            "/use-cases/serverless-databases",
             "/use-cases/webhooks",
+            "/use-cases/remote-ides",
           ],
         },
         {
@@ -101,16 +101,16 @@ const config: ZudokuConfig = {
           items: [
             "/platform/metros",
             "/platform/instances",
+            "/platform/services",
             "/platform/domains",
             "/platform/certificates",
-            "/platform/services",
             "/platform/volumes",
             "/platform/images",
-            "/platform/troubleshooting",
-            "/platform/delete-locks",
             "/platform/quotas",
             "/platform/metrics",
             "/platform/tagging",
+            "/platform/delete-locks",
+            "/platform/troubleshooting",
           ],
         },
         {
@@ -200,13 +200,13 @@ const config: ZudokuConfig = {
       label: "Tutorials",
       icon: "book",
       items: [
-        "/tutorials/environment-variables",
         "/tutorials/docker-to-ukc",
-        "/tutorials/instance-metrics",
+        "/tutorials/environment-variables",
         "/tutorials/rootfs-formats",
         "/tutorials/rootfs-compression",
         "/tutorials/rootfs-volumes-roms",
         "/tutorials/scale-to-zero-triggers",
+        "/tutorials/instance-metrics",
         "/tutorials/network-communication"
       ]
     },
