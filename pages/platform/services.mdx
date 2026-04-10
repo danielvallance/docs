@@ -56,7 +56,7 @@ For example, from the [Go web server guide](/guides/go):
 git clone https://github.com/unikraft-cloud/examples
 cd examples/http-go1.21/
 unikraft build . --output <my-org>/http-go121:latest
-unikraft run --metro=fra --service my-service -m 256MiB <my-org>/http-go121:latest
+unikraft run --metro=fra --service my-service -m 256MiB --image=<my-org>/http-go121:latest
 ```
 
 ```bash title="kraft"

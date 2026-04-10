@@ -144,7 +144,7 @@ Start the Flask web server, create a
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/http-python312-flask30:latest
-unikraft run --metro=fra -m 512MiB -p 443:8080/http+tls -v my-volume:/mnt <my-org>/http-python312-flask30:latest
+unikraft run --metro=fra -m 512MiB -p 443:8080/http+tls -v my-volume:/mnt --image=<my-org>/http-python312-flask30:latest
 ```
 
 ```bash title="kraft"
@@ -240,7 +240,7 @@ Now start another instance and, like before, mount the same volume:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/http-python312-flask30:latest
-unikraft run --metro=fra -m 512MiB -p 443:8080/http+tls -v my-volume:/mnt <my-org>/http-python312-flask30:latest
+unikraft run --metro=fra -m 512MiB -p 443:8080/http+tls -v my-volume:/mnt --image=<my-org>/http-python312-flask30:latest
 ```
 
 ```bash title="kraft"

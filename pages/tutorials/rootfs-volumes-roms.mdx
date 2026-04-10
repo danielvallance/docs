@@ -93,7 +93,7 @@ Finally, when you deploy an instance you can attach the volume to it:
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft run --metro=fra -m 512MiB -p 443:8080/http+tls -v my-volume:/mnt my-app:latest
+unikraft run --metro=fra -m 512MiB -p 443:8080/http+tls -v my-volume:/mnt --image=my-app:latest
 ```
 
 ```bash title="kraft"

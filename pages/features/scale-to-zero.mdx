@@ -217,7 +217,7 @@ Since Unikraft Cloud has scale-to-zero on by default, all you need to do is to s
 git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
 unikraft build . --output <my-org>/nginx:latest
-unikraft run --metro=fra -p 443:8080/http+tls -m 128MiB <my-org>/nginx:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 128MiB --image=<my-org>/nginx:latest
 ```
 
 ```bash title="kraft"

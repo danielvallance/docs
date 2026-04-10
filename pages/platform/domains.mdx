@@ -89,7 +89,7 @@ Unikraft Cloud does this through the domain flag:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/nginx:latest
-unikraft run --metro=fra -p 443:8080/http+tls --domain mydomain.com <my-org>/nginx:latest
+unikraft run --metro=fra -p 443:8080/http+tls --domain mydomain.com --image=<my-org>/nginx:latest
 ```
 
 ```bash title="kraft"
