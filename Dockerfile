@@ -43,8 +43,7 @@ COPY . .
 
 # Grab the latest OpenAPI spec based on the desired channel.
 ARG DOCS_CHANNEL=prod-staging
-RUN set -xe; \
-    wget -O apis/platform.yaml https://raw.githubusercontent.com/unikraft-cloud/openapi/refs/heads/${DOCS_CHANNEL}/platform.yaml;
+ADD https://raw.githubusercontent.com/unikraft-cloud/openapi/refs/heads/${DOCS_CHANNEL}/platform.yaml apis/platform.yaml
 
 # Kraft (old CLI) docs -> /cli/kraft/
 COPY --from=build-kraft-docs /kraftkit/docs/kraft/cloud /docs/pages/cli/kraft
