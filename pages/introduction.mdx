@@ -29,32 +29,35 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
    ```
 
    ```bash title="Debian/Ubuntu"
+   # Update and install dependencies
+   sudo apt update
+   sudo apt install ca-certificates curl
+
+   # Download and add the GPG key
+   sudo install -d -m 0755 /etc/apt/keyrings
+
+   sudo curl -fsSL \
+     -o /etc/apt/keyrings/unikraft-cli.gpg \
+     https://pkg.unikraft.com/debian/cli-apt/keys/cli-apt.gpg
+
+   sudo tee /etc/apt/sources.list.d/unikraft-cli.sources <<EOF
+   Types: deb
+   URIs: https://pkg.unikraft.com/debian/cli-apt/
+   Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+   Components: stable
+   Signed-By: /etc/apt/keyrings/unikraft-cli.gpg
+   EOF
+
+   # Update and install
    sudo apt-get update
-   sudo apt-get install \
-       ca-certificates \
-       curl \
-       gnupg \
-       lsb-release
-   
-   # Add Unikraft's official GPG key
-   sudo mkdir -p /etc/apt/keyrings
-   curl -fsSL https://deb.pkg.unikraft.com/gpg.key | \
-     sudo gpg --dearmor -o /etc/apt/keyrings/unikraft.gpg
-   
-   # Set up the APT repository
-   echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/unikraft.gpg] https://deb.pkg.unikraft.com /" | \
-     sudo tee /etc/apt/sources.list.d/unikraft.list > /dev/null
-   
-   # Install unikraft CLI
-   sudo apt-get update
-   sudo apt-get install unikraft
+   sudo apt-get install unikraft-cli
    ```
 
    ```bash title="Fedora/RHEL/Rocky/Alma"
    # Add the Unikraft CLI repository
    sudo tee /etc/yum.repos.d/unikraft-cli-rpm.repo <<EOF
-   [unikraft]
-   name=unikraft
+   [unikraft-cli]
+   name=unikraft-cli
    baseurl=https://pkg.unikraft.com/rpm/cli-rpm/
    gpgcheck=0
    enabled=1
