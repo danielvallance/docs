@@ -6,7 +6,7 @@ inputs:
   version:
     description: KraftKit version to install (use latest to auto-detect).
     required: false
-    default: 0.12.6
+    default: latest
 
 runs:
   using: composite
