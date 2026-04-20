@@ -123,39 +123,50 @@ def rewrite_urls(text: str) -> str:
 def convert_code_tabs(text: str) -> str:
     """Group adjacent code blocks containing title="..." inside a <CodeTabs> wrapper."""
     block_pattern = re.compile(r"(```([^\n]*?title=\"([^\"]+)\"[^\n]*)\n.*?\n```)", flags=re.S)
-    
+
     matches = list(block_pattern.finditer(text))
     if not matches:
         return text
-        
+
     groups = []
     current_group = [matches[0]]
-    
+
     for i in range(1, len(matches)):
         prev = current_group[-1]
         curr = matches[i]
-        
+
         # Check if only whitespace or the word "or" exists between blocks
         between = text[prev.end():curr.start()].strip().lower()
-        if between in ["", "or"]:
+
+        prev_info = prev.group(2).strip().lower()
+        curr_info = curr.group(2).strip().lower()
+
+        # "or" between an ansi (output) block and a bash (command) block marks
+        # the boundary between two CLI alternatives (e.g. listing cmd+output for
+        # unikraft followed by cmd+output for kraft). Break the group here so
+        # each CLI's command+output pair ends up in its own <CodeTabs>.
+        if between == "or" and prev_info.startswith("ansi") and curr_info.startswith("bash"):
+            groups.append(current_group)
+            current_group = [curr]
+        elif between in ["", "or"]:
             current_group.append(curr)
         else:
             groups.append(current_group)
             current_group = [curr]
     groups.append(current_group)
-    
+
     out = text
     for group in reversed(groups):
         if len(group) > 1:
             blocks = [m.group(1) for m in group]
-            
+
             # Reconstruct the matched area with <CodeTabs> and syncKey
             tabs_str = '<CodeTabs syncKey="cli">\n\n' + "\n\n".join(blocks) + "\n\n</CodeTabs>"
-            
+
             start = group[0].start()
             end = group[-1].end()
             out = out[:start] + tabs_str + out[end:]
-            
+
     return out
 
 
