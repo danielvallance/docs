@@ -447,8 +447,18 @@ You can mix inline ROMs and image-based ROMs in the same request:
 
 ### Limits
 
-The platform enforces limits on inline ROM size and file count.
-Contact your administrator for the configured limits on your deployment.
+The platform enforces the following default limits on inline ROMs:
+
+| Limit | Default |
+|-------|---------|
+| ROMs per instance | 8 (inline and image-based combined) |
+| Files per inline ROM | 16 |
+| Total size per inline ROM | 1 MB (across all files) |
+| Max API request body | 8 MB |
+
+No per-file size limit exists.
+The total size limit applies to the combined size of all files in a single inline ROM.
+Since inline ROM data is base64-encoded in the JSON request body, the 8 MB request body limit is the practical upper bound on total data per API call.
 
 ## Automounting
 
