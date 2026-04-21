@@ -5,6 +5,11 @@ title: "Guides Overview"
 This page lists all available guides for deploying applications and services on Unikraft Cloud, grouped by category.
 These guides mimic the [examples](https://github.com/unikraft-cloud/examples) repository, and are constantly updated with new content.
 
+:::note
+Unikraft Cloud can run any workload—define it in a Dockerfile and it will run it.
+These guides are here to make that journey as fast as possible for you.
+:::
+
 {/* vale off */}
 
 ## HTTP Servers
@@ -14,8 +19,8 @@ Deploy HTTP servers written in your language of choice on Unikraft Cloud.
 ### C / C++
 
 - [C HTTP Server](/guides/httpserver-gcc13.2)
-- [C++ HTTP Server](/guides/httpserver-g++13.2)
-- [C++ Boost HTTP Server](/guides/httpserver-boost1.74-g++13.2)
+- [C++ HTTP Server](/guides/httpserver-gpp13.2)
+- [C++ Boost HTTP Server](/guides/httpserver-boost1.74-gpp13.2)
 - [SSH and HTTP Server with C and Debugging Tools](/guides/httpserver-c-debug)
 
 ### .NET
@@ -34,7 +39,8 @@ Deploy HTTP servers written in your language of choice on Unikraft Cloud.
 ### Java
 
 - [Java HTTP Server](/guides/httpserver-java21)
-- [Spring Boot HTTP Server](/guides/httpserver-java17-springboot3.2.x)
+- [Spring Boot HTTP Server](/guides/httpserver-java17-springboot3.5.x)
+- [Spring Petclinic](/guides/httpserver-java17-spring-petclinic)
 
 ### JavaScript / TypeScript
 
@@ -47,7 +53,9 @@ Deploy HTTP servers written in your language of choice on Unikraft Cloud.
 - [Remix HTTP Server](/guides/httpserver-node21-remix)
 - [SolidJS HTTP Server](/guides/httpserver-node21-solid-start)
 - [SvelteKit HTTP Server](/guides/httpserver-node21-sveltekit)
-- [Vite HTTP Server](/guides/httpserver-nginx-vite-vanilla)
+- [Vite HTTP Server (Nginx)](/guides/httpserver-nginx-vite-vanilla)
+- [Vite HTTP Server (Node)](/guides/httpserver-node-vite-vanilla)
+- [Vite SSR HTTP Server (Node)](/guides/httpserver-node-vite-ssr-vanilla)
 
 ### Lua
 
@@ -65,7 +73,7 @@ Deploy HTTP servers written in your language of choice on Unikraft Cloud.
 
 - [Python HTTP Server](/guides/httpserver-python3.12)
 - [Django HTTP Server](/guides/httpserver-python3.12-django5.0)
-- [FastAPI HTTP Server](/guides/httpserver-python3.12-FastAPI-0.121.3)
+- [FastAPI HTTP Server](/guides/httpserver-python3.12-fastapi-0.121.3)
 - [Flask HTTP Server](/guides/httpserver-python3.12-flask3.0)
 - [Flask and SQLite HTTP Server](/guides/httpserver-python3.12-flask3.0-sqlite)
 
@@ -76,17 +84,18 @@ Deploy HTTP servers written in your language of choice on Unikraft Cloud.
 ### Rust
 
 - [Rust HTTP Server](/guides/httpserver-rust1.91)
-- [Rust (Tokio) HTTP Server](/guides/httpserver-rust1.75-tokio)
-- [Rust (Rocket) HTTP Server](/guides/httpserver-rust1.81-rocket0.5)
 - [Rust (Actix Web) HTTP Server](/guides/httpserver-rust1.87-actix-web4)
+- [Rust (Leptos + Trunk) HTTP Server](/guides/httpserver-rust-trunkrs-leptos)
+- [Rust (Rocket) HTTP Server](/guides/httpserver-rust1.81-rocket0.5)
+- [Rust (Tokio) HTTP Server](/guides/httpserver-rust1.75-tokio)
 
 ## Web Servers & Reverse Proxies
 
 Serve static content or route traffic with popular web server and proxy tools.
 
+- [Nginx](/guides/nginx)
 - [Caddy](/guides/caddy2.7-go1.21)
 - [HAProxy](/guides/haproxy)
-- [Nginx](/guides/nginx)
 - [Skipper](/guides/skipper0.18)
 - [Traefik](/guides/traefik)
 
@@ -100,6 +109,7 @@ Run databases and caching layers on Unikraft Cloud.
 - [Memcached](/guides/memcached1.6)
 - [MongoDB](/guides/mongodb)
 - [PostgreSQL](/guides/postgres)
+- [Redis](/guides/redis7.2)
 
 ## Storage & Media
 
@@ -112,7 +122,7 @@ Host object storage and image processing services.
 
 Run WebAssembly workloads on Unikraft Cloud.
 
-- [Spin (WAGI)](/guides/spin-wagi-http)
+- [Spin](/guides/spin-wagi-http)
 - [Wazero](/guides/wazero-import-go)
 
 ## AI & MCP Servers
@@ -146,11 +156,28 @@ Deploy complete web applications and content management systems.
 - [Ruby on Rails](/guides/ruby3.2-rails)
 - [Hugo](/guides/hugo0.122)
 
+## Browser Automation
+
+Run browser automation and end-to-end testing workloads on Unikraft Cloud.
+
+- [Playwright Chromium (Node)](/guides/node-playwright-chromium)
+- [Playwright Firefox (Node)](/guides/node-playwright-firefox)
+- [Playwright WebKit (Node)](/guides/node-playwright-webkit)
+- [Playwright Chromium (Python)](/guides/python-playwright-chromium)
+
+## Real-time & Gaming
+
+Multiplayer and WebSocket-based applications.
+
+- [Node WebSocket Server](/guides/node21-websocket)
+- [Agar.io Clone](/guides/node18-agario)
+- [Wings.io Clone](/guides/node18-wingsio)
+- [Node AllKaraoke](/guides/node24-karaoke)
+
 ## Integration & Automation
 
-Examples for webhooks, background jobs, and creative applications.
+Examples for webhooks, background jobs, and automation.
 
 - [GitHub Webhook Receiver](/guides/github-webhook-node)
-- [Node AllKaraoke](/guides/node24-karaoke)
 
 {/* vale on */}

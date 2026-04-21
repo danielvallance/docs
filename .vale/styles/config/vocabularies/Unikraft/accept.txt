@@ -236,6 +236,7 @@ FTP
 (?i)SSD(s)?
 (?i)ssh
 (?i)ssl
+(?i)SSR
 (?i)stderr
 (?i)stdin
 (?i)stdout

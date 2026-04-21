@@ -45,6 +45,7 @@ sync:
 		rm -rf "$$EXAMPLES_LOCAL"; \
 		git clone --depth 1 --branch $(EXAMPLES_BRANCH) https://github.com/$(EXAMPLES_REPO) "$$EXAMPLES_LOCAL"; \
 	fi; \
+	updated_guides=""; \
 	for example in $$(find "$$EXAMPLES_LOCAL" -mindepth 1 -maxdepth 1 -type d -not -name '.*'); do \
 		name=$$(basename "$$example"); \
 		readme="$$example/README.md"; \
@@ -54,9 +55,18 @@ sync:
 				guide="$(GUIDES_DIR)/$$name.mdx" ;\
 				echo "  📄 $$name -> $$(basename $$guide)" ;\
 				$(WORKDIR)/scripts/transform_readme.py "$$readme" "$$guide" "$$name" ;\
+				updated_guides="$$updated_guides $$name.mdx" ;\
 			else \
 				echo "⏭ Skipping $$name (metro line not present)" ;\
 			fi ;\
+		fi; \
+	done; \
+	for guide in $$(find "$(GUIDES_DIR)" -maxdepth 1 -name '*.mdx' -type f); do \
+		gname=$$(basename "$$guide"); \
+		if [ "$$gname" = "overview.mdx" ]; then continue; fi; \
+		if ! echo "$$updated_guides" | grep -qw "$$gname"; then \
+			echo "  🗑 Removing stale guide: $$gname"; \
+			rm -f "$$guide"; \
 		fi; \
 	done
 

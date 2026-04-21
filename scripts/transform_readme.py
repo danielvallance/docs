@@ -128,8 +128,11 @@ def convert_code_tabs(text: str) -> str:
     if not matches:
         return text
 
-    groups = []
+    groups: list[list] = []
+    # Separator that caused the split *before* groups[i]; None for the first group.
+    group_separators: list[str | None] = []
     current_group = [matches[0]]
+    current_sep: str | None = None
 
     for i in range(1, len(matches)):
         prev = current_group[-1]
@@ -144,28 +147,69 @@ def convert_code_tabs(text: str) -> str:
         # "or" between an ansi (output) block and a bash (command) block marks
         # the boundary between two CLI alternatives (e.g. listing cmd+output for
         # unikraft followed by cmd+output for kraft). Break the group here so
-        # each CLI's command+output pair ends up in its own <CodeTabs>.
+        # the two groups can later be interleaved into per-position <CodeTabs>.
         if between == "or" and prev_info.startswith("ansi") and curr_info.startswith("bash"):
             groups.append(current_group)
+            group_separators.append(current_sep)
+            current_sep = between
             current_group = [curr]
         elif between in ["", "or"]:
             current_group.append(curr)
         else:
             groups.append(current_group)
+            group_separators.append(current_sep)
+            current_sep = between
             current_group = [curr]
     groups.append(current_group)
+    group_separators.append(current_sep)
+
+    # Build a list of (start, end, replacement) spans to apply to the text.
+    # When two consecutive equal-length groups were split by "or" (cmd+output
+    # pattern), zip them positionally so that:
+    #   [bash:A, ansi:A] "or" [bash:B, ansi:B]
+    # becomes:
+    #   <CodeTabs>(bash:A, bash:B)</CodeTabs>
+    #   <CodeTabs>(ansi:A, ansi:B)</CodeTabs>
+    replacements: list[tuple[int, int, str]] = []
+    i = 0
+    while i < len(groups):
+        if (
+            i + 1 < len(groups)
+            and group_separators[i + 1] == "or"
+            and len(groups[i]) == len(groups[i + 1])
+            and len(groups[i]) > 1
+        ):
+            grp_a = groups[i]
+            grp_b = groups[i + 1]
+            parts = []
+            for j in range(len(grp_a)):
+                blocks = sorted(
+                    [grp_a[j].group(1), grp_b[j].group(1)],
+                    key=lambda b: (0 if 'title="unikraft"' in b else 1),
+                )
+                parts.append(
+                    '<CodeTabs syncKey="cli">\n\n' + "\n\n".join(blocks) + "\n\n</CodeTabs>"
+                )
+            replacement = "\n\n".join(parts)
+            # Replace the entire span covering both groups (including the "or" between them)
+            start = grp_a[0].start()
+            end = grp_b[-1].end()
+            replacements.append((start, end, replacement))
+            i += 2
+        else:
+            group = groups[i]
+            if len(group) > 1:
+                blocks = sorted(
+                    [m.group(1) for m in group],
+                    key=lambda b: (0 if 'title="unikraft"' in b else 1),
+                )
+                tabs_str = '<CodeTabs syncKey="cli">\n\n' + "\n\n".join(blocks) + "\n\n</CodeTabs>"
+                replacements.append((group[0].start(), group[-1].end(), tabs_str))
+            i += 1
 
     out = text
-    for group in reversed(groups):
-        if len(group) > 1:
-            blocks = [m.group(1) for m in group]
-
-            # Reconstruct the matched area with <CodeTabs> and syncKey
-            tabs_str = '<CodeTabs syncKey="cli">\n\n' + "\n\n".join(blocks) + "\n\n</CodeTabs>"
-
-            start = group[0].start()
-            end = group[-1].end()
-            out = out[:start] + tabs_str + out[end:]
+    for start, end, replacement in reversed(replacements):
+        out = out[:start] + replacement + out[end:]
 
     return out
 
@@ -235,9 +279,11 @@ def color_deployed_block(text: str) -> str:
         if f'{ANSI_DARK_GRAY}│{ANSI_RESET}' in body or f'{ANSI_DARK_GRAY}├{ANSI_RESET}' in body:
             return m.group(0)
 
-        # Ensure the fence is marked as 'ansi' for proper rendering
+        # Ensure the fence is marked as 'ansi' for proper rendering,
+        # preserving other attributes like title="..."
         if 'ansi' not in lang.lower():
-            fence_start = "```ansi\n"
+            rest_attrs = re.sub(r'^\S*', '', lang).strip()
+            fence_start = (f'```ansi {rest_attrs}\n' if rest_attrs else '```ansi\n')
 
         # Process line by line to add colors
         lines = body.split('\n')
@@ -359,6 +405,60 @@ def color_state_in_table_blocks(text: str) -> str:
     return FENCE_PATTERN.sub(repl, text)
 
 
+def color_yaml_deploy_block(text: str) -> str:
+    """Color state values in YAML-style unikraft deploy output blocks."""
+    def repl(m):
+        body = m.group(3)
+
+        # Only target blocks that look like unikraft YAML deploy output:
+        # must have 'state:' and 'name:' but NOT the kraft box-drawing style.
+        if 'deployed successfully!' in body.lower():
+            return m.group(0)
+        if not re.search(r'^state:\s+\S', body, re.M):
+            return m.group(0)
+        if not re.search(r'^name:\s+\S', body, re.M):
+            return m.group(0)
+        # Skip if already colorized
+        if ANSI_GREEN in body or ANSI_LIGHT_BLUE in body:
+            return m.group(0)
+
+        lines = body.split('\n')
+        colored_lines = []
+        for line in lines:
+            state_m = re.match(r'^(state:)(\s+)(\S+)(.*)$', line, re.I)
+            if state_m:
+                key = state_m.group(1)
+                spaces = state_m.group(2)
+                val = state_m.group(3)
+                rest = state_m.group(4)
+                color = STATE_COLORS.get(val.lower(), ANSI_GREEN)
+                colored_lines.append(f'{key}{spaces}{color}{val}{ANSI_RESET}{rest}')
+            else:
+                colored_lines.append(line)
+        new_body = '\n'.join(colored_lines)
+        return m.group(1) + new_body + m.group(4)
+
+    return FENCE_PATTERN.sub(repl, text)
+
+
+def wrap_vale_off(text: str) -> str:
+    """Wrap the content body in {/* vale off */} / {/* vale on */} comments."""
+    # Determine where the preamble (front matter + tabs import) ends
+    insert_at = 0
+    m_fm = FRONT_MATTER_PATTERN.match(text)
+    if m_fm:
+        insert_at = m_fm.end()
+    # Skip past the Tabs import line if present
+    if text[insert_at:].startswith("import {"):
+        end_of_import = text.find("\n\n", insert_at)
+        if end_of_import != -1:
+            insert_at = end_of_import + 2
+
+    before = text[:insert_at]
+    body = text[insert_at:].rstrip("\n")
+    return before + "{/* vale off */}\n" + body + "\n{/* vale on */}\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     """Main entry point for the README to MDX transformation script."""
     p = argparse.ArgumentParser(
@@ -386,7 +486,9 @@ def main(argv: list[str] | None = None) -> int:
     content = rewrite_urls(content)
     content = convert_code_tabs(content)
     content = color_deployed_block(content)
+    content = color_yaml_deploy_block(content)
     content = color_state_in_table_blocks(content)
+    content = wrap_vale_off(content)
 
     out.write_text(content, encoding="utf-8")
     return 0
