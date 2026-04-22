@@ -373,6 +373,93 @@ Check that the instances are up:
 Note the `roms` array in the instances configurations.
 Each ROM is available as a readable device at `/dev/ukp_rom_python_function.py` (in the form of an EROFS filesystem in this case), which the server program mounts at `/tmp/rom.py` and executes.
 
+## Inline ROMs
+
+Instead of pre-packaging and pushing a ROM image to a registry, you can provide file contents directly in the instance creation request.
+This is useful when you create instances from a template where the snapshot locks ENV and ARGS, but you still need to inject instance-specific data.
+
+### API format
+
+Add a `files` array to a ROM entry instead of an `image` field:
+
+```json title="POST /instances"
+{
+  "image": "myuser/my-base:latest",
+  "roms": [
+    {
+      "name": "my-rom",
+      "files": [
+        {
+          "path": "config/settings.json",
+          "encoding": "text",
+          "data": "{\"debug\": false, \"port\": 8080}"
+        },
+        {
+          "path": "certs/client.pem",
+          "encoding": "base64",
+          "data": "LS0tLS1CRUdJTi..."
+        }
+      ],
+      "at": "/roms/my-rom"
+    }
+  ]
+}
+```
+
+Each file in the `files` array has three fields:
+
+| Field | Description |
+|-------|-------------|
+| `path` | File path inside the ROM filesystem. The platform creates directories automatically. |
+| `encoding` | Either `text` (UTF-8 string) or `base64` (base64-encoded binary data). |
+| `data` | The file contents in the specified encoding. |
+
+The platform packages the provided files into an EROFS filesystem and attaches it as a ROM device, the same way image-based ROMs work.
+The `at` field is optional and works the same as for image-based ROMs—when present, the platform mounts the ROM at the given path automatically.
+
+### Combining with image-based ROMs
+
+You can mix inline ROMs and image-based ROMs in the same request:
+
+```json title="POST /instances"
+{
+  "image": "myuser/my-base:latest",
+  "roms": [
+    {
+      "name": "app-code",
+      "image": "myuser/my-rom:latest",
+      "at": "/app"
+    },
+    {
+      "name": "instance-config",
+      "files": [
+        {
+          "path": "config.json",
+          "encoding": "text",
+          "data": "{\"instance_id\": \"abc-123\"}"
+        }
+      ],
+      "at": "/config"
+    }
+  ]
+}
+```
+
+### Limits
+
+The platform enforces the following default limits on inline ROMs:
+
+| Limit | Default |
+|-------|---------|
+| ROMs per instance | 8 (inline and image-based combined) |
+| Files per inline ROM | 16 |
+| Total size per inline ROM | 1 MB (across all files) |
+| Max API request body | 8 MB |
+
+No per-file size limit exists.
+The total size limit applies to the combined size of all files in a single inline ROM.
+Since inline ROM data is base64-encoded in the JSON request body, the 8 MB request body limit is the practical upper bound on total data per API call.
+
 ## Automounting
 
 Instead of mounting the ROM device manually inside the guest, you can set the optional `at` field on any ROM entry.
