@@ -83,11 +83,11 @@ The simplest way to push an image is to use the CLI to build, package, push, and
 <CodeTabs syncKey="registry">
   ```bash title="central registry"
   unikraft build . --output index.unikraft.io/<my-org>/<image-name>:latest
-  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.unikraft.io/<my-org>/<image-name>:latest
+  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> --image=index.unikraft.io/<my-org>/<image-name>:latest
   ```
   ```bash title="local registry"
   unikraft build . --output index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
-  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
+  unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --name <instance-name> --image=index.<node-name>.unikraft.cloud/<my-org>/<image-name>:latest
   ```
 </CodeTabs>
 
@@ -201,21 +201,21 @@ When creating an instance directly from an existing image, reference it by tag o
     ```bash title="central registry"
     # By tag
     unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
-      index.unikraft.io/alice/my-app:latest
+      --image=index.unikraft.io/alice/my-app:latest
 
     # By digest (exact version pinning)
     unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
-      index.unikraft.io/alice/my-app@sha256:278cb8b1...
+      --image=index.unikraft.io/alice/my-app@sha256:278cb8b1...
     ```
 
     ```bash title="local registry"
     # By tag
     unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
-      index.<node-name>.unikraft.cloud/alice/my-app:latest
+      --image=index.<node-name>.unikraft.cloud/alice/my-app:latest
 
     # By digest (exact version pinning)
     unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB \
-      index.<node-name>.unikraft.cloud/alice/my-app@sha256:278cb8b1...
+      --image=index.<node-name>.unikraft.cloud/alice/my-app@sha256:278cb8b1...
     ```
 
 </CodeTabs>

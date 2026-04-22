@@ -104,7 +104,7 @@ This confirms that the runtime, filesystem, and command line are valid.
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/docker-port:latest
-unikraft run --metro=fra -p 443:<container-port> -m 512MiB <my-org>/docker-port:latest
+unikraft run --metro=fra -p 443:<container-port> -m 512MiB --image=<my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"
@@ -247,7 +247,7 @@ This often gives better cold-boot behaviour and lower memory pressure than `CPIO
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/docker-port:latest
-unikraft run --metro=fra -p 443:<container-port> -m 256MiB <my-org>/docker-port:latest
+unikraft run --metro=fra -p 443:<container-port> -m 256MiB --image=<my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"
@@ -287,7 +287,7 @@ unikraft build . --output <my-org>/docker-port:latest
 unikraft run --metro=fra -p 443:<container-port> -m 256MiB \
   -e APP_ENV=production \
   -e LOG_LEVEL=info \
-  <my-org>/docker-port:latest
+  --image=<my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"
@@ -346,7 +346,7 @@ unikraft build . --output <my-org>/docker-port:latest
 unikraft run --metro=fra -p 443:<container-port> -m 256MiB \
   --scale-to-zero \
   --scale-to-zero-cooldown-time-ms=5000 \
-  <my-org>/docker-port:latest
+  --image=<my-org>/docker-port:latest
 ```
 
 ```bash title="kraft"

@@ -342,7 +342,7 @@ Now Unikraft Cloud is ready to re-deploy:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/http-go-strace:latest
-unikraft run --metro=fra --name http-go-strace -p 443:8080/http+tls <my-org>/http-go-strace:latest
+unikraft run --metro=fra --name http-go-strace -p 443:8080/http+tls --image=<my-org>/http-go-strace:latest
 ```
 
 ```bash title="kraft"
@@ -404,7 +404,7 @@ For example, use the CLI to set `--restart on-failure` so the platform restarts 
 <CodeTabs syncKey="cli-tool">
 
 ```bash title="unikraft"
-unikraft run --metro=fra --restart=on-failure my-app:latest
+unikraft run --metro=fra --restart=on-failure --image=my-app:latest
 ```
 
 ```bash title="kraft"

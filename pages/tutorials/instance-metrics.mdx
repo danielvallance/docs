@@ -29,7 +29,7 @@ First, provision a new instance:
 ```bash title="unikraft"
 git clone https://github.com/unikraft-cloud/examples
 cd examples/nginx/
-unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB nginx:latest
+unikraft run --metro=fra -p 443:8080/http+tls -m 256MiB --image=nginx:latest
 ```
 
 ```bash title="kraft"

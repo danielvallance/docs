@@ -61,7 +61,7 @@ This guide uses `fra` (Frankfurt, 🇩🇪):
 ```bash title="unikraft"
 unikraft login
 unikraft build . --output <my-org>/postgres:latest
-unikraft run --metro=fra -e POSTGRES_PASSWORD=unikraft -p 5432:5432/tls -m 1Gi <my-org>/postgres:latest
+unikraft run --metro=fra -e POSTGRES_PASSWORD=unikraft -p 5432:5432/tls -m 1Gi --image=<my-org>/postgres:latest
 ```
 
 ```bash title="kraft"
@@ -195,7 +195,7 @@ Then start the PostgreSQL instance and mount that volume:
 
 ```console title="unikraft"
 unikraft build . --output <my-org>/postgres:latest
-unikraft run --metro=fra -p 5432:5432/tls -m 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres -v postgres:/volume <my-org>/postgres:latest
+unikraft run --metro=fra -p 5432:5432/tls -m 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres -v postgres:/volume --image=<my-org>/postgres:latest
 ```
 
 ```console title="kraft"

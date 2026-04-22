@@ -42,7 +42,7 @@ For extensive debug information with `strace`, add the `USE_STRACE=1` environmen
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/httpserver-c-debug:latest
-unikraft run --metro=fra -p 443:8080/tls+http -p 2222:2222/tls -e PUBKEY=.... -e USE_STRACE=1 -m 256M <my-org>/httpserver-c-debug:latest
+unikraft run --metro=fra -p 443:8080/tls+http -p 2222:2222/tls -e PUBKEY=.... -e USE_STRACE=1 -m 256M --image=<my-org>/httpserver-c-debug:latest
 ```
 
 ```bash title="kraft"
