@@ -3,14 +3,10 @@ title: CLI Overview
 description: Command-line interfaces for Unikraft Cloud
 ---
 
-Unikraft Cloud provides two command-line interfaces for managing your unikernel deployments:
-
-## unikraft CLI (recommended)
-
 The **unikraft** CLI is the new, official command-line interface for [Unikraft Cloud](https://unikraft.cloud).
 It provides a modern, streamlined experience for deploying and managing unikernels globally.
 
-### Features
+## Features
 
 - **Deploy Instantly** - Run unikernel images as serverless instances with `unikraft run`
 - **Global Infrastructure** - Deploy across supported metros with automatic multi-region support
@@ -20,7 +16,62 @@ It provides a modern, streamlined experience for deploying and managing unikerne
 - **Profile Management** - Switch between accounts and configurations
 - **Shell Completions** - Tab completion for Bash, Zsh, Fish, and PowerShell
 
-### Quick start
+## Installation
+
+<CodeTabs>
+
+```bash title="1-liner (macOS & Linux)"
+curl --proto '=https' --tlsv1.2 -fsSL https://unikraft.com/cli/install.sh | sh
+```
+
+```bash title="macOS"
+brew install unikraft/cli/unikraft
+```
+
+```bash title="Debian/Ubuntu"
+# Update and install dependencies
+sudo apt update
+sudo apt install ca-certificates curl
+
+# Download and add the GPG key
+sudo install -d -m 0755 /etc/apt/keyrings
+
+sudo curl -fsSL \
+ -o /etc/apt/keyrings/unikraft-cli.gpg \
+ https://pkg.unikraft.com/debian/cli-apt/keys/cli-apt.gpg
+
+sudo tee /etc/apt/sources.list.d/unikraft-cli.sources <<EOF
+Types: deb
+URIs: https://pkg.unikraft.com/debian/cli-apt/
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: stable
+Signed-By: /etc/apt/keyrings/unikraft-cli.gpg
+EOF
+
+# Update and install
+sudo apt-get update
+sudo apt-get install unikraft-cli
+```
+
+```bash title="Fedora/RHEL/Rocky/Alma"
+# Add the Unikraft CLI repository
+sudo tee /etc/yum.repos.d/unikraft-cli-rpm.repo <<EOF
+[unikraft-cli]
+name=unikraft-cli
+baseurl=https://pkg.unikraft.com/rpm/cli-rpm/
+gpgcheck=0
+enabled=1
+EOF
+
+# Install the CLI at the specific pre-release version
+yum install unikraft-cli
+```
+
+</CodeTabs>
+
+See [alternative installation instructions](https://github.com/unikraft/cli/?tab=readme-ov-file#installation) for other platforms.
+
+## Quick start
 
 ```sh
 # Login to Unikraft Cloud
@@ -35,36 +86,5 @@ unikraft instances list
 
 [View unikraft CLI documentation](/docs/cli/unikraft)
 
----
-
-## Kraft cloud CLI (legacy)
-
-The **kraft cloud** CLI is part of the [KraftKit](https://github.com/unikraft/kraftkit) toolchain.
-It remains fully supported, and new users should use the `unikraft` CLI above.
-
-### Quick start
-
-```sh
-# Deploy an instance
-kraft cloud deploy -p 443:8080/http+tls -M 512 .
-
-# List instances
-kraft cloud instance list
-```
-
-[View kraft cloud CLI documentation](/docs/cli/kraft/overview)
-
----
-
-## Choosing a CLI
-
-| Feature | unikraft | kraft cloud |
-|---------|----------|-------------|
-| Recommended for new users | Yes | No |
-| Profile management | Yes | Limited |
-| Scale-to-zero support | Yes | Yes |
-| Compose support | No | Yes |
-| Build from source | No | Yes |
-
-If you are getting started with Unikraft Cloud, use the **unikraft** CLI.
-If you need Docker Compose-style workflows or building images from source, use the **kraft cloud** CLI.
+Looking for the legacy `kraft cloud` CLI? 
+See the [Kraft cloud CLI (legacy)](/docs/cli/legacy-overview) page for installation instructions.
