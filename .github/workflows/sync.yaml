@@ -1,6 +1,8 @@
 name: sync
 
 on:
+  schedule:
+    - cron: '17 3 */2 * *'
   workflow_dispatch:
     inputs:
       examples_branch:
@@ -21,6 +23,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   sync:
@@ -48,6 +51,12 @@ jobs:
         BRANCH="sync/examples-$(date +'%Y%m%d%H%M%S')"
         echo "name=${BRANCH}" >>"${GITHUB_OUTPUT}"
 
+    - name: Generate timestamp
+      id: timestamp
+      run: |
+        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        echo "value=${TIMESTAMP}" >>"${GITHUB_OUTPUT}"
+
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
@@ -56,14 +65,14 @@ jobs:
         commit-message: "chore: Update guides from examples repository"
         title: "chore: Update guides from examples repository"
         body: |
-          IMPORTANT: Please make sure to review the deployment of this PR and also update `zudoku.config.ts` and `pages/guides/overview.mdx` if necessary.
+          IMPORTANT: Please make sure to review the deployment of this PR and also update `zudoku.config.tsx` and `pages/guides/overview.mdx` if necessary.
 
-          Automated sync of example READMEs from [`unikraft/examples@${{ inputs.examples_branch }}`](https://github.com/unikraft/examples/tree/${{ inputs.examples_branch }}).
+          Automated sync of example READMEs from [`unikraft-cloud/examples@${{ inputs.examples_branch || 'main' }}`](https://github.com/unikraft-cloud/examples/tree/${{ inputs.examples_branch || 'main' }}).
 
           This PR updates the guides in `pages/guides/` with the latest content from the examples repository.
 
-          **Branch:** `${{ inputs.examples_branch }}`
-          **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Branch:** `${{ inputs.examples_branch || 'main' }}`
+          **Timestamp:** ${{ steps.timestamp.outputs.value }}
         branch: ${{ steps.id.outputs.name }}
         committer: Unikraft Bot <monkey@unikraft.io>
         author: Unikraft Bot <monkey@unikraft.io>
