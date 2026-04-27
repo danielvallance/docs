@@ -23,6 +23,7 @@ const config: ZudokuConfig = {
         url: "https://github.com/unikraft-cloud/docs/edit/prod-stable/{filePath}",
       },
     },
+    publishMarkdown: true,
     llms: {
       llmsTxt: true, // Generate llms.txt
       llmsTxtFull: true, // Generate llms-full.txt
