@@ -223,6 +223,7 @@ const config: ZudokuConfig = {
           collapsed: false,
           items: [
             "/cli/registries",
+            "/cli/filters",
           ],
         },
         {
