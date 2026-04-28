@@ -219,6 +219,16 @@ const config: ZudokuConfig = {
         "/cli/overview",
         {
           type: "category",
+          label: "Concepts",
+          icon: "lightbulb",
+          collapsed: false,
+          items: [
+            "/cli/registries",
+            "/cli/filters",
+          ],
+        },
+        {
+          type: "category",
           label: "unikraft",
           icon: "terminal",
           collapsed: false,
