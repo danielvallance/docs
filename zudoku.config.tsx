@@ -480,6 +480,24 @@ const config: ZudokuConfig = {
       ],
     } as any,
     {
+      type: "category",
+      label: "Kraftfile",
+      icon: "file-text",
+      items: [
+        "/kraftfile/v0.7",
+        {
+          type: "link",
+          label: "Kraftfile Reference (v0.6)",
+          to: "https://unikraft.org/docs/cli/reference/kraftfile/v0.6",
+        },
+        {
+          type: "link",
+          label: "Kraftfile Reference (v0.5)",
+          to: "https://unikraft.org/docs/cli/reference/kraftfile/v0.5",
+        },
+      ],
+    } as any,
+    {
       type: "link",
       label: "Platform API",
       icon: "unplug",
@@ -492,6 +510,7 @@ const config: ZudokuConfig = {
   redirects: [
     { from: "/", to: "/introduction" },
     { from: "/cli", to: "/cli/overview" },
+    { from: "/kraftfile", to: "/kraftfile/v0.7" },
     { from: "/guides", to: "/guides/overview" },
   ],
   apis: [

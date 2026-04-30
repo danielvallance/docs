@@ -45,6 +45,9 @@ COPY . .
 ARG DOCS_CHANNEL=prod-staging
 ADD https://raw.githubusercontent.com/unikraft-cloud/openapi/refs/heads/${DOCS_CHANNEL}/platform.yaml apis/platform.yaml
 
+# Kraftfile v0.7 schema docs (from unikraft-cloud/x)
+ADD https://raw.githubusercontent.com/unikraft-cloud/x/refs/heads/${DOCS_CHANNEL}/kraftfile/schema.md pages/kraftfile/v0.7.md
+
 # Kraft (old CLI) docs -> /cli/kraft/
 COPY --from=build-kraft-docs /kraftkit/docs/kraft/cloud /docs/pages/cli/kraft
 COPY --from=build-kraft-docs /kraftkit/docs/kraft/cloud.mdx /docs/pages/cli/kraft/overview.mdx
