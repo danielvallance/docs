@@ -27,6 +27,7 @@ FROM node:24-alpine AS build
 WORKDIR /docs
 
 ENV CI=true
+ENV PNPM_HOME="/pnpm"
 
 RUN set -xe; \
     apk --no-cache add \
@@ -35,9 +36,15 @@ RUN set -xe; \
         wget \
     ;
 
-COPY package.json package-lock.json ./
+RUN set -xe; \
+    corepack enable; \
+    corepack prepare pnpm@latest --activate
 
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prefer-frozen-lockfile; \
+    pnpm install --prod --prefer-frozen-lockfile
 
 COPY . .
 
@@ -56,7 +63,7 @@ COPY --from=build-kraft-docs /kraftkit/docs/kraft/cloud.mdx /docs/pages/cli/kraf
 COPY --from=build-cli-docs /cli/dist/docs/mdx/unikraft/ /docs/pages/cli/unikraft/
 COPY --from=build-cli-docs /cli/dist/docs/mdx/unikraft.mdx /docs/pages/cli/unikraft.mdx
 
-RUN npm run build
+RUN pnpm run build
 
 ################################################################################
 # Production filesystem
