@@ -18,7 +18,6 @@ Read more about this in the [Registries documentation](/cli/registries).
 
 :::caution[DISCLAIMER] 
 The local registry isn't currently available for the public Unikraft Cloud offering.
-As such, the CLI can't entirely leverage this feature.
 :::
 
 1. **build**: You execute `unikraft build` with the
@@ -67,6 +66,7 @@ The erofs format decompresses data block-by-block only when the system accesses 
 This selective approach saves RAM and improves boot times.
 In contrast, the cpio format must remove its entire contents into memory on startup.
 Check out this [tutorial](/tutorials/rootfs-formats) comparing rootfs types to understand why Unikraft favors erofs.
+For a more in depth explanation of the Kraftfile you can check the [reference](/kraftfile/v0.7)
 
 The `Dockerfile` itself for the app looks as follows:
 
@@ -95,7 +95,7 @@ COPY ./server.py /src/server.py
 If you're familiar with `Dockerfiles` there is nothing unusual here, other than that Unikraft Cloud prefers usage of `FROM scratch` to keep images lean.
 This multi-stage build creates a minimal container.
 First, the process loads a standard Python 3.12 image to configure system dependencies.
-Next, it starts a empty filesystem called scratch.
+Next, it starts an empty filesystem called scratch.
 The builder extracts the compiled Python binary and essential shared system libraries from the first stage.
 It moves these exact files into the empty environment.
 Finally, the builder copies your app script into the container.
@@ -224,9 +224,6 @@ kraft cloud img rm httpserver-python312
 
 </CodeTabs>
 
-:::note
-It's impossible to remove images from the local registry using the CLI yet.
-:::
 :::note
 There may be a delay of a few minutes between removing an image from the registry and the image list reflecting the change.
 :::
@@ -391,13 +388,15 @@ You now have a new instance created from the existing image.
 
 ## REST API reference
 
-### List images
+### List images from local registry
+
+Base address: `https://api.<node-name>.unikraft.cloud/v1`
 
 ```
 GET /image-store
 ```
 
-Returns all images accessible for your account and known by the platform from both the local and central registries.
+Returns all images accessible for your account and known by the platform from the local registry.
 Each image object includes:
 
 | Field | Type | Description |
@@ -411,6 +410,21 @@ Each image object includes:
 | `args` | array of strings | Default arguments (omitted if none). |
 | `env` | map of strings | Default environmental variables (omitted if none). |
 | `users` | array of strings | Users with access to the image (omitted if not root account). |
+
+
+### List images from central registry
+
+Base address `https://controlplane.unikraft.cloud/v1`
+
+```
+GET /images
+```
+
+Returns all images accessible for your account and known by the platform from the central registry.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Image reference (`{owner}/{registry}/{image}`). Excludes digest and tag. |
 
 ## Learn more
 
