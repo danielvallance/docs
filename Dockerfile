@@ -40,7 +40,7 @@ RUN set -xe; \
     corepack enable; \
     corepack prepare pnpm@latest --activate
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prefer-frozen-lockfile; \
