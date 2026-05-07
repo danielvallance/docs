@@ -56,6 +56,8 @@ jobs:
         commit-message: "chore: Update guides from examples repository"
         title: "chore: Update guides from examples repository"
         body: |
+          IMPORTANT: Please make sure to review the deployment of this PR and also update `zudoku.config.ts` and `pages/guides/overview.mdx` if necessary.
+
           Automated sync of example READMEs from [`unikraft/examples@${{ inputs.examples_branch }}`](https://github.com/unikraft/examples/tree/${{ inputs.examples_branch }}).
 
           This PR updates the guides in `pages/guides/` with the latest content from the examples repository.
