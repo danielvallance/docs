@@ -89,6 +89,7 @@ const config: ZudokuConfig = {
             "/use-cases/headless-browsers",
             "/use-cases/mcp-servers",
             "/use-cases/api-gateways",
+            "/use-cases/serverless-functions",
             "/use-cases/serverless-databases",
             "/use-cases/webhooks",
             "/use-cases/remote-ides",
