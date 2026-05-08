@@ -91,6 +91,7 @@ const config: ZudokuConfig = {
             "/use-cases/api-gateways",
             "/use-cases/serverless-functions",
             "/use-cases/serverless-databases",
+            "/use-cases/build-test-environments",
             "/use-cases/webhooks",
             "/use-cases/remote-ides",
           ],
