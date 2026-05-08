@@ -94,6 +94,7 @@ runs:
     run: |
       kraft cloud deploy \
         --rollout remove \
+        --rollout-qualifier all \
         --build-arg API_URL="https://${{ steps.service.outputs.domain }}" \
         --build-arg PUBLIC_API_URL="https://${{ steps.service.outputs.domain }}" \
         --build-arg VITE_PUBLIC_SITE_URL="https://${{ steps.service.outputs.domain }}" \
