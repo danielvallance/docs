@@ -34,6 +34,15 @@ Databases can integrate with API gateways, event triggers, and headless services
 Unlike traditional serverless platforms where databases often suffer from high overhead, microVM-based instances deliver **bare-metal-like throughput and predictable latency**.
 These instances optimise both Online Transaction Processing (OLTP) and Online Analytical Processing (OLAP) workloads.
 
+### 📸 Checkpoints for point-in-time recovery
+
+**Checkpointing** saves the complete state of a running microVM at any time, **without interrupting execution**.
+Checkpoints are incremental, fast, and keep a history, so you can restore the database to any previous checkpoint to recover from a failed migration or an erroneous write.
+
+### 🔀 Instance branching for instant clones
+
+Unikraft Cloud lets you **branch** a running instance, creating an identical, **independent copy in milliseconds** while leaving the original untouched.
+Test your migrations or destructive changes on a byte-for-byte copy of production before applying them, so you can proceed with confidence.
 
 ## Getting started
 
@@ -202,6 +211,43 @@ unikraft run --metro=fra -p 5432:5432/tls -m 1Gi -e POSTGRES_PASSWORD=unikraft -
 kraft cloud deploy -p 5432:5432/tls -M 1Gi -e POSTGRES_PASSWORD=unikraft -e PGDATA=/volume/postgres -v postgres:/volume .
 ```
 
+</CodeTabs>
+
+### Using checkpoints
+
+:::note
+Checkpointing is coming soon.
+Full documentation will follow once the interface is available.
+:::
+
+### Using instance branching
+
+:::note
+Instance branching is a preview feature and isn't yet available on stable.
+The interface described here reflects the current implementation and may change before general availability.
+:::
+
+You can branch a running PostgreSQL instance to create an independent copy with the exact same state.
+The source instance keeps running unaffected.
+
+To create a branch, pass `--branch` with the source instance name to `unikraft run`:
+
+<CodeTabs syncKey="cli-tool">
+```console title="unikraft"
+unikraft run --metro=fra -p 5432:5432/tls --branch <source-instance>
+```
+</CodeTabs>
+
+The branch boots immediately from the same state as the source.
+Connect to it like any other instance.
+Whatever you do, the source instance remains unaffected.
+
+When you're done, remove the branch:
+
+<CodeTabs syncKey="cli-tool">
+```console title="unikraft"
+unikraft instances delete <branch-name>
+```
 </CodeTabs>
 
 ### Customize your deployment
