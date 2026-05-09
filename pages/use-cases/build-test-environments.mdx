@@ -232,7 +232,7 @@ unikraft run --metro fra \
   --name go-build-env-rom1 \
   -p 443:8080/tls+http \
   --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  --rom <my-org>/go-rom1:latest:/rom:go_function \
+  --rom image=<my-org>/go-rom1:latest,at=/rom \
   --template go-build-env
 ```
 
@@ -309,7 +309,7 @@ unikraft run --metro fra \
   --name go-build-env-rom2 \
   -p 443:8080/tls+http \
   --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  --rom <my-org>/go-rom2:latest:/rom:go_function \
+  --rom image=<my-org>/go-rom2:latest,at=/rom \
   --template go-build-env
 ```
 
