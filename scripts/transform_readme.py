@@ -40,7 +40,7 @@ TABS_IMPORT = 'import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/
 # Regex patterns
 FENCE_PATTERN = re.compile(r"(^```([^\n]*)\n)(.*?)(\n```)$", flags=re.M | re.S)
 FRONT_MATTER_PATTERN = re.compile(r"^---\n.*?\n---\n\s*", flags=re.S)
-ADMONITION_PATTERN = re.compile(r"^>\s*\*\*([^*]+)\*\*:\s*$")
+ADMONITION_PATTERN = re.compile(r"^>\s*\*\*([^*]+?):?\*\*:?\s*$")
 
 
 def extract_title(text: str, example_name: str | None) -> str:
@@ -95,7 +95,7 @@ def convert_admonitions(text: str) -> str:
     while i < len(lines):
         m = ADMONITION_PATTERN.match(lines[i])
         if m:
-            label = m.group(1).strip()
+            label = m.group(1).strip().rstrip(":")
             key = label.lower().replace(" ", "-")
             i += 1
             block = []
