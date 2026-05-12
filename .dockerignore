@@ -1,0 +1,45 @@
+# Vale packages
+.vale/styles/*
+!.vale/styles/Unikraft/*
+!.vale/styles/config/vocabularies/Unikraft/accept.txt
+
+# Node/Zudoku
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# zudoku
+/dist/
+/.zudoku/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files (can opt-in for commiting if needed)
+.env*
+
+# typescript
+*.tsbuildinfo
+
+# build outputs
+dist/
+
+# generated files
+apis/platform.yaml
+build.log
+.examples/
