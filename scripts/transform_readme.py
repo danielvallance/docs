@@ -121,6 +121,14 @@ def rewrite_urls(text: str) -> str:
     return text
 
 
+def remove_cli_section_labels(text: str) -> str:
+    """Remove bold CLI section labels from examples READMEs."""
+    pattern = re.compile(
+        r"(?m)^\*\*(Using the unikraft CLI \(Recommended\)|Using the legacy kraft CLI)\*\*\s*$\n?"
+    )
+    return pattern.sub("", text)
+
+
 def convert_code_tabs(text: str) -> str:
     """Group adjacent code blocks containing title="..." inside a <CodeTabs> wrapper."""
     block_pattern = re.compile(r"(```([^\n]*?title=\"([^\"]+)\"[^\n]*)\n.*?\n```)", flags=re.S)
@@ -485,6 +493,7 @@ def main(argv: list[str] | None = None) -> int:
     content = insert_tabs_import(content, title)
     content = convert_admonitions(content)
     content = rewrite_urls(content)
+    content = remove_cli_section_labels(content)
     content = convert_code_tabs(content)
     content = color_deployed_block(content)
     content = color_yaml_deploy_block(content)
