@@ -11,10 +11,10 @@ on:
           The branch of the examples repository to sync from.
           Default: main
       docs_branch:
-        default: main
+        default: prod-staging
         description: |
           The base branch in docs repository to create PR against.
-          Default: main
+          Default: prod-staging
 
 # Automatically cancel in-progress actions on the same branch
 concurrency:
@@ -31,7 +31,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.docs_branch || 'main' }}
+        ref: ${{ inputs.docs_branch || 'prod-staging' }}
 
     - name: Sync example READMEs
       shell: bash
@@ -61,7 +61,7 @@ jobs:
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ secrets.GH_PAT }}
-        base: ${{ inputs.docs_branch || 'main' }}
+        base: ${{ inputs.docs_branch || 'prod-staging' }}
         commit-message: "chore: Update guides from examples repository"
         title: "chore: Update guides from examples repository"
         body: |
