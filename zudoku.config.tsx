@@ -86,6 +86,7 @@ const config: ZudokuConfig = {
           icon: "lightbulb",
           collapsed: false,
           items: [
+            "/use-cases/sandboxes",
             "/use-cases/headless-browsers",
             "/use-cases/mcp-servers",
             "/use-cases/api-gateways",
