@@ -144,7 +144,7 @@ const config: ZudokuConfig = {
         "/guides/httpserver-boost1.74-gpp13.2", // C++ Boost HTTP Server
         "/guides/httpserver-gpp13.2", // C++ HTTP Server
         "/guides/caddy2.7-go1.21", // Caddy
-        "/guides/debian-ssh", // Debian SSH Server
+        "/guides/debian-ssh", // Debian SSH server
         "/guides/httpserver-python3.12-django5.0", // Django HTTP Server
         "/guides/dragonflydb", // DragonflyDB
         "/guides/duckdb-go1.21", // DuckDB with Go
@@ -154,7 +154,7 @@ const config: ZudokuConfig = {
         "/guides/httpserver-python3.12-fastapi-0.121.3", // FastAPI HTTP Server
         "/guides/httpserver-python3.12-flask3.0-sqlite", // Flask and SQLite HTTP Server
         "/guides/httpserver-python3.12-flask3.0", // Flask HTTP Server
-        "/guides/github-webhook-node", // GitHub Webhook Receiver
+        "/guides/github-webhook-node", // GitHub Webhook receiver
         "/guides/httpserver-go1.21", // Go HTTP Server
         "/guides/grafana", // Grafana
         "/guides/haproxy", // HAProxy
@@ -164,7 +164,7 @@ const config: ZudokuConfig = {
         "/guides/httpserver-lua5.1", // Lua HTTP Server
         "/guides/mariadb", // MariaDB
         "/guides/memcached1.6", // Memcached
-        "/guides/minio", // MinIO
+        "/guides/minio", // Minio
         "/guides/mongodb", // MongoDB
         "/guides/httpserver-node21-nextjs", // Next.js HTTP Server
         "/guides/nginx", // Nginx
@@ -175,10 +175,10 @@ const config: ZudokuConfig = {
         "/guides/opentelemetry-collector", // OpenTelemetry Collector
         "/guides/httpserver-perl5.42", // Perl HTTP Server
         "/guides/httpserver-php8.2", // PHP HTTP Server
-        "/guides/node-playwright-chromium", // Playwright Chromium (Node)
-        "/guides/python-playwright-chromium", // Playwright Chromium (Python)
-        "/guides/node-playwright-firefox", // Playwright Firefox (Node)
-        "/guides/node-playwright-webkit", // Playwright WebKit (Node)
+        "/guides/node-playwright-chromium", // Playwright (Chromium) with Node.js
+        "/guides/python-playwright-chromium", // Playwright (Chromium) with Python FastAPI
+        "/guides/node-playwright-firefox", // Playwright (Firefox) with Node.js
+        "/guides/node-playwright-webkit", // Playwright (WebKit) with Node.js
         "/guides/postgres", // PostgreSQL
         "/guides/httpserver-prisma-expressjs4.19-node18", // Prisma HTTP Server
         "/guides/httpserver-node-express-puppeteer", // Puppeteer HTTP Server
@@ -195,20 +195,20 @@ const config: ZudokuConfig = {
         "/guides/mcp-server-simple", // Simple MCP Server
         "/guides/skipper0.18", // Skipper
         "/guides/httpserver-node21-solid-start", // SolidJS HTTP Server
-        "/guides/spin-wagi-http", // Spin (WAGI)
+        "/guides/spin-wagi-http", // Spin
         "/guides/httpserver-java17-springboot3.5.x", // Spring Boot HTTP Server
-        "/guides/httpserver-java17-spring-petclinic", // Spring Petclinic
+        "/guides/httpserver-java17-spring-petclinic", // Spring PetClinic
         "/guides/httpserver-c-debug", // SSH and HTTP Server with C and Debugging Tools
         "/guides/httpserver-node21-sveltekit", // SvelteKit HTTP Server
         "/guides/traefik", // Traefik
         "/guides/visual-studio-code-server", // Visual Studio Code Server
-        "/guides/httpserver-nginx-vite-vanilla", // Vite HTTP Server (Nginx)
-        "/guides/httpserver-node-vite-vanilla", // Vite HTTP Server (Node)
-        "/guides/httpserver-node-vite-ssr-vanilla", // Vite SSR HTTP Server (Node)
+        "/guides/httpserver-node-vite-vanilla", // Vite (vanilla)
+        "/guides/httpserver-node-vite-ssr-vanilla", // Vite (vanilla) SSR
+        "/guides/httpserver-nginx-vite-vanilla", // Vite HTTP Server
         "/guides/vsftpd", // vsftpd
         "/guides/wazero-import-go", // Wazero
         "/guides/node18-wingsio", // Wings.io (Node)
-        "/guides/wordpress-all-in-one", // WordPress
+        "/guides/wordpress-all-in-one", // Wordpress
       ]
     },
     {

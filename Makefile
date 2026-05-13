@@ -68,6 +68,9 @@ sync:
 			echo "  🗑 Removing stale guide: $$gname"; \
 			rm -f "$$guide"; \
 		fi; \
-	done
+	done; \
+	$(WORKDIR)/scripts/update_zudoku_guides.py "$(GUIDES_DIR)" "$(WORKDIR)/zudoku.config.tsx"
 
 .PHONY: sync-list
+sync-list:
+	$(WORKDIR)/scripts/update_zudoku_guides.py "$(GUIDES_DIR)" "$(WORKDIR)/zudoku.config.tsx"
