@@ -152,6 +152,7 @@ const config: ZudokuConfig = {
         "/guides/httpserver-erlang26.2", // Erlang HTTP Server
         "/guides/httpserver-expressjs4.18-node21", // Express HTTP Server
         "/guides/httpserver-python3.12-fastapi-0.121.3", // FastAPI HTTP Server
+        "/guides/httpserver-flask-redis", // Flask + Redis HTTP Server
         "/guides/httpserver-python3.12-flask3.0-sqlite", // Flask and SQLite HTTP Server
         "/guides/httpserver-python3.12-flask3.0", // Flask HTTP Server
         "/guides/github-webhook-node", // GitHub Webhook receiver
@@ -183,13 +184,13 @@ const config: ZudokuConfig = {
         "/guides/httpserver-prisma-expressjs4.19-node18", // Prisma HTTP Server
         "/guides/httpserver-node-express-puppeteer", // Puppeteer HTTP Server
         "/guides/httpserver-python3.12", // Python HTTP Server
+        "/guides/httpserver-node22-react-router", // React Router HTTP Server
         "/guides/redis7.2", // Redis
-        "/guides/httpserver-node21-remix", // Remix HTTP Server
         "/guides/httpserver-ruby3.2", // Ruby HTTP Server
         "/guides/ruby3.2-rails", // Ruby on Rails
-        "/guides/httpserver-rust1.87-actix-web4", // Rust (Actix Web) HTTP Server
+        "/guides/httpserver-rust1.88-actix-web4", // Rust (Actix Web) HTTP Server
         "/guides/httpserver-rust-trunkrs-leptos", // Rust (Leptos + Trunk) HTTP Server
-        "/guides/httpserver-rust1.81-rocket0.5", // Rust (Rocket) HTTP Server
+        "/guides/httpserver-rust1.88-rocket0.5", // Rust (Rocket) HTTP Server
         "/guides/httpserver-rust1.75-tokio", // Rust (Tokio) HTTP Server
         "/guides/httpserver-rust1.91", // Rust HTTP Server
         "/guides/mcp-server-simple", // Simple MCP Server
@@ -199,7 +200,7 @@ const config: ZudokuConfig = {
         "/guides/httpserver-java17-springboot3.5.x", // Spring Boot HTTP Server
         "/guides/httpserver-java17-spring-petclinic", // Spring PetClinic
         "/guides/httpserver-c-debug", // SSH and HTTP Server with C and Debugging Tools
-        "/guides/httpserver-node21-sveltekit", // SvelteKit HTTP Server
+        "/guides/httpserver-node22-sveltekit", // SvelteKit HTTP Server
         "/guides/traefik", // Traefik
         "/guides/visual-studio-code-server", // Visual Studio Code Server
         "/guides/httpserver-node-vite-vanilla", // Vite (vanilla)
