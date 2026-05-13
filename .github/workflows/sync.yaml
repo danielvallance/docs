@@ -65,7 +65,7 @@ jobs:
         commit-message: "chore: Update guides from examples repository"
         title: "chore: Update guides from examples repository"
         body: |
-          IMPORTANT: Please make sure to review the deployment of this PR and also update `zudoku.config.tsx` and `pages/guides/overview.mdx` if necessary.
+          IMPORTANT: Please make sure to review the deployment of this PR and also update `pages/guides/overview.mdx` if necessary.
 
           Automated sync of example READMEs from [`unikraft-cloud/examples@${{ inputs.examples_branch || 'main' }}`](https://github.com/unikraft-cloud/examples/tree/${{ inputs.examples_branch || 'main' }}).
 
@@ -76,7 +76,9 @@ jobs:
         branch: ${{ steps.id.outputs.name }}
         committer: Unikraft Bot <monkey@unikraft.io>
         author: Unikraft Bot <monkey@unikraft.io>
-        add-paths: pages/guides
+        add-paths: |
+          pages/guides
+          zudoku.config.tsx
         signoff: true
         labels: |
           automated
