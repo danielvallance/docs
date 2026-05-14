@@ -175,6 +175,8 @@ kraft cloud instance template list
 
 </CodeTabs>
 
+<br/>
+
 <CodeTabs syncKey="cli-tool">
 
 ```ansi title="unikraft"
@@ -371,18 +373,20 @@ kraft cloud instance list
 
 </CodeTabs>
 
+<br/>
+
 <CodeTabs syncKey="cli-tool">
 
 ```ansi title="unikraft"
-[1mMETRO[0m  [1mNAME[0m               [1mSTATE[0m    [1mIMAGE[0m                  [1mARGS[0m  [1mMEMORY[0m  [1mVCPUS[0m  [1mFQDN[0m                                        [1mCREATED[0m
-fra    go-build-env-rom2  [94mstandby[0m  <my-org>/go-build-env        512MiB  1      nameless-wood-gw7pbnls.fra.unikraft.app   2 minutes ago
-fra    go-build-env-rom1  [94mstandby[0m  <my-org>/go-build-env        512MiB  1      sparkling-dawn-syowlbtj.fra.unikraft.app  3 minutes ago
+[1mMETRO[0m  [1mNAME[0m               [1mSTATE[0m    [1mIMAGE[0m                  [1mARGS[0m  [1mMEMORY[0m  [1mVCPUS[0m  [1mFQDN[0m                                      [1mCREATED[0m
+fra    go-build-env-rom2  [94mstandby[0m  <my-org>/go-build-env        512MiB  1      nameless-wood-gw7pbnls.fra.unikraft.app   2 minutes ago
+fra    go-build-env-rom1  [94mstandby[0m  <my-org>/go-build-env        512MiB  1      sparkling-dawn-syowlbtj.fra.unikraft.app  3 minutes ago
 ```
 
 ```ansi title="kraft"
-[1mNAME[0m               [1mFQDN[0m                                        [1mSTATE[0m    [1mSTATUS[0m   [1mIMAGE[0m                                                     [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m  [1mBOOT TIME[0m
-go-build-env-rom2  nameless-wood-gw7pbnls.fra.unikraft.app   [94mstandby[0m  standby  oci://unikraft.io/<my-org>/go-build-env@sha256:1cbd64...  512 MiB  1            6.98 ms
-go-build-env-rom1  sparkling-dawn-syowlbtj.fra.unikraft.app  [94mstandby[0m  standby  oci://unikraft.io/<my-org>/go-build-env@sha256:1cbd64...  512 MiB  1            7.86 ms
+[1mNAME[0m               [1mFQDN[0m                                      [1mSTATE[0m    [1mSTATUS[0m   [1mIMAGE[0m                                                     [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m  [1mBOOT TIME[0m
+go-build-env-rom2  nameless-wood-gw7pbnls.fra.unikraft.app   [94mstandby[0m  standby  oci://unikraft.io/<my-org>/go-build-env@sha256:1cbd64...  512 MiB  1            6.98 ms
+go-build-env-rom1  sparkling-dawn-syowlbtj.fra.unikraft.app  [94mstandby[0m  standby  oci://unikraft.io/<my-org>/go-build-env@sha256:1cbd64...  512 MiB  1            7.86 ms
 ```
 
 </CodeTabs>
