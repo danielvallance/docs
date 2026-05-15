@@ -95,7 +95,7 @@ const config: ZudokuConfig = {
             "/use-cases/build-test-environments",
             "/use-cases/webhooks",
             "/use-cases/remote-ides",
-            "/use-cases/minecraft",
+            "/use-cases/game-servers",
             "/use-cases/remote-desktops",
           ],
         },
