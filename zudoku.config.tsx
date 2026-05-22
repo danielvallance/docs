@@ -3,7 +3,7 @@ import type { ZudokuConfig } from "zudoku";
 const config: ZudokuConfig = {
   metadata: {
     title: "%s | Unikraft Cloud Docs",
-    favicon: "/favicon.ico",
+    favicon: "/docs/favicon.ico",
   },
   basePath: "/docs",
   site: {
