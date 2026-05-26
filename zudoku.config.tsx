@@ -220,6 +220,7 @@ const config: ZudokuConfig = {
       icon: "book",
       items: [
         "/tutorials/docker-to-ukc",
+        "/tutorials/kraftkit-to-unikraft",
         "/tutorials/environment-variables",
         "/tutorials/rootfs-formats",
         "/tutorials/rootfs-compression",
