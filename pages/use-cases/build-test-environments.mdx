@@ -48,16 +48,22 @@ The base image contains a Go server (`server.go`) that:
 
 ### Prerequisites
 
-1. Install the CLI:
+1. Install the CLI.
    Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
-   You need a [BuildKit](https://github.com/moby/buildkit) builder. The easiest way is via [Docker](https://docs.docker.com/engine/install/).
+   You need a [BuildKit](https://github.com/moby/buildkit) builder. The easiest way to get one is via [Docker](https://docs.docker.com/engine/install/).
+   You can also set up and use BuildKit directly; see the [quick start](https://github.com/moby/buildkit#quick-start).
+
+   :::note
+   The unikraft CLI is the current standard, while kraft is the legacy version.
+   Choose one of the CLIs below and only run the commands associated with it for the rest of this guide.
+   :::
 
 1. Clone the examples repository and enter the example directory:
 
-```bash
-git clone https://github.com/unikraft-cloud/examples
-cd examples/build-environments/
-```
+   ```bash
+   git clone https://github.com/unikraft-cloud/examples
+   cd examples/build-environments/
+   ```
 
 Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
@@ -88,12 +94,12 @@ unikraft build . --output <my-org>/go-build-env:latest
 
 ```bash title="kraft"
 kraft pkg \
-   --name index.unikraft.io/<my-org>/go-build-env:latest \
-   --plat kraftcloud \
-   --arch x86_64 \
-   --rootfs-type erofs \
-   --push \
-   .
+  --name index.unikraft.io/<my-org>/go-build-env:latest \
+  --plat kraftcloud \
+  --arch x86_64 \
+  --rootfs-type erofs \
+  --push \
+  .
 ```
 
 </CodeTabs>
@@ -204,21 +210,19 @@ unikraft build rom2/ --output <my-org>/go-rom2:latest
 
 ```bash title="kraft"
 kraft pkg \
-   --rom ./fs \
-   --rom-type erofs \
-   --plat kraftcloud \
-   --arch x86_64 \
-   --name index.unikraft.io/<my-org>/go-rom1:latest \
-   --push \
-   rom1/
+  --plat kraftcloud \
+  --arch x86_64 \
+  --name index.unikraft.io/<my-org>/go-rom1:latest \
+  --rom-type erofs \
+  --push \
+  rom1/
 kraft pkg \
-   --rom ./fs \
-   --rom-type erofs \
-   --plat kraftcloud \
-   --arch x86_64 \
-   --name index.unikraft.io/<my-org>/go-rom2:latest \
-   --push \
-   rom2/
+  --plat kraftcloud \
+  --arch x86_64 \
+  --name index.unikraft.io/<my-org>/go-rom2:latest \
+  --rom-type erofs \
+  --push \
+  rom2/
 ```
 
 </CodeTabs>
@@ -238,40 +242,39 @@ unikraft run --metro fra \
   --template go-build-env
 ```
 
-```bash title="kraft"
-# kraft does not support creating instances with attached ROMs, but you can use the API directly
-curl -X POST "$UKC_METRO/instances" \
-   -H "Accept: application/json" \
-   -H "Authorization: Bearer $UKC_TOKEN" \
-   -H "Content-Type: application/json" \
-   -d '{
-   "name": "go-build-env-rom1",
-   "template": {
+```bash title="API"
+curl -X POST "https://api.fra.unikraft.cloud/v1/instances" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "go-build-env-rom1",
+    "template": {
       "name": "go-build-env"
-   },
-   "autostart": true,
-   "service_group": {
+    },
+    "autostart": true,
+    "service_group": {
       "services": [
-         {
-            "port": 443,
-            "destination_port": 8080,
-            "handlers": ["tls", "http"]
-         }
+        {
+          "port": 443,
+          "destination_port": 8080,
+          "handlers": ["tls", "http"]
+        }
       ]
-   },
-   "scale_to_zero": {
+    },
+    "scale_to_zero": {
       "policy": "on",
       "stateful": true,
       "cooldown_time_ms": 1000
-   },
-   "roms": [
+    },
+    "roms": [
       {
-         "name": "go_function",
-         "image": "index.unikraft.io/<my-org>/go-rom1:latest",
-         "at": "/rom"
+        "name": "go_function",
+        "image": "index.unikraft.io/<my-org>/go-rom1:latest",
+        "at": "/rom"
       }
-   ]
-}'
+    ]
+  }'
 ```
 
 </CodeTabs>
@@ -304,40 +307,39 @@ unikraft run --metro fra \
   --template go-build-env
 ```
 
-```bash title="kraft"
-# kraft does not support creating instances with attached ROMs, but you can use the API directly
-curl -X POST "$UKC_METRO/instances" \
-   -H "Accept: application/json" \
-   -H "Authorization: Bearer $UKC_TOKEN" \
-   -H "Content-Type: application/json" \
-   -d '{
-   "name": "go-build-env-rom2",
-   "template": {
+```bash title="API"
+curl -X POST "https://api.fra.unikraft.cloud/v1/instances" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "go-build-env-rom2",
+    "template": {
       "name": "go-build-env"
-   },
-   "autostart": true,
-   "service_group": {
+    },
+    "autostart": true,
+    "service_group": {
       "services": [
-         {
-            "port": 443,
-            "destination_port": 8080,
-            "handlers": ["tls", "http"]
-         }
+        {
+          "port": 443,
+          "destination_port": 8080,
+          "handlers": ["tls", "http"]
+        }
       ]
-   },
-   "scale_to_zero": {
+    },
+    "scale_to_zero": {
       "policy": "on",
       "stateful": true,
       "cooldown_time_ms": 1000
-   },
-   "roms": [
+    },
+    "roms": [
       {
-         "name": "go_function",
-         "image": "index.unikraft.io/<my-org>/go-rom2:latest",
-         "at": "/rom"
+        "name": "go_function",
+        "image": "index.unikraft.io/<my-org>/go-rom2:latest",
+        "at": "/rom"
       }
-   ]
-}'
+    ]
+  }'
 ```
 
 </CodeTabs>

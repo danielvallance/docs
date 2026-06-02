@@ -48,15 +48,22 @@ This guide shows you how to use [noVNC](https://novnc.com/info.html), an open so
 
 To run it, follow these steps:
 
-1. Install the CLI and a container runtime engine (for example, [Docker](https://docs.docker.com/engine/install/)).
+1. Install the CLI.
    Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
+   You need a [BuildKit](https://github.com/moby/buildkit) builder. The easiest way to get one is via [Docker](https://docs.docker.com/engine/install/).
+   You can also set up and use BuildKit directly; see the [quick start](https://github.com/moby/buildkit#quick-start).
+
+   :::note
+   The unikraft CLI is the current standard, while kraft is the legacy version.
+   Choose one of the CLIs below and only run the commands associated with it for the rest of this guide.
+   :::
 
 1. Clone the [`examples` repository](https://github.com/unikraft-cloud/examples) and `cd` into the `examples/novnc-browser/` directory:
 
-```bash
-git clone https://github.com/unikraft-cloud/examples
-cd examples/novnc-browser/
-```
+   ```bash
+   git clone https://github.com/unikraft-cloud/examples
+   cd examples/novnc-browser/
+   ```
 
 Make sure to log into Unikraft Cloud and pick a [metro](/platform/metros) close to you.
 This guide uses `fra` (Frankfurt, 🇩🇪):
@@ -78,11 +85,9 @@ export UKC_METRO=fra
 
 The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
 
-:::note
-
+:::caution
 A noVNC desktop instance on Unikraft Cloud requires 4GB to run.
 Request an increase in the instance memory quota when you need more memory.
-
 :::
 
 When done, invoke the following command to deploy this app on Unikraft Cloud:
@@ -91,18 +96,23 @@ When done, invoke the following command to deploy this app on Unikraft Cloud:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/novnc-browser:latest
-unikraft run --scale-to-zero policy=on,cooldown-time=4000,stateful=true --metro fra -p 443:6080/tls+http -m 4G --name vnc-browser --image <my-org>/novnc-browser:latest
+unikraft run --metro fra \
+  --name vnc-browser \
+  -m 4G \
+  -p 443:6080/tls+http \
+  --scale-to-zero policy=on,cooldown-time=4000,stateful=true \
+  --image <my-org>/novnc-browser:latest
 ```
 
 ```bash title="kraft"
 kraft cloud deploy \
-    --scale-to-zero on \
-    --scale-to-zero-stateful \
-    --scale-to-zero-cooldown 4s \
-    -p 443:6080/tls+http \
-    -M 4Gi \
-    -n vnc-browser \
-    .
+  --name vnc-browser \
+  -M 4Gi \
+  -p 443:6080/tls+http \
+  --scale-to-zero on \
+  --scale-to-zero-stateful \
+  --scale-to-zero-cooldown 4s \
+  .
 ```
 
 </CodeTabs>

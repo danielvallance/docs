@@ -19,7 +19,11 @@ The biggest change is that the legacy CLI combines packaging and deployment into
 In the legacy flow:
 
 ```bash title="kraft"
-kraft cloud deploy -p 443:8080/http+tls -M 512Mi --rootfs-type erofs .
+kraft cloud deploy \
+  -p 443:8080/http+tls \
+  -M 512Mi \
+  --rootfs-type erofs \
+  .
 ```
 
 the CLI reads the local project, builds the root filesystem and image if needed, pushes it, and starts an instance.
@@ -28,7 +32,10 @@ In the new flow, the CLI splits the same work into two clearer stages:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/my-app:latest
-unikraft run --metro=fra -p 443:8080/http+tls -m 512M --image=<my-org>/my-app:latest
+unikraft run --metro fra\
+  -p 443:8080/http+tls\
+  -m 512M \
+  --image <my-org>/my-app:latest
 ```
 
 This split has two practical consequences:
@@ -72,7 +79,8 @@ The `default` profile contains all the publicly available metros:
 ```bash
 unikraft profile list
 ```
-```ansi
+
+```ansi title=""
 [1mNAME[0m     [1mACTIVE[0m  [1mMETROS[0m
 default  true    ["fra0", "dal0", "sin0", "was1", "fra", "dal", "sin", "was", "sfo"]
 ```
@@ -118,7 +126,10 @@ httpserver-go121-xjsli  bitter-bonobo-20plsjfu.was.unikraft.app  [94mstandby[0
 Write operations require an explicit metro selection with `--metro`:
 
 ```bash title="unikraft"
-unikraft run --metro=fra -p 443:8080/http+tls -m 512MiB --image=<my-org>/my-app:latest
+unikraft run --metro fra \
+  -p 443:8080/http+tls \
+  -m 512Mi \
+  --image <my-org>/my-app:latest
 ``` 
 
 For custom or private metros, define a profile in `~/.config/unikraft/config.yaml`:
@@ -190,7 +201,13 @@ unikraft build . --output <my-org>/my-app:latest
 ```
 
 ```bash title="kraft"
-kraft pkg --push -p kraftcloud -m x86_64 --rootfs-type erofs --name <my-org>/my-app:latest .
+kraft pkg \
+  --plat kraftcloud \
+  --arch x86_64 \
+  --name <my-org>/my-app:latest \
+  --rootfs-type erofs \
+  --push \
+  .
 ```
 
 </CodeTabs>
@@ -200,11 +217,18 @@ kraft pkg --push -p kraftcloud -m x86_64 --rootfs-type erofs --name <my-org>/my-
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft run --metro=fra -p 443:8080/http+tls -m 512M --image=<my-org>/my-app:latest
+unikraft run --metro fra \
+  -p 443:8080/http+tls \
+  -m 512M \
+  --image <my-org>/my-app:latest
 ```
 
 ```bash title="kraft"
-kraft cloud vm create --start -p 443:8080/http+tls -M 512Mi <my-org>/my-app:latest
+kraft cloud vm create \
+  --start \
+  -p 443:8080/http+tls \
+  -M 512Mi \
+  <my-org>/my-app:latest
 ```
 
 </CodeTabs>
@@ -242,11 +266,16 @@ kraft cloud instance remove <name>
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft volume create --metro=fra --name=data --size=200M
+unikraft volume create \
+  --metro fra \
+  --name data \
+  --size 200M
 ```
 
 ```bash title="kraft"
-kraft cloud volume create --name data --size 200Mi
+kraft cloud volume create \
+  --name data \
+  --size 200Mi
 ```
 
 </CodeTabs>
@@ -260,11 +289,15 @@ Memory units behave differently in the new CLI.
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft run --metro=fra -m 512M --image=<my-org>/my-app:latest
+unikraft run --metro fra \
+  -m 512M \
+  --image <my-org>/my-app:latest
 ```
 
 ```bash title="kraft"
-kraft cloud deploy -M 512Mi .
+kraft cloud deploy \
+  -M 512Mi \
+  .
 ```
 
 </CodeTabs>
@@ -279,9 +312,9 @@ The new CLI folds three legacy switches into one structured flag:
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft run --metro=fra \
+unikraft run --metro fra \
   --scale-to-zero policy=idle,cooldown-time=5000,stateful=true \
-  --image=<my-org>/my-app:latest
+  --image <my-org>/my-app:latest
 ```
 
 ```bash title="kraft"
@@ -335,7 +368,7 @@ The migrated workflow is:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/my-app:latest
-unikraft run --metro=fra -n my-app -p 443:8080/http+tls -m 512M -e APP_ENV=production --image=<my-org>/my-app:latest
+unikraft run --metro fra -n my-app -p 443:8080/http+tls -m 512M -e APP_ENV=production --image <my-org>/my-app:latest
 unikraft instances get my-app
 unikraft instance logs my-app -f
 unikraft instances delete my-app

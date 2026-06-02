@@ -3,30 +3,42 @@ title: Certificates
 navigation_icon: shield-check
 ---
 
-To use a custom certificate instead of the automatically generated one from the default public certificate authority, create a certificate with the CLI:
+When attaching a [service](/platform/services) to an instance, Unikraft Cloud exposes the instance on a subdomain of `unikraft.app` by default.
+It automatically issues a certificate for the domain from a public certificate authority.
+
+## Custom certificates
+
+You can upload your own certificate to use with your services:
 
 <CodeTabs syncKey="cli">
 
-```ansi title="unikraft"
-unikraft certificates create \
-  --cn *.mydomain.com \
+```bash title="unikraft"
+unikraft certificates create --metro fra \
+  --cn demo.unikraft.dev. \
   --name mydomain-cert \
-  --pkey /path/to/private.key \
-  --chain /path/to/chain.pem
+  --pkey </path/to/private.key> \
+  --chain </path/to/chain.pem>
 ```
 
-```ansi title="kraft"
-kraft cloud cert create \
-  --cn *.mydomain.com \
+```bash title="kraft"
+kraft cloud certificates create \
+  --cn demo.unikraft.dev. \
   --name mydomain-cert \
-  --pkey /path/to/private.key \
-  --chain /path/to/chain.pem
+  --pkey </path/to/private.key> \
+  --chain </path/to/chain.pem>
 ```
 
 </CodeTabs>
 
-The provided common name (CN) must match the one for which Unikraft Cloud issued the certificate.
+:::caution
+Make sure that the common name given ends with a dot (`.`).
+:::
+
+:::info
+Unikraft Cloud checks both the `CN` and `SAN` fields of the certificate.
+The provided common name (CN) must match the one on the certificate file, and the certificate must be valid for the domain you want to use.
 It can also be a wildcard domain.
+:::
 
 Use the CLI to view and manage certificates.
 For example, to list certificates:
@@ -38,48 +50,149 @@ unikraft certificates list
 ```
 
 ```bash title="kraft"
-kraft cloud cert ls
+kraft cloud certificates list
 ```
 
 </CodeTabs>
 
 You should see output like:
 
-```text title=""
-NAME                STATE  COMMON NAME     CREATED AT
-mydomain.com-sa4x9  valid  mydomain.com    5 days ago
-mydomain-cert       valid  *.mydomain.com  2 days ago
+<CodeTabs syncKey="cli">
+
+```ansi title="unikraft"
+METRO  NAME                COMMON-NAME        STATE  CREATED       NOT-AFTER
+fra    mydomain-cert       demo.unikraft.dev  valid  1 minute ago  in 12 months
+fra    mydomain.com-sa4x9  *.mydomain.com     valid  5 days ago    in 12 months
 ```
+
+```ansi title="kraft"
+NAME                STATE  COMMON NAME        CREATED AT
+mydomain-cert       valid  demo.unikraft.dev  1 minute ago
+mydomain.com-sa4x9  valid  *.mydomain.com     5 days ago
+```
+
+</CodeTabs>
 
 Retrieve full information about a certificate with:
 
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft certificates get mydomain.com-sa4x9
+unikraft certificates get mydomain-cert
 ```
 
 ```bash title="kraft"
-kraft cloud cert get mydomain.com-sa4x9
+kraft cloud certificates get mydomain-cert
 ```
 
 </CodeTabs>
 
 You should see output like:
 
-```ansi title=""
-        uuid: b8160db9-7cba-4b80-9107-c4fe27529bf5
-        name: mydomain.com-sa4x9
-        state: [92mvalid[0m
-  common name: mydomain.com
-      subject: CN=mydomain.com
-      issuer: CN=R3,O=Let's Encrypt,C=US
-serial number: 0455BBAEC140EACBA5FEEAE6D817E73EF266
-  not before: 2024-03-07T18:06:11Z
-    not after: 2024-06-05T18:06:10Z
-  created at: 2024-03-07T19:06:04Z
-    services: wispy-moon-dpg6d54i
+<CodeTabs syncKey="cli">
+
+```ansi title="unikraft"
+metro:         fra
+name:          mydomain-cert
+uuid:          9fabfc61-a168-439e-89e2-0d5308ee9f13
+common-name:   demo.unikraft.dev
+subject:       CN=demo.unikraft.dev
+issuer:        CN=demo.unikraft.dev
+serial-number: 43C149067F939CD41100A74905B80560C315E92F
+state:         valid
+timestamps:
+  created:     just now
+  not-before:  1 minute ago
+  not-after:   in 12 months
 ```
+
+```ansi title="kraft"
+                uuid: 9fabfc61-a168-439e-89e2-0d5308ee9f13
+                name: mydomain-cert
+               state: valid
+ validation attempts: 
+        next attempt: 
+         common name: demo.unikraft.dev
+             subject: CN=demo.unikraft.dev
+              issuer: CN=demo.unikraft.dev
+       serial number: 43C149067F939CD41100A74905B80560C315E92F
+          not before: 2026-06-04T14:51:03Z
+           not after: 2027-06-04T14:51:03Z
+          created at: 2026-06-04T14:52:01Z
+            services:
+```
+
+</CodeTabs>
+
+## Attaching certificates to services
+
+You attach the certificate to a service group implicitly.
+You do this by creating an instance with a [domain](/platform/domains) that matches the common name of the certificate:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft run --metro fra \
+  -m 256M \
+  -p 443:8080/http+tls \
+  --domain demo.unikraft.dev \
+  --image <my-org>/nginx:latest
+```
+
+```bash title="kraft"
+kraft cloud instance create \
+  --start \
+  -M 256Mi \
+  -p 443:8080/tls+http \
+  -d demo.unikraft.dev \
+  <my-org>/nginx:latest
+```
+
+</CodeTabs>
+
+<CodeTabs syncKey="cli">
+
+```ansi title="unikraft"
+metro:           fra
+name:            nginx-67zbu
+uuid:            8a8bc1b9-0af6-420e-a426-190dc2da9eaa
+state:           [92mstarting[0m
+image:           <my-org>/nginx
+resources:
+  memory:        256MiB
+  vcpus:         1
+service:
+  uuid:          a942b9b5-ad17-3ffe-dcd2-ef4331f9087a
+  name:          nameless-fog-0tvh1uov
+  domains:
+  - fqdn:        demo.unikraft.dev
+    certificate:
+      name:      mydomain-cert
+      uuid:      9fabfc61-a168-439e-89e2-0d5308ee9f13
+networks:
+- uuid:          62d9bbf0-aec8-61f6-7bdb-86edf63dd068
+  private-ip:    10.0.3.3
+  mac:           12:b0:c6:23:ed:15
+timestamps:
+  created:       just now
+```
+
+```ansi title="kraft"
+[90m[[0m[92m●[0m[90m][0m Deployed successfully!
+ [90m│[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: nginx-67zbu
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 8a8bc1b9-0af6-420e-a426-190dc2da9eaa
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmetro[0m: https://api.fra.unikraft.cloud/v1
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mdomain[0m: https://demo.unikraft.dev
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: oci://unikraft.io/<my-org>/nginx@sha256:f51ecc121c9ca34abb88a2bc6a69765501304f7893f7e85af15fbec3dc86e2bd
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 256 MiB
+ [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: nameless-fog-0tvh1uov
+ [90m├[0m[90m─[0m [90mprivate fqdn[0m: nginx-67zbu.internal
+ [90m└[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 10.0.3.3
+```
+
+</CodeTabs>
 
 To remove a certificate, first remove any instances from the relevant service and then remove the service.
 Remove the certificate with:
@@ -87,11 +200,11 @@ Remove the certificate with:
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft certificates delete mydomain.com-sa4x9
+unikraft certificates delete mydomain-cert
 ```
 
 ```bash title="kraft"
-kraft cloud cert rm mydomain.com-sa4x9
+kraft cloud certificates delete mydomain-cert
 ```
 
 </CodeTabs>
@@ -99,5 +212,5 @@ kraft cloud cert rm mydomain.com-sa4x9
 ## Learn more
 
 * The [CLI reference](/docs/cli/unikraft) and the [legacy CLI reference](/docs/cli/kraft/overview).
-* Unikraft Cloud's [REST API reference](/api/platform/v1).
-* Many more guides [here](/guides/bun).
+* Unikraft Cloud's [REST API reference](/api/platform/v1) and, in particular, the section on [certificates](/api/platform/v1/certificates).
+* The [domains documentation](/platform/domains) for more information on how to expose your services on custom domains.
