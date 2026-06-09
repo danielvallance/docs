@@ -129,40 +129,40 @@ kraft cloud deploy \
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:        fra
-name:         node-playwright-chromium-4rrxr
-uuid:         aeff2d28-d718-4068-9e24-4e2bb203022c
-state:        [92mstarting[0m
-image:        <my-org>/node-playwright-chromium
-resources:
-  memory:     1000MiB
-  vcpus:      1
-service:
-  name:       dry-fire-vhmh9z8u
-  uuid:       28762473-9e16-4921-bee5-e57c9e5dff34
-  domains:
-  - fqdn:     dry-fire-vhmh9z8u.fra.unikraft.app
-networks:
-- uuid:       dd2581ff-f7e8-4aac-b7e6-73b1d64c5cb7
-  private-ip: 10.0.3.133
-  mac:        12:b0:0a:00:00:19
-timestamps:
-  created:    just now
+[1mmetro[22m:        fra
+[1mname[22m:         node-playwright-chromium-4rrxr
+[1muuid[22m:         aeff2d28-d718-4068-9e24-4e2bb203022c
+[1mstate[22m:        [38;2;144;161;185mstarting[0m
+[1mimage[22m:        <my-org>/node-playwright-chromium
+[1mresources[22m:
+[3m  memory[23m:     1000MiB
+[3m  vcpus[23m:      1
+[1mservice[22m:
+[3m  name[23m:       dry-fire-vhmh9z8u
+[3m  uuid[23m:       28762473-9e16-4921-bee5-e57c9e5dff34
+[3m  domains[23m:
+[3m  - fqdn[23m:     dry-fire-vhmh9z8u.fra.unikraft.app
+[1mnetworks[22m:
+[3m- uuid[23m:       dd2581ff-f7e8-4aac-b7e6-73b1d64c5cb7
+[3m  private-ip[23m: 10.0.3.133
+[3m  mac[23m:        12:b0:0a:00:00:19
+[1mtimestamps[22m:
+[3m  created[23m:    just now
 ```
 
 ```ansi title="kraft"
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m─────────[0m [90mname[0m: node-playwright-chromium-q9ynl
- [90m├[0m[90m─────────[0m [90muuid[0m: cb7a1770-6d6a-4f53-a98a-f021ae796313
- [90m├[0m[90m────────[0m [90mmetro[0m: https://api.fra.unikraft.cloud/v1
- [90m├[0m[90m────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────[0m [90mdomain[0m: https://proud-dream-udqhbav3.fra.unikraft.app
- [90m├[0m[90m────────[0m [90mimage[0m: oci://unikraft.io/<my-org>/node-playwright-chromium@sha256:056d5daa3e0f8a91ac18930a9a7714203515a6fae1244b1ecea831f64f593e79
- [90m├[0m[90m───────[0m [90mmemory[0m: 1000 MiB
- [90m├[0m[90m──────[0m [90mservice[0m: proud-dream-udqhbav3
- [90m├[0m[90m─[0m [90mprivate fqdn[0m: node-playwright-chromium-q9ynl.internal
- [90m└[0m[90m───[0m [90mprivate ip[0m: 10.0.3.133
+[38;5;245m[[0m[92m●[0m[38;5;245m][0m Deployed successfully!
+ [38;5;245m│[0m
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245mname[0m: node-playwright-chromium-q9ynl
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245muuid[0m: cb7a1770-6d6a-4f53-a98a-f021ae796313
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mmetro[0m: https://api.fra.unikraft.cloud/v1
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mstate[0m: [0;32mrunning[0m
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mdomain[0m: https://proud-dream-udqhbav3.fra.unikraft.app
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mimage[0m: oci://unikraft.io/<my-org>/node-playwright-chromium@sha256:056d5daa3e0f8a91ac18930a9a7714203515a6fae1244b1ecea831f64f593e79
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mmemory[0m: 1000 MiB
+ [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: proud-dream-udqhbav3
+ [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: node-playwright-chromium-q9ynl.internal
+ [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.3.133
 ```
 
 </CodeTabs>
@@ -201,40 +201,40 @@ kraft cloud deploy \
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:        fra
-name:         node-playwright-chromium-b0nyn
-uuid:         e4d00b20-4fc9-4cba-a29d-846fa733c358
-state:        [92mstarting[0m
-image:        <my-org>/node-playwright-chromium
-resources:
-  memory:     2700MiB
-  vcpus:      1
-service:
-  name:       fragrant-dawn-v42h579x
-  uuid:       e9424066-5c71-4142-94ee-44acc5ed3d09
-  domains:
-  - fqdn:     fragrant-dawn-v42h579x.fra.unikraft.app
-networks:
-- uuid:       762a85e2-e6ad-435a-867e-4139a5fda69f
-  private-ip: 10.0.3.157
-  mac:        12:b0:0a:00:00:9d
-timestamps:
-  created:    just now
+[1mmetro[22m:        fra
+[1mname[22m:         node-playwright-chromium-b0nyn
+[1muuid[22m:         e4d00b20-4fc9-4cba-a29d-846fa733c358
+[1mstate[22m:        [38;2;144;161;185mstarting[0m
+[1mimage[22m:        <my-org>/node-playwright-chromium
+[1mresources[22m:
+[3m  memory[23m:     2700MiB
+[3m  vcpus[23m:      1
+[1mservice[22m:
+[3m  name[23m:       fragrant-dawn-v42h579x
+[3m  uuid[23m:       e9424066-5c71-4142-94ee-44acc5ed3d09
+[3m  domains[23m:
+[3m  - fqdn[23m:     fragrant-dawn-v42h579x.fra.unikraft.app
+[1mnetworks[22m:
+[3m- uuid[23m:       762a85e2-e6ad-435a-867e-4139a5fda69f
+[3m  private-ip[23m: 10.0.3.157
+[3m  mac[23m:        12:b0:0a:00:00:9d
+[1mtimestamps[22m:
+[3m  created[23m:    just now
 ```
 
 ```ansi title="kraft"
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m─────────[0m [90mname[0m: node-playwright-chromium-b0nyn
- [90m├[0m[90m─────────[0m [90muuid[0m: e4d00b20-4fc9-4cba-a29d-846fa733c358
- [90m├[0m[90m────────[0m [90mmetro[0m: https://api.fra.unikraft.cloud/v1
- [90m├[0m[90m────────[0m [90mstate[0m: [92mrunning[0m
- [90m├[0m[90m───────[0m [90mdomain[0m: https://fragrant-dawn-v42h579x.fra.unikraft.app
- [90m├[0m[90m────────[0m [90mimage[0m: oci://unikraft.io/<my-org>/node-playwright-chromium@sha256:57d1773398bc6d4ff94f063d6e9b7400dca66171d04ce78cd8a45789ba0a7d93
- [90m├[0m[90m───────[0m [90mmemory[0m: 2700 MiB
- [90m├[0m[90m──────[0m [90mservice[0m: fragrant-dawn-v42h579x
- [90m├[0m[90m─[0m [90mprivate fqdn[0m: node-playwright-chromium-b0nyn.internal
- [90m└[0m[90m───[0m [90mprivate ip[0m: 10.0.3.157
+[38;5;245m[[0m[92m●[0m[38;5;245m][0m Deployed successfully!
+ [38;5;245m│[0m
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245mname[0m: node-playwright-chromium-b0nyn
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245muuid[0m: e4d00b20-4fc9-4cba-a29d-846fa733c358
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mmetro[0m: https://api.fra.unikraft.cloud/v1
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mstate[0m: [0;32mrunning[0m
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mdomain[0m: https://fragrant-dawn-v42h579x.fra.unikraft.app
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mimage[0m: oci://unikraft.io/<my-org>/node-playwright-chromium@sha256:57d1773398bc6d4ff94f063d6e9b7400dca66171d04ce78cd8a45789ba0a7d93
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mmemory[0m: 2700 MiB
+ [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: fragrant-dawn-v42h579x
+ [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: node-playwright-chromium-b0nyn.internal
+ [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.3.157
 ```
 
 </CodeTabs>

@@ -116,7 +116,7 @@ unikraft api /v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea -X 
 
 ```bash title="API"
 curl -X GET \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   "https://api.fra.unikraft.cloud/v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea"
 ```
 
@@ -225,7 +225,7 @@ unikraft api /v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea -X 
 
 ```bash title="API"
 curl -X GET \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Accept: text/plain" \
   "https://api.fra.unikraft.cloud/v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea"
 ```

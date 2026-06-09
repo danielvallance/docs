@@ -39,6 +39,7 @@ pnpm-debug.log*
 
 # build outputs
 dist/
+*.pyc
 
 # generated files
 apis/platform.yaml

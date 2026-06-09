@@ -93,7 +93,7 @@ Then invoke the following `curl` command to scale down an instance named `my-ins
 
 ```bash title="POST /instances/suspend"
 curl -X POST https://api.fra.unikraft.cloud/v1/instances/suspend \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "my-instance",

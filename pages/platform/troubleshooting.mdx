@@ -79,31 +79,31 @@ This yields output like:
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:           fra
-name:            node-playwright-chromium-nwa95
-uuid:            59cd6c94-611c-4ca8-911f-78c7db95ad12
-state:           stopped
-image:           <my-org>/node-playwright-chromium
-resources:
-  memory:        2.441GiB
-  vcpus:         1
-service:
-  name:          divine-dust-73sxgnb6
-  uuid:          3c7ce2b4-ae86-4a21-8562-55033d5409d5
-  domains:
-  - fqdn:        divine-dust-73sxgnb6.fra0-fe-test.unikraft.app
-networks:
-- uuid:          62982265-6521-401c-878a-d7e31804c63c
-  private-ip:    10.0.0.109
-  mac:           12:b0:0a:00:00:6d
-timestamps:
-  created:       2 days ago
-scale-to-zero:
-  enabled:       true
-  policy:        on
-  cooldown-time: 1s
-stop:
-  reason:        kernel crash: out of memory (ENOMEM)
+[1mmetro[22m:           fra
+[1mname[22m:            node-playwright-chromium-nwa95
+[1muuid[22m:            59cd6c94-611c-4ca8-911f-78c7db95ad12
+[1mstate[22m:           [38;2;236;0;63mstopped[0m
+[1mimage[22m:           <my-org>/node-playwright-chromium
+[1mresources[22m:
+[3m  memory[23m:        2.441GiB
+[3m  vcpus[23m:         1
+[1mservice[22m:
+[3m  name[23m:          divine-dust-73sxgnb6
+[3m  uuid[23m:          3c7ce2b4-ae86-4a21-8562-55033d5409d5
+[3m  domains[23m:
+[3m  - fqdn[23m:        divine-dust-73sxgnb6.fra0-fe-test.unikraft.app
+[1mnetworks[22m:
+[3m- uuid[23m:          62982265-6521-401c-878a-d7e31804c63c
+[3m  private-ip[23m:    10.0.0.109
+[3m  mac[23m:           12:b0:0a:00:00:6d
+[1mtimestamps[22m:
+[3m  created[23m:       2 days ago
+[1mscale-to-zero[22m:
+[3m  enabled[23m:       true
+[3m  policy[23m:        on
+[3m  cooldown-time[23m: 1s
+[1mstop[22m:
+[3m  reason[23m:        kernel crash: out of memory (ENOMEM)
 ```
 
 ```ansi title="kraft"
@@ -112,7 +112,7 @@ stop:
                    fqdn: divine-dust-73sxgnb6.fra0-fe-test.unikraft.app
            private fqdn: node-playwright-chromium-nwa95.internal
              private ip: 10.0.0.109
-                  state: stopped
+                  state: [0;31mstopped[0m
                 created: 2026-06-02T17:24:31Z
                 started: 2026-06-02T17:24:31Z
                 stopped: 2026-06-02T17:24:37Z

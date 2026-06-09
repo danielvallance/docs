@@ -36,21 +36,21 @@ kraft cloud volume create \
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:        fra
-name:         my-volume
-uuid:         4d5576f7-315a-4eab-98b8-6c18fec076e0
-state:        available
-size:         100MiB
-filesystem:   ext4
-quota-policy: static
-persistent:   true
-access-mode:  rwo
-timestamps:
-  created:    just now
+[1mmetro[22m:        fra
+[1mname[22m:         my-volume
+[1muuid[22m:         4d5576f7-315a-4eab-98b8-6c18fec076e0
+[1mstate[22m:        available
+[1msize[22m:         100MiB
+[1mfilesystem[22m:   ext4
+[1mquota-policy[22m: static
+[1mpersistent[22m:   true
+[1maccess-mode[22m:  rwo
+[1mtimestamps[22m:
+[3m  created[23m:    just now
 ```
 
 ```ansi title="kraft"
-NAME       CREATED AT    SIZE     ATTACHED TO  MOUNTED BY  STATE      PERSISTENT
+[0;1;39mNAME[0m       [0;1;39mCREATED AT[0m    [0;1;39mSIZE[0m     [0;1;39mATTACHED TO[0m  [0;1;39mMOUNTED BY[0m  [0;1;39mSTATE[0m      [0;1;39mPERSISTENT[0m
 my-volume  1 second ago  100 MiB                           available  true
 ```
 
@@ -72,20 +72,20 @@ kraft cloud volume list
 
 <CodeTabs syncKey="cli">
 
-```bash title="unikraft"
-METRO  NAME       STATE      SIZE    CREATED
-fra    my-volume  available  100MiB  just now
+```ansi title="unikraft"
+[1mMETRO[22m  [1mNAME[22m       [1mSTATE[22m      [1mSIZE[22m    [1mCREATED[22m
+fra    my-volume  [38;2;0;188;125mavailable[0m  100MiB  just now
 ```
 
-```bash title="kraft"
-NAME       CREATED AT    SIZE     ATTACHED TO  MOUNTED BY  STATE      PERSISTENT
+```ansi title="kraft"
+[0;1;39mNAME[0m       [0;1;39mCREATED AT[0m    [0;1;39mSIZE[0m     [0;1;39mATTACHED TO[0m  [0;1;39mMOUNTED BY[0m  [0;1;39mSTATE[0m      [0;1;39mPERSISTENT[0m
 my-volume  1 minute ago  100 MiB                           available  true
 ```
 
+</CodeTabs>
+
 The volume is in `available` state because it isn't attached to any instance yet.
 It's also marked as `persistent` because it will persist even after instance deletion.
-
-</CodeTabs>
 
 ### Importing local data
 
@@ -206,44 +206,44 @@ You should see output like:
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:        fra
-name:         httpserver-python312-flask30-bxwxm
-uuid:         3ff1ebad-2639-4214-bab4-ed35c4c32fa4
-state:        [92mstarting[0m
-image:        <my-org>/httpserver-python312-flask30
-resources:
-  memory:     512MiB
-  vcpus:      1
-service:
-  uuid:       2021ca1e-5e47-a35c-bde2-7190f3815c07
-  name:       damp-sunset-azd6dtyt
-  domains:
-  - fqdn:     damp-sunset-azd6dtyt.fra.unikraft.app
-volumes:
-- name:       my-volume
-  uuid:       4d5576f7-315a-4eab-98b8-6c18fec076e0
-  at:         /mnt
-networks:
-- uuid:       4dc3b272-4fa2-ddb4-7ce0-5e66e8112a61
-  private-ip: 10.0.6.5
-  mac:        12:b0:66:99:b3:3f
-timestamps:
-  created:    just now
+[1mmetro[22m:        fra
+[1mname[22m:         httpserver-python312-flask30-bxwxm
+[1muuid[22m:         3ff1ebad-2639-4214-bab4-ed35c4c32fa4
+[1mstate[22m:        [38;2;144;161;185mstarting[0m
+[1mimage[22m:        <my-org>/httpserver-python312-flask30
+[1mresources[22m:
+[3m  memory[23m:     512MiB
+[3m  vcpus[23m:      1
+[1mservice[22m:
+[3m  uuid[23m:       2021ca1e-5e47-a35c-bde2-7190f3815c07
+[3m  name[23m:       damp-sunset-azd6dtyt
+[3m  domains[23m:
+[3m  - fqdn[23m:     damp-sunset-azd6dtyt.fra.unikraft.app
+[1mvolumes[22m:
+[3m- name[23m:       my-volume
+[3m  uuid[23m:       4d5576f7-315a-4eab-98b8-6c18fec076e0
+[3m  at[23m:         /mnt
+[1mnetworks[22m:
+[3m- uuid[23m:       4dc3b272-4fa2-ddb4-7ce0-5e66e8112a61
+[3m  private-ip[23m: 10.0.6.5
+[3m  mac[23m:        12:b0:66:99:b3:3f
+[1mtimestamps[22m:
+[3m  created[23m:    just now
 ```
 
 ```ansi title="kraft"
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-python312-flask30-bxwxm
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 3ff1ebad-2639-4214-bab4-ed35c4c32fa4
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmetro[0m: https://api.fra.unikraft.cloud/v1
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mdomain[0m: https://damp-sunset-azd6dtyt.fra.unikraft.app
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: oci://unikraft.io/<my-org>/httpserver-python312-flask30@sha256:d6c8e4c5a4f44e1d642d8eaeaa1d820b2841194dd6c5d4a872ae0a895c767da9
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 512 MiB
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: damp-sunset-azd6dtyt
- [90m├[0m[90m─[0m [90mprivate fqdn[0m: httpserver-python312-flask30-bxwxm.internal
- [90m└[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 10.0.6.5
+[38;5;245m[[0m[92m●[0m[38;5;245m][0m Deployed successfully!
+ [38;5;245m│[0m
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245mname[0m: httpserver-python312-flask30-bxwxm
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245muuid[0m: 3ff1ebad-2639-4214-bab4-ed35c4c32fa4
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mmetro[0m: https://api.fra.unikraft.cloud/v1
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mstate[0m: [92mstarting[0m
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mdomain[0m: https://damp-sunset-azd6dtyt.fra.unikraft.app
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mimage[0m: oci://unikraft.io/<my-org>/httpserver-python312-flask30@sha256:d6c8e4c5a4f44e1d642d8eaeaa1d820b2841194dd6c5d4a872ae0a895c767da9
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mmemory[0m: 512 MiB
+ [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: damp-sunset-azd6dtyt
+ [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: httpserver-python312-flask30-bxwxm.internal
+ [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.6.5
 ```
 
 </CodeTabs>
@@ -267,12 +267,12 @@ You should see output like:
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-METRO  NAME       STATE    SIZE    CREATED
-fra    my-volume  mounted  100MiB  2 minutes ago
+[1mMETRO[22m  [1mNAME[22m       [1mSTATE[22m    [1mSIZE[22m    [1mCREATED[22m
+fra    my-volume  [38;2;0;188;125mmounted[0m  100MiB  2 minutes ago
 ```
 
 ```ansi title="kraft"
-NAME       CREATED AT     SIZE     ATTACHED TO                         MOUNTED BY                          STATE    PERSISTENT
+[0;1;39mNAME[0m       [0;1;39mCREATED AT[0m     [0;1;39mSIZE[0m     [0;1;39mATTACHED TO[0m                         [0;1;39mMOUNTED BY[0m                          [0;1;39mSTATE[0m    [0;1;39mPERSISTENT[0m
 my-volume  2 minutes ago  100 MiB  httpserver-python312-flask30-bxwxm  httpserver-python312-flask30-bxwxm  mounted  true
 ```
 
@@ -358,44 +358,44 @@ This should output something like:
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:        fra
-name:         httpserver-python312-flask30-0s9c7
-uuid:         59d06415-84b8-4bf5-85c7-997960382011
-state:        [92mstarting[0m
-image:        <my-org>/httpserver-python312-flask30
-resources:
-  memory:     512MiB
-  vcpus:      1
-service:
-  uuid:       ca8ae7e9-3767-85f6-3d70-b77bcf894a7c
-  name:       winter-field-v6m37jgs
-  domains:
-  - fqdn:     winter-field-v6m37jgs.fra.unikraft.app
-volumes:
-- name:       my-volume
-  uuid:       4d5576f7-315a-4eab-98b8-6c18fec076e0
-  at:         /mnt
-networks:
-- uuid:       935ba4ef-39c2-07e7-d2ae-8cd3c9aae07c
-  private-ip: 10.0.6.5
-  mac:        12:b0:66:99:b3:3f
-timestamps:
-  created:    just now
+[1mmetro[22m:        fra
+[1mname[22m:         httpserver-python312-flask30-0s9c7
+[1muuid[22m:         59d06415-84b8-4bf5-85c7-997960382011
+[1mstate[22m:        [38;2;144;161;185mstarting[0m
+[1mimage[22m:        <my-org>/httpserver-python312-flask30
+[1mresources[22m:
+[3m  memory[23m:     512MiB
+[3m  vcpus[23m:      1
+[1mservice[22m:
+[3m  uuid[23m:       ca8ae7e9-3767-85f6-3d70-b77bcf894a7c
+[3m  name[23m:       winter-field-v6m37jgs
+[3m  domains[23m:
+[3m  - fqdn[23m:     winter-field-v6m37jgs.fra.unikraft.app
+[1mvolumes[22m:
+[3m- name[23m:       my-volume
+[3m  uuid[23m:       4d5576f7-315a-4eab-98b8-6c18fec076e0
+[3m  at[23m:         /mnt
+[1mnetworks[22m:
+[3m- uuid[23m:       935ba4ef-39c2-07e7-d2ae-8cd3c9aae07c
+[3m  private-ip[23m: 10.0.6.5
+[3m  mac[23m:        12:b0:66:99:b3:3f
+[1mtimestamps[22m:
+[3m  created[23m:    just now
 ```
 
 ```ansi title="kraft"
-[90m[[0m[92m●[0m[90m][0m Deployed successfully!
- [90m│[0m
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mname[0m: httpserver-python312-flask30-0s9c7
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90muuid[0m: 59d06415-84b8-4bf5-85c7-997960382011
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmetro[0m: https://api.fra.unikraft.cloud/v1
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mstate[0m: [92mstarting[0m
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mdomain[0m: https://winter-field-v6m37jgs.fra.unikraft.app
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mimage[0m: oci://unikraft.io/<my-org>/httpserver-python312-flask30@sha256:d6c8e4c5a4f44e1d642d8eaeaa1d820b2841194dd6c5d4a872ae0a895c767da9
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mmemory[0m: 512 MiB
- [90m├[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m[90m─[0m [90mservice[0m: winter-field-v6m37jgs
- [90m├[0m[90m─[0m [90mprivate fqdn[0m: httpserver-python312-flask30-0s9c7.internal
- [90m└[0m[90m─[0m[90m─[0m[90m─[0m [90mprivate ip[0m: 10.0.6.5
+[38;5;245m[[0m[92m●[0m[38;5;245m][0m Deployed successfully!
+ [38;5;245m│[0m
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245mname[0m: httpserver-python312-flask30-0s9c7
+ [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245muuid[0m: 59d06415-84b8-4bf5-85c7-997960382011
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mmetro[0m: https://api.fra.unikraft.cloud/v1
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mstate[0m: [92mstarting[0m
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mdomain[0m: https://winter-field-v6m37jgs.fra.unikraft.app
+ [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mimage[0m: oci://unikraft.io/<my-org>/httpserver-python312-flask30@sha256:d6c8e4c5a4f44e1d642d8eaeaa1d820b2841194dd6c5d4a872ae0a895c767da9
+ [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mmemory[0m: 512 MiB
+ [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: winter-field-v6m37jgs
+ [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: httpserver-python312-flask30-0s9c7.internal
+ [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.6.5
 ```
 
 </CodeTabs>
@@ -471,15 +471,15 @@ kraft cloud volume template create my-volume
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:      fra
-name:       my-volume
-uuid:       4d5576f7-315a-4eab-98b8-6c18fec076e0
-state:      template
-size:       100MiB
-filesystem: ext4
-persistent: true
-timestamps:
-  created:  just now
+[1mmetro[22m:      fra
+[1mname[22m:       my-volume
+[1muuid[22m:       4d5576f7-315a-4eab-98b8-6c18fec076e0
+[1mstate[22m:      [38;2;43;127;255mtemplate[0m
+[1msize[22m:       100MiB
+[1mfilesystem[22m: ext4
+[1mpersistent[22m: true
+[1mtimestamps[22m:
+[3m  created[23m:  just now
 ```
 
 ```ansi title="kraft"
@@ -505,12 +505,12 @@ kraft cloud volume template list
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-METRO  NAME       STATE     SIZE    CREATED
-fra    my-volume  template  100MiB  1 minute ago
+[1mMETRO[22m  [1mNAME[22m       [1mSTATE[22m     [1mSIZE[22m    [1mCREATED[22m
+fra    my-volume  [38;2;43;127;255mtemplate[0m  100MiB  1 minute ago
 ```
 
 ```ansi title="kraft"
-NAME       CREATED AT    SIZE     FREE  ATTACHED TO  STATE     PERSISTENT  POLICY
+[0;1;39mNAME[0m       [0;1;39mCREATED AT[0m    [0;1;39mSIZE[0m     [0;1;39mFREE[0m  [0;1;39mATTACHED TO[0m  [0;1;39mSTATE[0m     [0;1;39mPERSISTENT[0m  [0;1;39mPOLICY[0m
 my-volume  1 minute ago  100 MiB  0 B                template  true        static
 ```
 
@@ -533,17 +533,17 @@ unikraft volume clone my-volume --name my-volume-clone
 ```
 
 ```ansi title="unikraft"
-metro:        fra
-name:         my-volume-clone
-uuid:         3f0625b4-cad3-4875-8b61-113aad4b02c7
-state:        available
-size:         100MiB
-filesystem:   ext4
-quota-policy: static
-persistent:   true
-access-mode:  rwo
-timestamps:
-  created:    just now
+[1mmetro[22m:        fra
+[1mname[22m:         my-volume-clone
+[1muuid[22m:         3f0625b4-cad3-4875-8b61-113aad4b02c7
+[1mstate[22m:        available
+[1msize[22m:         100MiB
+[1mfilesystem[22m:   ext4
+[1mquota-policy[22m: static
+[1mpersistent[22m:   true
+[1maccess-mode[22m:  rwo
+[1mtimestamps[22m:
+[3m  created[23m:    just now
 ```
 
 :::note

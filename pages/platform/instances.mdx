@@ -40,32 +40,32 @@ kraft instance list httpserver-go121-taud8
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:           fra
-name:            httpserver-go121-taud8
-uuid:            bd281cc4-7640-4cbc-af48-5a44c2bd7b74
-state:           standby
-image:           <my-org>/httpserver-go121
-resources:
-  memory:        256MiB
-  vcpus:         1
-service:
-  name:          floral-sun-54ixkmi6
-  uuid:          d20c8a02-53a8-4917-8c25-94b99ab59a88
-  domains:
-  - fqdn:        floral-sun-54ixkmi6.fra.unikraft.app
-networks:
-- uuid:          16ca6566-a368-45d3-b759-3abf0cc37d03
-  private-ip:    10.0.0.37
-  mac:           12:b0:0a:00:00:25
-timestamps:
-  created:       6 days ago
-scale-to-zero:
-  enabled:       true
-  policy:        on
-  cooldown-time: 1s
-stop:
-  reason:        platform stop
-  exit-code:     1
+[1mmetro[22m:           fra
+[1mname[22m:            httpserver-go121-taud8
+[1muuid[22m:            bd281cc4-7640-4cbc-af48-5a44c2bd7b74
+[1mstate[22m:           [38;2;43;127;255mstandby[0m
+[1mimage[22m:           <my-org>/httpserver-go121
+[1mresources[22m:
+[3m  memory[23m:        256MiB
+[3m  vcpus[23m:         1
+[1mservice[22m:
+[3m  name[23m:          floral-sun-54ixkmi6
+[3m  uuid[23m:          d20c8a02-53a8-4917-8c25-94b99ab59a88
+[3m  domains[23m:
+[3m  - fqdn[23m:        floral-sun-54ixkmi6.fra.unikraft.app
+[1mnetworks[22m:
+[3m- uuid[23m:          16ca6566-a368-45d3-b759-3abf0cc37d03
+[3m  private-ip[23m:    10.0.0.37
+[3m  mac[23m:           12:b0:0a:00:00:25
+[1mtimestamps[22m:
+[3m  created[23m:       6 days ago
+[1mscale-to-zero[22m:
+[3m  enabled[23m:       true
+[3m  policy[23m:        on
+[3m  cooldown-time[23m: 1s
+[1mstop[22m:
+[3m  reason[23m:        platform stop
+[3m  exit-code[23m:     1
 ```
 
 ```ansi title="kraft"
@@ -74,7 +74,7 @@ stop:
                    fqdn: floral-sun-54ixkmi6.fra.unikraft.app
            private fqdn: httpserver-go121-taud8.internal
              private ip: 10.0.0.37
-                  state: standby
+                  state: [0;36mstandby[0m
                 created: 2026-05-28T13:53:40Z
                 started: 2026-05-28T13:54:43Z
                 stopped: 2026-05-28T13:54:45Z
@@ -106,7 +106,7 @@ You can retrieve even more instance details via the API:
 
 ```bash title="GET /instances/bd281cc4-7640-4cbc-af48-5a44c2bd7b74"
 curl -X GET \ 
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Accept: application/json" \
   https://api.fra.unikraft.cloud/v1/instances/bd281cc4-7640-4cbc-af48-5a44c2bd7b74
 ```
@@ -465,20 +465,20 @@ kraft cloud instance template create
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-metro:           fra
-name:            httpserver-go121-taud8
-uuid:            bd281cc4-7640-4cbc-af48-5a44c2bd7b74
-state:           template
-image:           <my-org>/httpserver-go121
-resources:
-  memory:        256MiB
-  vcpus:         1
-timestamps:
-  created:       6 days ago
-scale-to-zero:
-  enabled:       true
-  policy:        on
-  cooldown-time: 1s
+[1mmetro[22m:           fra
+[1mname[22m:            httpserver-go121-taud8
+[1muuid[22m:            bd281cc4-7640-4cbc-af48-5a44c2bd7b74
+[1mstate[22m:           [38;2;43;127;255mtemplate[0m
+[1mimage[22m:           <my-org>/httpserver-go121
+[1mresources[22m:
+[3m  memory[23m:        256MiB
+[3m  vcpus[23m:         1
+[1mtimestamps[22m:
+[3m  created[23m:       6 days ago
+[1mscale-to-zero[22m:
+[3m  enabled[23m:       true
+[3m  policy[23m:        on
+[3m  cooldown-time[23m: 1s
 ```
 
 ```ansi title="kraft"
@@ -504,12 +504,12 @@ kraft instance template list
 <CodeTabs syncKey="cli">
 
 ```ansi title="unikraft"
-METRO  NAME                    STATE     IMAGE                      ARGS  MEMORY  VCPUS  CREATED
-fra    httpserver-go121-taud8  template  <my-org>/httpserver-go121        256MiB  1      6 days ago
+[1mMETRO[22m  [1mNAME[22m                    [1mSTATE[22m     [1mIMAGE[22m                      [1mARGS[22m  [1mMEMORY[22m  [1mVCPUS[22m  [1mCREATED[22m
+fra    httpserver-go121-taud8  [38;2;43;127;255mtemplate[0m  <my-org>/httpserver-go121        256MiB  1      6 days ago
 ```
 
 ```ansi title="kraft"
-NAME                    IMAGE                                                                                                                       ARGS  CREATED AT
+[0;1;39mNAME[0m                    [0;1;39mIMAGE[0m                                                                                                                       [0;1;39mARGS[0m  [0;1;39mCREATED AT[0m
 httpserver-go121-taud8  oci://unikraft.io/<my-org>/httpserver-go121:latest@sha256:7785ebdf6c1ffaf05c3beab4cffc2548790c088233a0ee51ac5d047e21e43d77        6 days ago
 ```
 
@@ -524,24 +524,24 @@ unikraft instance create --metro fra \
 ```
 
 ```ansi title="unikraft"
-metro:           fra
-name:            httpserver-go121-clone
-uuid:            91796fdb-bd41-4c7b-856f-9e60356c96bd
-state:           standby
-image:           acioc/httpserver-go121
-resources:
-  memory:        256MiB
-  vcpus:         1
-networks:
-- uuid:          8c778b8b-6ede-4e87-a825-159a2269fd19
-  private-ip:    10.0.0.85
-  mac:           12:b0:0a:00:00:55
-timestamps:
-  created:       just now
-scale-to-zero:
-  enabled:       true
-  policy:        on
-  cooldown-time: 1s
+[1mmetro[22m:           fra
+[1mname[22m:            httpserver-go121-clone
+[1muuid[22m:            91796fdb-bd41-4c7b-856f-9e60356c96bd
+[1mstate[22m:           [38;2;43;127;255mstandby[0m
+[1mimage[22m:           acioc/httpserver-go121
+[1mresources[22m:
+[3m  memory[23m:        256MiB
+[3m  vcpus[23m:         1
+[1mnetworks[22m:
+[3m- uuid[23m:          8c778b8b-6ede-4e87-a825-159a2269fd19
+[3m  private-ip[23m:    10.0.0.85
+[3m  mac[23m:           12:b0:0a:00:00:55
+[1mtimestamps[22m:
+[3m  created[23m:       just now
+[1mscale-to-zero[22m:
+[3m  enabled[23m:       true
+[3m  policy[23m:        on
+[3m  cooldown-time[23m: 1s
 ```
 
 Templates support [delete locks](/platform/delete-locks), [tags](/platform/tagging), and [autokill](/features/autokill).

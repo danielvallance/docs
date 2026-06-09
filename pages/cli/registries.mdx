@@ -125,7 +125,7 @@ For the legacy CLI, package using the `--push` flag:
 kraft pkg \
   --plat kraftcloud \
   --arch x86_64 \
-  --name index.unikraft.io/"$UKC_USER"/my-app:latest \
+  --name "index.unikraft.io/${UKC_USER}/my-app:latest" \
   --push \
   .
 ```
@@ -134,7 +134,7 @@ kraft pkg \
 kraft pkg \
   --plat kraftcloud \
   --arch x86_64 \
-  --name index.<node-name>.unikraft.cloud/"$UKC_USER"/my-app:latest \
+  --name "index.<node-name>.unikraft.cloud/${UKC_USER}/my-app:latest" \
   --push \
   .
 ```
@@ -158,13 +158,13 @@ kraft cloud image ls
 <CodeTabs syncKey="registry">
     
 ```ansi title="central registry"
-NAME                  VERSION  SIZE
+[1mNAME[0m                  [1mVERSION[0m  [1mSIZE[0m
 alice/http-python312  latest   77 MB
 alice/my-app          latest   42 MB
 ```
 
 ```ansi title="local registry"
-NAME                                           VERSION  SIZE
+[1mNAME[0m                                           [1mVERSION[0m  [1mSIZE[0m
 alice/http-python312                           latest   77 MB
 index.<node-name>.unikraft.cloud/alice/my-app  latest   42 MB
 ```
@@ -194,7 +194,7 @@ kraft cloud image rm <my-org>/<my-app>[:<tag>]
 ## Kernel layer deduplication
 
 An image has two OCI layers: a kernel layer and a rootfs layer.
-When you push an update to an existing image, the CLI checks whether the kernel layer is already present in the registry and skips re-uploading it if so.
+When you push an update to an existing image, the CLI checks whether the kernel layer is already present in the registry and skips re-uploading it.
 Only the rootfs layer travels over the wire.
 This makes iterative pushes faster and cheaper on bandwidth.
 

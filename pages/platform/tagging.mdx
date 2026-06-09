@@ -41,7 +41,7 @@ unikraft api /v1/instances -X POST --metro fra \
 ```
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '{
@@ -65,7 +65,7 @@ unikraft api /v1/instances/templates -X POST --metro fra \
 ```
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/templates" \
   -d '{
@@ -88,7 +88,7 @@ unikraft api /v1/volumes -X POST --metro fra \
 ```
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes" \
   -d '{
@@ -110,7 +110,7 @@ unikraft api /v1/volumes/templates -X POST --metro fra \
 ```
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes/templates" \
   -d '{
@@ -145,7 +145,7 @@ unikraft api /v1/instances -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '[{
@@ -171,7 +171,7 @@ unikraft api /v1/instances/templates -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/templates" \
   -d '[{
@@ -197,7 +197,7 @@ unikraft api /v1/volumes -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes" \
   -d '[{
@@ -223,7 +223,7 @@ unikraft api /v1/volumes/templates -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes/templates" \
   -d '[{
@@ -260,7 +260,7 @@ unikraft api /v1/instances -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '[{
@@ -287,7 +287,7 @@ unikraft api /v1/instances/templates -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/templates" \
   -d '[{
@@ -313,7 +313,7 @@ unikraft api /v1/volumes -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes" \
   -d '[{
@@ -339,7 +339,7 @@ unikraft api /v1/volumes/templates -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes/templates" \
   -d '[{
@@ -383,7 +383,7 @@ unikraft api /v1/instances -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '[{
@@ -409,7 +409,7 @@ unikraft api /v1/instances/templates -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/templates" \
   -d '[{
@@ -435,7 +435,7 @@ unikraft api /v1/volumes -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes" \
   -d '[{
@@ -461,7 +461,7 @@ unikraft api /v1/volumes/templates -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/volumes/templates" \
   -d '[{
@@ -494,7 +494,7 @@ Only resources that have _all_ the specified tags appear in the results.
 unikraft api "/v1/instances?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
-curl -H "Authorization: Bearer $UKC_TOKEN" \
+curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   "https://api.fra.unikraft.cloud/v1/instances?tags=production,customer_A"
 ```
   </CodeTabs>
@@ -506,7 +506,7 @@ curl -H "Authorization: Bearer $UKC_TOKEN" \
 unikraft api "/v1/instances/templates?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
-curl -H "Authorization: Bearer $UKC_TOKEN" \
+curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   "https://api.fra.unikraft.cloud/v1/instances/templates?tags=production,customer_A"
 ```
   </CodeTabs>
@@ -518,7 +518,7 @@ curl -H "Authorization: Bearer $UKC_TOKEN" \
 unikraft api "/v1/volumes?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
-curl -H "Authorization: Bearer $UKC_TOKEN" \
+curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   "https://api.fra.unikraft.cloud/v1/volumes?tags=production,customer_A"
 ```
   </CodeTabs>
@@ -530,7 +530,7 @@ curl -H "Authorization: Bearer $UKC_TOKEN" \
 unikraft api "/v1/volumes/templates?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
-curl -H "Authorization: Bearer $UKC_TOKEN" \
+curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   "https://api.fra.unikraft.cloud/v1/volumes/templates?tags=production,customer_A"
 ```
   </CodeTabs>

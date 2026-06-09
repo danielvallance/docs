@@ -107,18 +107,17 @@ kraft cloud instance list
 
 ```ansi title="unikraft"
 [1mMETRO[0m  [1mNAME[0m                    [1mSTATE[0m    [1mIMAGE[0m                      [1mARGS[0m  [1mMEMORY[0m  [1mVCPUS[0m  [1mFQDN[0m                                        [1mCREATED[0m
-fra    httpserver-go121-qdrlz  [91mstopped[0m  <my-org>/httpserver-go121        256MiB  1      summer-star-huyfslqm.fra.unikraft.app       20 hours ago
-fra    httpserver-go121-bhjvm  [91mstopped[0m  <my-org>/httpserver-go121        256MiB  1      restless-gorilla-dalzi9bs.fra.unikraft.app  20 hours ago
-was    httpserver-go121-xjsli  [94mstandby[0m  <my-org>/httpserver-go121        256MiB  1      bitter-bonobo-20plsjfu.was.unikraft.app     2 minutes ago
+fra    httpserver-go121-qdrlz  [38;2;236;0;63mstopped[0m  <my-org>/httpserver-go121        256MiB  1      summer-star-huyfslqm.fra.unikraft.app       20 hours ago
+fra    httpserver-go121-bhjvm  [38;2;236;0;63mstopped[0m  <my-org>/httpserver-go121        256MiB  1      restless-gorilla-dalzi9bs.fra.unikraft.app  20 hours ago
+was    httpserver-go121-xjsli  [38;2;43;127;255mstandby[0m  <my-org>/httpserver-go121        256MiB  1      bitter-bonobo-20plsjfu.was.unikraft.app     2 minutes ago
 ```
 
 ```ansi title="kraft"
-[1mNAME[0m                    [1mFQDN[0m                                        [1mSTATE[0m    [1mSTATUS[0m  [1mIMAGE[0m                                                      [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m  [1mBOOT TIME[0m
-httpserver-go121-qdrlz  summer-star-huyfslqm.fra.unikraft.app       [91mstopped[0m          <my-org>/httpserver-go121@sha256:7785ebdf6c1ffaf05c3be...  256 MiB  1            90.20 ms
-httpserver-go121-bhjvm  restless-gorilla-dalzi9bs.fra.unikraft.app  [91mstopped[0m          <my-org>/httpserver-go121@sha256:7785ebdf6c1ffaf05c3be...  256 MiB  1            89.33 ms
+[1mNAME[0m                    [1mFQDN[0m                                        [1mSTATE[0m    [1mSTATUS[0m   [1mIMAGE[0m                                                      [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m  [1mBOOT TIME[0m
+httpserver-go121-qdrlz  summer-star-huyfslqm.fra.unikraft.app       [0;31mstopped[0m           <my-org>/httpserver-go121@sha256:7785ebdf6c1ffaf05c3be...  256 MiB  1            90.20 ms
+httpserver-go121-bhjvm  restless-gorilla-dalzi9bs.fra.unikraft.app  [0;31mstopped[0m           <my-org>/httpserver-go121@sha256:7785ebdf6c1ffaf05c3be...  256 MiB  1            89.33 ms
 #-------------------------
-[1mNAME[0m                    [1mFQDN[0m                                     [1mSTATE[0m    [1mSTATUS[0m   [1mIMAGE[0m                                                      [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m  [1mBOOT TIME[0m
-httpserver-go121-xjsli  bitter-bonobo-20plsjfu.was.unikraft.app  [94mstandby[0m  standby  <my-org>/httpserver-go121@sha256:7785ebdf6c1ffaf05c3be...  256 MiB  1            165.63 ms
+httpserver-go121-xjsli  bitter-bonobo-20plsjfu.was.unikraft.app     [0;36mstandby[0m  standby  <my-org>/httpserver-go121@sha256:7785ebdf6c1ffaf05c3be...  256 MiB  1            165.63 ms
 ```
 
 </CodeTabs>

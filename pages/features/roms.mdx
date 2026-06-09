@@ -334,7 +334,7 @@ unikraft run --metro fra \
 
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '[
@@ -486,7 +486,7 @@ Add a `files` array to a ROM entry instead of an `image` field:
 
 ```bash title="POST /instances"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '{
@@ -529,7 +529,7 @@ You can mix inline ROMs and image-based ROMs in the same request:
 
 ```bash title="POST /instances"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '{

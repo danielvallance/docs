@@ -60,7 +60,7 @@ unikraft api /v1/instances -X POST --metro fra \
 ```
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '{
@@ -101,7 +101,7 @@ unikraft api /v1/instances -X POST --metro fra \
 ```
 ```bash title="API"
 curl -X POST \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances" \
   -d '{
@@ -140,7 +140,7 @@ unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/<instance-uuid>" \
   -d '{
@@ -178,7 +178,7 @@ unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/<instance-uuid>" \
   -d '{
@@ -210,7 +210,7 @@ unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
 ```
 ```bash title="API"
 curl -X PATCH \
-  -H "Authorization: Bearer $UKC_TOKEN" \
+  -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Content-Type: application/json" \
   "https://api.fra.unikraft.cloud/v1/instances/<instance-uuid>" \
   -d '{
