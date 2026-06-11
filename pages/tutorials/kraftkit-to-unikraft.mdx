@@ -129,7 +129,7 @@ unikraft run --metro fra \
   -p 443:8080/http+tls \
   -m 512Mi \
   --image <my-org>/my-app:latest
-``` 
+```
 
 For custom or private metros, define a profile in `~/.config/unikraft/config.yaml`:
 
@@ -346,7 +346,7 @@ unikraft instance wait my-instance --until state==running
 
 These `--filter` and `--until` expressions are features of the new CLI.
 They aren't available in the legacy `kraft cloud` CLI.
-See [Filters](/docs/cli/filters) for the full syntax.
+See [Fields](/docs/cli/fields#filter-expression-reference) for the full syntax.
 
 ## A side-by-side migration example
 
@@ -416,5 +416,5 @@ For more details, check the following references:
 
 * The [unikraft CLI overview](/docs/cli/overview).
 * The [legacy CLI overview](/docs/cli/legacy-overview).
-* The [Filters](/docs/cli/filters) reference for the new filtering language.
+* The [Fields](/docs/cli/fields#filter-expression-reference) reference for the new filtering language.
 * The [Environment Variables](/tutorials/environment-variables) tutorial for runtime configuration patterns.
