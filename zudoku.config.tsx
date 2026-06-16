@@ -76,6 +76,7 @@ const config: ZudokuConfig = {
             "/features/autoscale",
             "/features/roms",
             "/features/autokill",
+            "/features/on-demand-templates",
             "/features/cron-jobs",
             "/features/forking",
           ],
