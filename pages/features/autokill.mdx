@@ -77,15 +77,15 @@ curl -X POST \
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft api -X PATCH --metro fra \
-  -d '{
+unikraft api /v1/instances -X PATCH --metro fra \
+  -d '[{
     "name": "<instance-name>",
     "prop": "autokill",
     "op": "set",
     "value": {
-        "time_ms": 10000
+      "time_ms": 10000
     }
-  }'
+  }]'
 ```
 
 ```bash title="API"
@@ -98,7 +98,7 @@ curl -X PATCH \
     "prop": "autokill",
     "op": "set",
     "value": {
-        "time_ms": 10000
+      "time_ms": 10000
     }
   }]'
 ```

@@ -32,8 +32,8 @@ In the new flow, the CLI splits the same work into two clearer stages:
 
 ```bash title="unikraft"
 unikraft build . --output <my-org>/my-app:latest
-unikraft run --metro fra\
-  -p 443:8080/http+tls\
+unikraft run --metro fra \
+  -p 443:8080/http+tls \
   -m 512M \
   --image <my-org>/my-app:latest
 ```

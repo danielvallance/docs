@@ -109,8 +109,8 @@ unikraft run --metro fra \
   -m 256M \
   --scale-to-zero policy=idle,cooldown-time=1000,stateful=true \
   --domain tyk-redis.internal \
-  -e REDIS_PASSWORD=unikraft
-  --image <my-org>/redis:latest \
+  -e REDIS_PASSWORD=unikraft \
+  --image <my-org>/redis:latest
 ```
 
 ```bash title="kraft"

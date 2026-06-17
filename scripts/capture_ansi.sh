@@ -63,7 +63,7 @@ done
 
 if [[ $# -lt 3 ]]; then
   usage
-  exit 0
+  exit 1
 fi
 
 out_file=$1
