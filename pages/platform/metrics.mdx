@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 Unikraft Cloud exposes runtime metrics for each instance: CPU time, memory usage, network I/O, connection counts, and scale-to-zero wakeup latencies.
 
 :::caution
-You can currently only view metrics via the [API](/api/platform/v1/instances#get-instances-metrics).
+You can currently only view metrics via the [API](/api/platform/v1/instances#get-instances-metrics) or [`unikraft api`](/cli/unikraft/api).
 :::
 
 ## Endpoints
@@ -110,7 +110,6 @@ For instances with [scale-to-zero](/features/scale-to-zero) enabled, the `wakeup
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea -X GET --metro fra
 ```
 
@@ -219,8 +218,8 @@ curl -X GET \
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
-unikraft api /v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea -X GET --metro fra -H "Accept: text/plain"
+unikraft api /v1/instances/metrics?uuid=f31c1fa8-6188-4ebe-b6e0-b2de063ad7ea -X GET --metro fra \
+  -H "Accept: text/plain"
 ```
 
 ```bash title="API"

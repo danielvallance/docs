@@ -6,7 +6,7 @@ navigation_icon: lock
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "zudoku/ui/Tabs"
 
 :::caution
-You can currently only manage delete locks via the [API](/api/platform/v1).
+You can currently only manage delete locks via the [API](/api/platform/v1) or [`unikraft api`](/cli/unikraft/api).
 :::
 
 Delete locks prevent accidental deletion of [instances](/platform/instances) and [volumes](/platform/volumes).
@@ -33,7 +33,6 @@ You can set a delete lock on a resource via a `PATCH` operation:
   
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X PATCH --metro fra \
   -d '[{
     "name": "<instance-name>",
@@ -60,7 +59,6 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/templates -X PATCH --metro fra \
   -d '[{
     "name": "<instance-template-name>",
@@ -86,7 +84,6 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes -X PATCH --metro fra \
   -d '[{
     "name": "<volume-name>",
@@ -112,7 +109,6 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes/templates -X PATCH --metro fra \
   -d '[{
     "name": "<volume-template-name>",
@@ -151,7 +147,6 @@ Before you can delete a resource, you need to remove the delete lock by setting 
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X PATCH --metro fra \
   -d '[{
     "name": "<instance-name>",
@@ -177,7 +172,6 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/templates -X PATCH --metro fra \
   -d '[{
     "name": "<instance-template-name>",
@@ -203,7 +197,6 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes -X PATCH --metro fra \
   -d '[{
     "name": "<volume-name>",
@@ -229,7 +222,6 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes/templates -X PATCH --metro fra \
   -d '[{
     "name": "<volume-template-name>",

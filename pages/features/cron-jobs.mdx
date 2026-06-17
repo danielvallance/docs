@@ -11,7 +11,7 @@ When you clone an instance from a [template](/platform/instances#instance-templa
 :::
 
 :::caution
-You can currently only manage schedules via the [API](/api/platform/v1/instances#create-instance).
+You can currently only manage schedules via the [API](/api/platform/v1/instances#create-instance) or [`unikraft api`](/cli/unikraft/api).
 :::
 
 ## Calendar expression format
@@ -40,7 +40,6 @@ For example, to start an instance every day at 09:00 UTC and stop it at 18:00 UT
 
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X POST --metro fra \
   -d '{
     "image": "...",
@@ -85,7 +84,6 @@ To run a command inside the instance every night at midnight, use the `exec` act
 
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X POST --metro fra \
   -d '{
     "image": "...",
@@ -124,7 +122,6 @@ Add, set, or remove scheduled operations via [PATCH](/api/platform/v1/instances#
 
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
   -d '{
     "prop": "schedules",
@@ -161,7 +158,6 @@ Add an `exec` schedule the same way, but include `args` with the command to run:
 
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
   -d '{
     "prop": "schedules",
@@ -198,7 +194,6 @@ curl -X PATCH \
 
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
   -d '{
     "prop": "schedules",

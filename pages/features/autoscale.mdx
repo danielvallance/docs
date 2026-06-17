@@ -38,6 +38,7 @@ Autoscale, as well as load balancing in general, currently supports only Interne
 :::caution
 Autoscale is currently only partially available via the legacy CLI.
 `unikraft` CLI support is coming soon.
+Use the [API](/api/platform/v1/autoscale) or [`unikraft api`](/cli/unikraft/api).
 :::
 {/* vale on */}
 
@@ -126,7 +127,6 @@ Unikraft Cloud then takes care of cloning this master instance whenever load inc
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services/a942b9b5-ad17-3ffe-dcd2-ef4331f9087a/autoscale -X POST --metro fra \
   -d '{
     "min_size": 1,
@@ -210,7 +210,6 @@ To check it's working, you can use the legacy CLI `scale get` command to list th
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services/a942b9b5-ad17-3ffe-dcd2-ef4331f9087a/autoscale -X GET --metro fra
 ```
 
@@ -298,7 +297,6 @@ To list an individual policy, use the legacy CLI `scale get` command as follows:
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services/a942b9b5-ad17-3ffe-dcd2-ef4331f9087a/autoscale/policies/scale-out-policy -X GET --metro fra
 ```
 
@@ -367,7 +365,7 @@ Four autoscale policy types are available.
 A service can have more than one policy active at the same time.
 
 :::caution
-Only the `step` policy is currently available via the legacy CLI, but all policies are available via the API.
+Only the `step` policy is currently available via the legacy CLI, but all policies are available via the [API](/api/platform/v1/autoscale) or [`unikraft api`](/cli/unikraft/api).
 :::
 
 ### Step policy
@@ -380,7 +378,6 @@ You should order steps by lower bound with no gaps between them and no overlaps:
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services/a942b9b5-ad17-3ffe-dcd2-ef4331f9087a/autoscale/policies -X POST --metro fra \
   -d '{
     "name": "my-step-policy",
@@ -433,7 +430,6 @@ This prevents request queuing but introduces cold start delays.
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services -X POST --metro fra \
   -d '{
     "policies": [
@@ -472,7 +468,6 @@ Setting `replace` to true deletes the original VM after the new one starts.
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services -X POST --metro fra \
   -d '{
     "policies": [
@@ -515,7 +510,6 @@ The `idle` policy scales in (removes instances) when the service has been idleâ€
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/services -X POST --metro fra \
   -d '{
     "policies": [

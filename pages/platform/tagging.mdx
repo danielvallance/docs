@@ -14,7 +14,7 @@ Tags can be up to 256 characters long and may contain alphanumeric characters pl
 Each resource ([instance](/platform/instances), [volume](/platform/volumes), [instance template](/platform/instances#instance-templates), [volume template](/platform/volumes#volume-templates)) can have up to 16 tags.
 
 :::caution
-You can currently only manage tags via the [API](/api/platform/v1).
+You can currently only manage tags via the [API](/api/platform/v1) or [`unikraft api`](/cli/unikraft/api).
 :::
 
 ## Adding tags
@@ -31,7 +31,6 @@ Add tags to a resource at creation time:
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X POST --metro fra \
   -d '{
     "image": "...",
@@ -55,7 +54,6 @@ curl -X POST \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/templates -X POST --metro fra \
   -d '{
     "image": "...",
@@ -79,7 +77,6 @@ curl -X POST \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes -X POST --metro fra \
   -d '{
     "size_mb": ...,
@@ -101,7 +98,6 @@ curl -X POST \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes/templates -X POST --metro fra \
   -d '{
     "size_mb": ...,
@@ -134,7 +130,6 @@ Add tags to an existing resource (`"op": "set"` will replace all existing tags):
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X PATCH --metro fra \
   -d '[{
     "name": "<instance-name>",
@@ -160,7 +155,6 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/templates -X PATCH --metro fra \
   -d '[{
     "name": "<instance-template-name>",
@@ -186,7 +180,6 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes -X PATCH --metro fra \
   -d '[{
     "name": "<volume-name>",
@@ -212,7 +205,6 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes/templates -X PATCH --metro fra \
   -d '[{
     "name": "<volume-template-name>",
@@ -249,7 +241,6 @@ Add tags to a resource without replacing existing ones (`"op": "add"`):
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X PATCH --metro fra \
   -d '[{
     "name": "<instance-name>",
@@ -276,7 +267,6 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/templates -X PATCH --metro fra \
   -d '[{
     "name": "<instance-template-name>",
@@ -302,7 +292,6 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes -X PATCH --metro fra \
   -d '[{
     "name": "<volume-name>",
@@ -328,7 +317,6 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes/templates -X PATCH --metro fra \
   -d '[{
     "name": "<volume-template-name>",
@@ -372,7 +360,6 @@ Remove specific tags from a resource (`"op": "del"`):
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances -X PATCH --metro fra \
   -d '[{
     "name": "<instance-name>",
@@ -398,7 +385,6 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/instances/templates -X PATCH --metro fra \
   -d '[{
     "name": "<instance-template-name>",
@@ -424,7 +410,6 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes -X PATCH --metro fra \
   -d '[{
     "name": "<volume-name>",
@@ -450,7 +435,6 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api /v1/volumes/templates -X PATCH --metro fra \
   -d '[{
     "name": "<volume-template-name>",
@@ -490,7 +474,6 @@ Only resources that have _all_ the specified tags appear in the results.
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api "/v1/instances?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
@@ -502,7 +485,6 @@ curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api "/v1/instances/templates?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
@@ -514,7 +496,6 @@ curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api "/v1/volumes?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
@@ -526,7 +507,6 @@ curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-# not yet supported, use `unikraft api` instead
 unikraft api "/v1/volumes/templates?tags=production,customer_A" -X GET --metro fra
 ```
 ```bash title="API"
