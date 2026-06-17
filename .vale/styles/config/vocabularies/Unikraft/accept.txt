@@ -25,6 +25,7 @@ FUSE
 ALIAS
 ANAME
 ASCII
+BYOC
 CNAME
 COPY
 DCO
@@ -49,6 +50,7 @@ TOML
 USA
 UTC
 WASI
+WSL
 YAML
 Unikraft Cloud
 POSIX
@@ -267,6 +269,7 @@ FTP
 (?i)TypeDoc
 (?i)typeof
 (?i)TypeScript
+(?i)UDP
 (?i)ui
 (?i)uncached
 (?i)undefined

@@ -82,6 +82,27 @@ const config: ZudokuConfig = {
         },
         {
           type: "category",
+          label: "Cloud Platform",
+          icon: "cloud",
+          collapsed: false,
+          items: [
+            "/platform/metros",
+            "/platform/instances",
+            "/platform/services",
+            "/platform/networking",
+            "/platform/domains",
+            "/platform/certificates",
+            "/platform/volumes",
+            "/platform/images",
+            "/platform/quotas",
+            "/platform/metrics",
+            "/platform/tagging",
+            "/platform/delete-locks",
+            "/platform/troubleshooting",
+          ],
+        },
+        {
+          type: "category",
           label: "Use Cases",
           icon: "lightbulb",
           collapsed: false,
@@ -97,26 +118,6 @@ const config: ZudokuConfig = {
             "/use-cases/remote-ides",
             "/use-cases/game-servers",
             "/use-cases/remote-desktops",
-          ],
-        },
-        {
-          type: "category",
-          label: "Cloud Platform",
-          icon: "cloud",
-          collapsed: false,
-          items: [
-            "/platform/metros",
-            "/platform/instances",
-            "/platform/services",
-            "/platform/domains",
-            "/platform/certificates",
-            "/platform/volumes",
-            "/platform/images",
-            "/platform/quotas",
-            "/platform/metrics",
-            "/platform/tagging",
-            "/platform/delete-locks",
-            "/platform/troubleshooting",
           ],
         },
         {
@@ -231,8 +232,6 @@ const config: ZudokuConfig = {
         "/tutorials/rootfs-compression",
         "/tutorials/rootfs-volumes-roms",
         "/tutorials/scale-to-zero-triggers",
-        "/tutorials/instance-metrics",
-        "/tutorials/network-communication"
       ]
     },
     {
