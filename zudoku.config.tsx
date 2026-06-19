@@ -80,6 +80,7 @@ const config: ZudokuConfig = {
             "/features/cron-jobs",
             "/features/forking",
             "/features/branching",
+            "/features/managed-volumes",
           ],
         },
         {

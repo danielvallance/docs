@@ -124,8 +124,8 @@ You should see output like:
 
 [●] Import complete
  │
- ├─ volume: my-volume 
- ├─── free: 90 MiB    
+ ├─ volume: my-volume
+ ├─── free: 90 MiB
  └── total: 90 MiB
 ```
 
@@ -591,11 +591,12 @@ For BYOC or on-prem Unikraft Cloud installations, you can configure custom files
 ### Managed volumes
 
 :::caution[**Limited Access**]
-Managed volumes are only available in BYOC or on-prem Unikraft Cloud installations.
+Managed volumes are available as part of enterprise plans.
+To enable them for your account, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
 Quotas aren't yet enforced by the platform for managed volumes, so use them with caution to avoid filling up your host's disk.
 :::
 
-A managed volume points to an existing directory on the host rather than a platform-allocated storage file.
+A [managed volume](/features/managed-volumes) points to an existing directory on the host rather than a platform-allocated storage file.
 
 Create a managed volume with a `host_path` field instead of `size_mb` when calling [`POST /volumes`](/api/platform/v1/volumes#create-volume):
 
