@@ -80,18 +80,18 @@ kraft instance list httpserver-go121-taud8
                 stopped: 2026-05-28T13:54:45Z
             start count: 3
           restart count: 0
-       restart attempts: 
-           next restart: 
+       restart attempts:
+           next restart:
          restart policy: never
-            stop origin: 
-            stop reason: 
+            stop origin:
+            stop reason:
           app exit code: 1
                   image: oci://unikraft.io/<my-org>/httpserver-go121:latest@sha256:7785ebdf6c1ffaf05c3beab4cffc2548790c088233a0ee51ac5d047e21e43d77
                  memory: 256 MiB
                   vcpus: 1
-                   args: 
-                    env: 
-                volumes: 
+                   args:
+                    env:
+                volumes:
                 service: floral-sun-54ixkmi6
           scale to zero: on
  scale to zero cooldown: 1000
@@ -105,7 +105,7 @@ kraft instance list httpserver-go121-taud8
 You can retrieve even more instance details via the API:
 
 ```bash title="GET /instances/bd281cc4-7640-4cbc-af48-5a44c2bd7b74"
-curl -X GET \ 
+curl -X GET \
   -H "Authorization: Bearer ${UKC_TOKEN}" \
   -H "Accept: application/json" \
   https://api.fra.unikraft.cloud/v1/instances/bd281cc4-7640-4cbc-af48-5a44c2bd7b74
@@ -437,7 +437,7 @@ Setting both returns a `400` error.
 ## Instance templates
 
 An instance template is a snapshotted instance that acts as a source for cloning new instances.
-Cloning a template creates a new instance that resumes from the exact original system state. 
+Cloning a template creates a new instance that resumes from the exact original system state.
 It preserves memory contents, open files, and populated caches to bypass the standard boot sequence.
 Once you convert an instance into a template, you can't reverse the process.
 
@@ -448,6 +448,10 @@ echo 1 > /uk/libukp/template_instance
 ```
 
 This action instructs the controller to freeze running processes and save the instance as a reusable template.
+The write blocks until the platform has snapshotted the instance and created the new instance from the resulting template.
+When the write returns, the guest is already running as the freshly cloned instance, restored from the snapshot rather than continuing as the original.
+This lets the guest finish any instance-specific setup—such as reading per-instance data from an attached [inline ROM](/features/roms#inline-roms)—immediately after the write completes.
+If the template already exists, the clone happens right away and the write returns without re-snapshotting.
 You can also create a template from an instance (even when it's running) by calling [`POST /instances/templates`](/api/platform/v1/instances#create-template-instances-from-instances), or using the CLI:
 
 <CodeTabs syncKey="cli">
@@ -457,7 +461,7 @@ unikraft instance template create httpserver-go121-taud8
 ```
 
 ```bash title="kraft"
-kraft cloud instance template create 
+kraft cloud instance template create
 ```
 
 </CodeTabs>
@@ -547,6 +551,11 @@ unikraft instance create --metro fra \
 Templates support [delete locks](/platform/delete-locks), [tags](/platform/tagging), and [autokill](/features/autokill).
 The platform measures autokill on a template from the time of last clone, not from instance stop time.
 
+:::info
+You can also have the platform create a template implicitly as part of an instance-create call, instead of converting and managing it yourself.
+See [On-demand templates](/features/on-demand-templates).
+:::
+
 ### Nested templates
 
 You can clone a template from another template, creating a hierarchy.
@@ -554,6 +563,10 @@ Each clone inherits the parent's full state at clone time and can independently 
 This enables layered configurations, for example a base template with a warm database connection pool, and child templates specialized for different query workloads.
 
 No depth limit applies to nesting, and circular references aren't possible because the template state is immutable once set.
+
+:::info
+You can also build such a hierarchy in a single API call with [on-demand templates](/features/on-demand-templates#nested-templates), where the platform creates each level only if it doesn't already exist.
+:::
 
 For more information, check out the API reference for instance templates [here](/api/platform/v1/instances#create-template-instances-from-instances).
 
