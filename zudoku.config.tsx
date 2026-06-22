@@ -1,19 +1,12 @@
 import type { ZudokuConfig } from "zudoku";
+import { UnikraftCodeTabs } from "./src/UnikraftCodeTabs";
 
 const config: ZudokuConfig = {
   metadata: {
     title: "%s | Unikraft Cloud Docs",
-    description:
-      "Unikraft Cloud documentation: guides, platform reference, CLI, and API docs for the millisecond, Linux-based microVM cloud platform.",
     favicon: "/docs/favicon.ico",
   },
   basePath: "/docs",
-  // Emit <link rel="canonical"> on every docs page (origin + basePath + route),
-  // and generate a sitemap so docs pages are discoverable/indexable by agents.
-  canonicalUrlOrigin: "https://unikraft.com",
-  sitemap: {
-    siteUrl: "https://unikraft.com",
-  },
   site: {
     logo: {
       src: { light: "/logo-light.svg", dark: "/logo-dark.svg" },
@@ -56,6 +49,12 @@ const config: ZudokuConfig = {
       dark: "github-dark-high-contrast",
     },
   },
+  mdx: {
+    components: {
+      // Personalizes `<my-org>` in Unikraft CLI code tabs for signed-in users.
+      CodeTabs: UnikraftCodeTabs,
+    },
+  },
   navigation: [
     {
       type: "category",
@@ -88,11 +87,6 @@ const config: ZudokuConfig = {
             "/features/cron-jobs",
             "/features/forking",
             "/features/branching",
-            "/features/managed-volumes",
-            "/features/checkpoints",
-            "/features/plugins",
-            "/features/custom-network-configuration",
-            "/features/annotations",
           ],
         },
         {
@@ -187,8 +181,6 @@ const config: ZudokuConfig = {
         "/guides/memcached1.6", // Memcached
         "/guides/minio", // Minio
         "/guides/mongodb", // MongoDB
-        "/guides/mysql", // MySQL
-        "/guides/neo4j", // Neo4j
         "/guides/httpserver-node21-nextjs", // Next.js HTTP Server
         "/guides/nginx", // Nginx
         "/guides/node24-karaoke", // Node AllKaraoke
@@ -315,6 +307,7 @@ const config: ZudokuConfig = {
               collapsed: false,
               items: [
                 "/cli/unikraft/images",
+                "/cli/unikraft/images/build",
                 "/cli/unikraft/images/copy",
                 "/cli/unikraft/images/delete",
                 "/cli/unikraft/images/get",
@@ -400,9 +393,11 @@ const config: ZudokuConfig = {
               collapsed: false,
               items: [
                 "/cli/unikraft/volumes",
+                "/cli/unikraft/volumes/attach",
                 "/cli/unikraft/volumes/clone",
                 "/cli/unikraft/volumes/create",
                 "/cli/unikraft/volumes/delete",
+                "/cli/unikraft/volumes/detach",
                 "/cli/unikraft/volumes/edit",
                 "/cli/unikraft/volumes/get",
                 "/cli/unikraft/volumes/import",
@@ -508,6 +503,20 @@ const config: ZudokuConfig = {
             },
             {
               type: "category",
+              label: "kraft cloud scale",
+              icon: "arrow-up-1-0",
+              collapsed: false,
+              items: [
+                "/cli/kraft/scale",
+                "/cli/kraft/scale/add",
+                "/cli/kraft/scale/get",
+                "/cli/kraft/scale/init",
+                "/cli/kraft/scale/remove",
+                "/cli/kraft/scale/reset",
+              ],
+            },
+            {
+              type: "category",
               label: "kraft cloud service",
               icon: "split",
               collapsed: false,
@@ -562,12 +571,6 @@ const config: ZudokuConfig = {
       label: "Platform API",
       icon: "unplug",
       to: "/api/platform/v1",
-    },
-    {
-      type: "link",
-      label: "Glossary",
-      icon: "book-a",
-      to: "https://unikraft.com/glossary",
     },
   ],
   search: {
