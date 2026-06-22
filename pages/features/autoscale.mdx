@@ -36,8 +36,7 @@ Autoscale, as well as load balancing in general, currently supports only Interne
 
 {/* vale off */}
 :::caution
-Autoscale is currently only partially available via the legacy CLI (`kraft`).
-Full `unikraft` CLI support is coming soon.
+Dedicated `unikraft` CLI subcommands for autoscale are coming soon.
 In the meantime, drive autoscale through the [API](/api/platform/v1/autoscale), which you can invoke with `curl` or the [`unikraft api`](/cli/unikraft/api) command.
 :::
 {/* vale on */}
@@ -54,15 +53,6 @@ unikraft run --metro fra \
   -m 256M \
   -p 443:8080/http+tls \
   --image <my-org>/nginx:latest
-```
-
-```bash title="kraft"
-git clone https://github.com/unikraft-cloud/examples
-cd examples/nginx/
-kraft cloud deploy \
-  -M 256Mi \
-  -p 443:8080 \
-  .
 ```
 
 </CodeTabs>
@@ -93,39 +83,14 @@ The output shows the instance address and other details:
 [3m  created[23m:    just now
 ```
 
-```ansi title="kraft"
-[38;5;245m[[0m[92m●[0m[38;5;245m][0m Deployed successfully!
- [38;5;245m│[0m
- [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245mname[0m: nginx-67zbu
- [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245muuid[0m: 8a8bc1b9-0af6-420e-a426-190dc2da9eaa
- [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mmetro[0m: https://api.fra.unikraft.cloud/v1
- [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mstate[0m: [92mstarting[0m
- [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mdomain[0m: https://nameless-fog-0tvh1uov.fra.unikraft.app
- [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mimage[0m: oci://unikraft.io/<my-org>/nginx@sha256:f51ecc121c9ca34abb88a2bc6a69765501304f7893f7e85af15fbec3dc86e2bd
- [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mmemory[0m: 256 MiB
- [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: nameless-fog-0tvh1uov
- [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: nginx-67zbu.internal
- [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.3.3
-```
-
 </CodeTabs>
-
-This single deploy or run flow does 4 things:
-
-1. Builds the NGINX image and pushes it to the registry.
-1. Creates an instance of NGINX which will serve as the basis for the autoscale **template**.
-1. Creates a service via the `-p` flag (named `nameless-fog-0tvh1uov`).
-1. Attaches the instance to the service (the `-p` flag also does this automatically).
 
 :::note
 Autoscale requires an [instance template](/platform/instances#instance-templates) to create new instances during scale-out.
 If you enable autoscale through the API, provide the template under the top-level `template` field.
 :::
 
-With the `unikraft` CLI, prepare a template and a service manually before enabling autoscale.
-If you use the `kraft` CLI, skip ahead to the `scale init` command in the next step, which handles both for you.
-
-First, convert the instance you deployed into a template that autoscale clones during scale-out:
+The next step is to convert the instance you deployed into a template that autoscale clones during scale-out:
 
 ```bash title="unikraft"
 unikraft instance template create nginx-67zbu
@@ -194,28 +159,6 @@ unikraft api /v1/services/<service-uuid>/autoscale/policies -X POST --metro fra 
   }'
 ```
 
-```bash title="kraft"
-kraft cloud scale init nameless-fog-0tvh1uov \
-  --template nginx-67zbu \
-  --min-size 1 \
-  --max-size 8 \
-  --warmup-time 1s \
-  --cooldown-time 1s
-
-kraft cloud scale add nameless-fog-0tvh1uov \
-  --name scale-out-policy \
-  --metric cpu \
-  --adjustment percent \
-  --step 600:800/50 \
-  --step 800:/100
-
-kraft cloud scale add nameless-fog-0tvh1uov \
-  --name scale-in-policy \
-  --metric cpu \
-  --adjustment percent \
-  --step :50/-50
-```
-
 </CodeTabs>
 
 Note the following:
@@ -228,21 +171,17 @@ Note the following:
 :::note
 The platform waits between decisions so the service doesn't constantly scale in and out.
 The warm-up time is how long it waits after scaling out before it can scale again, and the cool-down time is how long it waits after scaling in.
-Set them with `--warmup-time` and `--cooldown-time` (`kraft`) or `warmup_time_ms` and `cooldown_time_ms` (API).
+Set them with the `warmup_time_ms` and `cooldown_time_ms` fields.
 Refer to the API autoscale [reference](/api/platform/v1/autoscale) for more details.
 Keep in mind that a few restrictions apply to how you define scale-in/scale-out steps.
 :::
 
-To check it's working, you can use the legacy CLI `scale get` command to list the autoscale properties of the service:
+To check it's working, list the autoscale properties of the service:
 
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale -X GET --metro fra
-```
-
-```bash title="kraft"
-kraft cloud scale get nameless-fog-0tvh1uov
 ```
 
 </CodeTabs>
@@ -308,30 +247,14 @@ You should see output like:
 }
 ```
 
-```ansi title="kraft"
-          uuid: 5ca059ec-a24a-41f2-8413-f09bc58730ca
-          name: nameless-fog-0tvh1uov
-       enabled: true
-      min size: 1
-      max size: 8
-   warmup (ms): 1000
- cooldown (ms): 1000
-      template: 8a8bc1b9-0af6-420e-a426-190dc2da9eaa
-      policies: scale-out-policy;scale-in-policy
-```
-
 </CodeTabs>
 
-To list an individual policy, use the legacy CLI `scale get` command as follows:
+To list an individual policy:
 
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale/policies/scale-out-policy -X GET --metro fra
-```
-
-```bash title="kraft"
-kraft cloud scale get --policy scale-out-policy nameless-fog-0tvh1uov
 ```
 
 </CodeTabs>
@@ -371,21 +294,6 @@ You should see output like:
 }
 ```
 
-```ansi title="kraft"
-adjustment_type: percent
-enabled: true
-metric: cpu
-name: scale-out-policy
-status: success
-steps:
-- adjustment: 50
-  lower_bound: 600
-  upper_bound: 800
-- adjustment: 100
-  lower_bound: 800
-type: step
-```
-
 </CodeTabs>
 
 {/* TODO: add example */}
@@ -394,10 +302,6 @@ type: step
 
 Four autoscale policy types are available.
 A service can have more than one policy active at the same time.
-
-:::caution
-Only the `step` policy is currently available via the legacy CLI, but all policies are available via the [API](/api/platform/v1/autoscale) or [`unikraft api`](/cli/unikraft/api).
-:::
 
 ### Step policy
 
@@ -420,16 +324,6 @@ unikraft api /v1/services/<service-uuid>/autoscale/policies -X POST --metro fra 
       { "lower_bound": 800, "adjustment": 4 }
     ]
   }'
-```
-
-```bash title="kraft"
-kraft cloud scale add nameless-fog-0tvh1uov \
-  --name my-step-policy \
-  --type step \
-  --metric cpu \
-  --adjustment-type change \
-  --step 600:800/2 \
-  --step 800:/4
 ```
 
 </CodeTabs>
@@ -573,5 +467,5 @@ curl -X POST \
 
 ## Learn more
 
-* The [CLI reference](/docs/cli/unikraft) and the [legacy CLI reference](/docs/cli/kraft/overview).
+* The [CLI reference](/docs/cli/unikraft).
 * Unikraft Cloud's [REST API reference](/api/platform/v1), and in particular the section on [autoscale](/api/platform/v1/autoscale).
