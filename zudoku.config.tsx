@@ -496,20 +496,6 @@ const config: ZudokuConfig = {
             },
             {
               type: "category",
-              label: "kraft cloud scale",
-              icon: "arrow-up-1-0",
-              collapsed: false,
-              items: [
-                "/cli/kraft/scale",
-                "/cli/kraft/scale/add",
-                "/cli/kraft/scale/get",
-                "/cli/kraft/scale/init",
-                "/cli/kraft/scale/remove",
-                "/cli/kraft/scale/reset",
-              ],
-            },
-            {
-              type: "category",
               label: "kraft cloud service",
               icon: "split",
               collapsed: false,
