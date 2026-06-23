@@ -291,10 +291,49 @@ kraft cloud deploy \
 
 ## Using checkpoints
 
-:::note
-Checkpointing is coming soon.
-Full documentation will follow once the interface is available.
+:::caution[**Limited Access**]
+Checkpointing is a new feature that **is not** enabled by default and requires a valid license.
+The interface described here reflects the current implementation and may change before general availability.
 :::
+
+You can checkpoint a running PostgreSQL instance to capture its complete state—memory and volume—without interrupting it.
+Checkpoints are reusable, named restore points that keep a history.
+Start a fresh instance from any checkpoint to recover from a failed migration or an erroneous write.
+For a full description of how checkpointing works, see the [checkpointing feature page](/features/checkpoints).
+
+To checkpoint a running instance, call the [`POST /instances/checkpoints`](/api/platform/v1/instances) endpoint with the source instance name:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances/checkpoints \
+  -d '{
+    "name": "before-migration",
+    "from": {
+      "name": "<source-instance>"
+    }
+  }'
+```
+
+</CodeTabs>
+
+Later, restore the database by creating a new instance from the checkpoint:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances \
+  -d '{
+    "name": "restored-postgres",
+    "checkpoint": {
+      "name": "before-migration"
+    }
+  }'
+```
+
+</CodeTabs>
+
+The new instance resumes from exactly the checkpointed state, while the source instance keeps running unaffected.
 
 ## Using instance branching
 
