@@ -334,7 +334,7 @@ If you try to detach a volume while the instance is running, the platform will q
 The detach operation will trigger when the instance goes into `stopped`.
 :::
 
-Now start another instance and, like before, mount the same volume:
+Now start another instance:
 
 <CodeTabs syncKey="cli">
 
@@ -342,7 +342,6 @@ Now start another instance and, like before, mount the same volume:
 unikraft run --metro fra \
   -m 512M \
   -p 443:8080/http+tls \
-  -v my-volume:/mnt \
   --image <my-org>/httpserver-python312-flask30:latest
 ```
 
@@ -351,7 +350,6 @@ kraft cloud instance create \
   --start \
   -M 512Mi \
   -p 443:8080 \
-  --volume my-volume:/mnt \
   <my-org>/httpserver-python312-flask30:latest
 ```
 
@@ -375,10 +373,6 @@ This should output something like:
 [3m  name[23m:       winter-field-v6m37jgs
 [3m  domains[23m:
 [3m  - fqdn[23m:     winter-field-v6m37jgs.fra.unikraft.app
-[1mvolumes[22m:
-[3m- name[23m:       my-volume
-[3m  uuid[23m:       4d5576f7-315a-4eab-98b8-6c18fec076e0
-[3m  at[23m:         /mnt
 [1mnetworks[22m:
 [3m- uuid[23m:       935ba4ef-39c2-07e7-d2ae-8cd3c9aae07c
 [3m  private-ip[23m: 10.0.6.5
@@ -400,6 +394,24 @@ This should output something like:
  [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: winter-field-v6m37jgs
  [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: httpserver-python312-flask30-0s9c7.internal
  [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.6.5
+```
+
+</CodeTabs>
+
+Attach the volume to the new instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft volumes attach my-volume \
+  --to httpserver-python312-flask30-0s9c7 \
+  --at /mnt
+```
+
+```bash title="kraft"
+kraft cloud volume attach my-volume \
+  --to httpserver-python312-flask30-0s9c7 \
+  --at /mnt
 ```
 
 </CodeTabs>
@@ -426,12 +438,16 @@ To clean up, first detach the volume from all instances and then remove it:
 unikraft instances stop httpserver-python312-flask30-0s9c7
 unikraft volumes detach my-volume --from httpserver-python312-flask30-0s9c7
 unikraft volumes delete my-volume
+unikraft instances delete httpserver-python312-flask30-0s9c7
+unikraft instances delete httpserver-python312-flask30-bxwxm
 ```
 
 ```bash title="kraft"
 kraft cloud instance stop httpserver-python312-flask30-0s9c7
 kraft cloud volume detach my-volume --from httpserver-python312-flask30-0s9c7
 kraft cloud volume remove my-volume
+kraft cloud instance remove httpserver-python312-flask30-bxwxm
+kraft cloud instance remove httpserver-python312-flask30-0s9c7
 ```
 
 </CodeTabs>
