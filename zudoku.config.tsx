@@ -267,6 +267,7 @@ const config: ZudokuConfig = {
             "/cli/unikraft/completion",
             "/cli/unikraft/login",
             "/cli/unikraft/logout",
+            "/cli/unikraft/quotas",
             "/cli/unikraft/run",
             "/cli/unikraft/tui",
             "/cli/unikraft/upgrade",
