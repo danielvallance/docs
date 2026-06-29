@@ -92,6 +92,7 @@ const config: ZudokuConfig = {
             "/features/checkpoints",
             "/features/plugins",
             "/features/custom-network-configuration",
+            "/features/annotations",
           ],
         },
         {
