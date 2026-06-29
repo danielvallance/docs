@@ -13,7 +13,7 @@ Examples:
   capture_ansi.sh test.ansi.log -- bash -lc 'kraft cloud quotas'
   capture_ansi.sh quotas.ansi.log -- kraft cloud quotas
   capture_ansi.sh --docs-bars quotas.ansi.log -- kraft cloud quotas
-  capture_ansi.sh --tui quotas.ansi.log -- unikraft metro quotas
+  capture_ansi.sh --tui quotas.ansi.log -- unikraft quotas
 
 Notes:
   - This script prefers the "script" utility so commands run in a pseudo-TTY.
