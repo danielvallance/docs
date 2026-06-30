@@ -6,6 +6,12 @@ const config: ZudokuConfig = {
     favicon: "/docs/favicon.ico",
   },
   basePath: "/docs",
+  // Emit <link rel="canonical"> on every docs page (origin + basePath + route),
+  // and generate a sitemap so docs pages are discoverable/indexable by agents.
+  canonicalUrlOrigin: "https://unikraft.com",
+  sitemap: {
+    siteUrl: "https://unikraft.com",
+  },
   site: {
     logo: {
       src: { light: "/logo-light.svg", dark: "/logo-dark.svg" },
