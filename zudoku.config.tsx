@@ -176,6 +176,7 @@ const config: ZudokuConfig = {
         "/guides/memcached1.6", // Memcached
         "/guides/minio", // Minio
         "/guides/mongodb", // MongoDB
+        "/guides/mysql", // MySQL
         "/guides/httpserver-node21-nextjs", // Next.js HTTP Server
         "/guides/nginx", // Nginx
         "/guides/node24-karaoke", // Node AllKaraoke
