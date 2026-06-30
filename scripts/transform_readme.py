@@ -77,6 +77,7 @@ FRONT_MATTER_PATTERN = re.compile(r"^---\n.*?\n---\n\s*", flags=re.S)
 ADMONITION_PATTERN = re.compile(r"^(\s*)>\s*\*\*([^*]+?):?\*\*:?\s*$")
 TITLE_VALUE_PATTERN = re.compile(r'title\s*=\s*"([^"]*)"', flags=re.I)
 
+CODETABS_SPACER = '\n\n<div style={{ marginTop: \'0.8em\' }} />\n\n'
 
 def has_fence_title(fence_info: str) -> bool:
     m = TITLE_VALUE_PATTERN.search(fence_info or "")
@@ -258,7 +259,7 @@ def convert_code_tabs(text: str) -> str:
                 parts.append(
                     '<CodeTabs syncKey="cli">\n\n' + "\n\n".join(blocks) + "\n\n</CodeTabs>"
                 )
-            replacement = "\n\n".join(parts)
+            replacement = CODETABS_SPACER.join(parts)
             # Replace the entire span covering both groups (including the "or" between them)
             start = grp_a[0].start()
             end = grp_b[-1].end()
