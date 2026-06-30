@@ -3,6 +3,8 @@ import type { ZudokuConfig } from "zudoku";
 const config: ZudokuConfig = {
   metadata: {
     title: "%s | Unikraft Cloud Docs",
+    description:
+      "Unikraft Cloud documentation: guides, platform reference, CLI, and API docs for the millisecond, Linux-based microVM cloud platform.",
     favicon: "/docs/favicon.ico",
   },
   basePath: "/docs",
@@ -532,6 +534,12 @@ const config: ZudokuConfig = {
       label: "Platform API",
       icon: "unplug",
       to: "/api/platform/v1",
+    },
+    {
+      type: "link",
+      label: "Glossary",
+      icon: "book-a",
+      to: "https://unikraft.com/glossary",
     },
   ],
   search: {
