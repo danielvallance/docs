@@ -177,6 +177,7 @@ const config: ZudokuConfig = {
         "/guides/minio", // Minio
         "/guides/mongodb", // MongoDB
         "/guides/mysql", // MySQL
+        "/guides/neo4j", // Neo4j
         "/guides/httpserver-node21-nextjs", // Next.js HTTP Server
         "/guides/nginx", // Nginx
         "/guides/node24-karaoke", // Node AllKaraoke
