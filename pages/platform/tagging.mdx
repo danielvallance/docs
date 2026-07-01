@@ -13,10 +13,6 @@ Don't confuse them with [image](/platform/images) tags which serve a different p
 Tags can be up to 256 characters long and may contain alphanumeric characters plus `-`, `+`, `_`, `.`, `:`, and `=`.
 Each resource ([instance](/platform/instances), [volume](/platform/volumes), [instance template](/platform/instances#instance-templates), [volume template](/platform/volumes#volume-templates)) can have up to 16 tags.
 
-:::caution
-You can currently only manage tags via the [API](/api/platform/v1) or [`unikraft api`](/cli/unikraft/api).
-:::
-
 ## Adding tags
 
 Add tags to a resource at creation time:
@@ -31,12 +27,11 @@ Add tags to a resource at creation time:
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances -X POST --metro fra \
-  -d '{
-    "image": "...",
-    "memory_mb": ...,
-    "tags": ["production", "customer_A"]
-  }'
+unikraft instance create \
+  --metro fra \
+  --image ... \
+  --memory ... \
+  --tags production,customer_A
 ```
 ```bash title="API"
 curl -X POST \
@@ -54,12 +49,10 @@ curl -X POST \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances/templates -X POST --metro fra \
-  -d '{
-    "image": "...",
-    "memory_mb": ...,
-    "tags": ["production", "customer_A"]
-  }'
+unikraft instance template create \
+  --set image=... \
+  --set resources.memory=... \
+  --set tags=production,customer_A
 ```
 ```bash title="API"
 curl -X POST \
@@ -77,11 +70,10 @@ curl -X POST \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes -X POST --metro fra \
-  -d '{
-    "size_mb": ...,
-    "tags": ["production", "customer_A"]
-  }'
+unikraft volume create \
+  --metro fra \
+  --size ... \
+  --tags production,customer_A
 ```
 ```bash title="API"
 curl -X POST \
@@ -98,11 +90,9 @@ curl -X POST \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes/templates -X POST --metro fra \
-  -d '{
-    "size_mb": ...,
-    "tags": ["production", "customer_A"]
-  }'
+unikraft volume template create \
+  --set size=... \
+  --set tags=production,customer_A
 ```
 ```bash title="API"
 curl -X POST \
@@ -130,13 +120,8 @@ Add tags to an existing resource (`"op": "set"` will replace all existing tags):
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances -X PATCH --metro fra \
-  -d '[{
-    "name": "<instance-name>",
-    "prop": "tags",
-    "op": "set",
-    "value": ["testsystem", "customer_B"]
-  }]'
+unikraft instance edit <instance-name> \
+  --tags testsystem,customer_B
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -155,13 +140,8 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances/templates -X PATCH --metro fra \
-  -d '[{
-    "name": "<instance-template-name>",
-    "prop": "tags",
-    "op": "set",
-    "value": ["testsystem", "customer_B"]
-  }]'
+unikraft instance template edit <instance-template-name> \
+  --tags testsystem,customer_B
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -180,13 +160,8 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes -X PATCH --metro fra \
-  -d '[{
-    "name": "<volume-name>",
-    "prop": "tags",
-    "op": "set",
-    "value": ["testsystem", "customer_B"]
-  }]'
+unikraft volume edit <volume-name> \
+  --tags testsystem,customer_B
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -205,13 +180,8 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes/templates -X PATCH --metro fra \
-  -d '[{
-    "name": "<volume-template-name>",
-    "prop": "tags",
-    "op": "set",
-    "value": ["testsystem", "customer_B"]
-  }]'
+unikraft volume template edit <volume-template-name> \
+  --tags testsystem,customer_B
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -241,13 +211,7 @@ Add tags to a resource without replacing existing ones (`"op": "add"`):
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances -X PATCH --metro fra \
-  -d '[{
-    "name": "<instance-name>",
-    "prop": "tags",
-    "op": "add",
-    "value": ["legacy"]
-  }]'
+unikraft instance edit <instance-name> --add tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -267,13 +231,7 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances/templates -X PATCH --metro fra \
-  -d '[{
-    "name": "<instance-template-name>",
-    "prop": "tags",
-    "op": "add",
-    "value": ["legacy"]
-  }]'
+unikraft instance template edit <instance-template-name> --add tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -292,13 +250,7 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes -X PATCH --metro fra \
-  -d '[{
-    "name": "<volume-name>",
-    "prop": "tags",
-    "op": "add",
-    "value": ["legacy"]
-  }]'
+unikraft volume edit <volume-name> --add tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -317,13 +269,7 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes/templates -X PATCH --metro fra \
-  -d '[{
-    "name": "<volume-template-name>",
-    "prop": "tags",
-    "op": "add",
-    "value": ["legacy"]
-  }]'
+unikraft volume template edit <volume-template-name> --add tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -360,13 +306,7 @@ Remove specific tags from a resource (`"op": "del"`):
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances -X PATCH --metro fra \
-  -d '[{
-    "name": "<instance-name>",
-    "prop": "tags",
-    "op": "del",
-    "value": ["legacy"]
-  }]'
+unikraft instance edit <instance-name> --del tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -385,13 +325,7 @@ curl -X PATCH \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/instances/templates -X PATCH --metro fra \
-  -d '[{
-    "name": "<instance-template-name>",
-    "prop": "tags",
-    "op": "del",
-    "value": ["legacy"]
-  }]'
+unikraft instance template edit <instance-template-name> --del tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -410,13 +344,7 @@ curl -X PATCH \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes -X PATCH --metro fra \
-  -d '[{
-    "name": "<volume-name>",
-    "prop": "tags",
-    "op": "del",
-    "value": ["legacy"]
-  }]'
+unikraft volume edit <volume-name> --del tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -435,13 +363,7 @@ curl -X PATCH \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api /v1/volumes/templates -X PATCH --metro fra \
-  -d '[{
-    "name": "<volume-template-name>",
-    "prop": "tags",
-    "op": "del",
-    "value": ["legacy"]
-  }]'
+unikraft volume template edit <volume-template-name> --del tags=legacy
 ```
 ```bash title="API"
 curl -X PATCH \
@@ -474,7 +396,7 @@ Only resources that have _all_ the specified tags appear in the results.
   <TabsContent value="instance">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api "/v1/instances?tags=production,customer_A" -X GET --metro fra
+unikraft instance list --filter 'tags==production,customer_A'
 ```
 ```bash title="API"
 curl -H "Authorization: Bearer ${UKC_TOKEN}" \
@@ -485,7 +407,7 @@ curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   <TabsContent value="instance-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api "/v1/instances/templates?tags=production,customer_A" -X GET --metro fra
+unikraft instance template list --filter 'tags==production,customer_A'
 ```
 ```bash title="API"
 curl -H "Authorization: Bearer ${UKC_TOKEN}" \
@@ -496,7 +418,7 @@ curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   <TabsContent value="volume">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api "/v1/volumes?tags=production,customer_A" -X GET --metro fra
+unikraft volume list --filter 'tags==production,customer_A'
 ```
 ```bash title="API"
 curl -H "Authorization: Bearer ${UKC_TOKEN}" \
@@ -507,7 +429,7 @@ curl -H "Authorization: Bearer ${UKC_TOKEN}" \
   <TabsContent value="volume-tpl">
   <CodeTabs syncKey="cli">
 ```bash title="unikraft"
-unikraft api "/v1/volumes/templates?tags=production,customer_A" -X GET --metro fra
+unikraft volume template list --filter 'tags==production,customer_A'
 ```
 ```bash title="API"
 curl -H "Authorization: Bearer ${UKC_TOKEN}" \
