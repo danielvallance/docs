@@ -90,6 +90,7 @@ const config: ZudokuConfig = {
             "/features/branching",
             "/features/managed-volumes",
             "/features/checkpoints",
+            "/features/plugins",
           ],
         },
         {
