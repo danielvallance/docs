@@ -3,9 +3,17 @@ import type { ZudokuConfig } from "zudoku";
 const config: ZudokuConfig = {
   metadata: {
     title: "%s | Unikraft Cloud Docs",
+    description:
+      "Unikraft Cloud documentation: guides, platform reference, CLI, and API docs for the millisecond, Linux-based microVM cloud platform.",
     favicon: "/docs/favicon.ico",
   },
   basePath: "/docs",
+  // Emit <link rel="canonical"> on every docs page (origin + basePath + route),
+  // and generate a sitemap so docs pages are discoverable/indexable by agents.
+  canonicalUrlOrigin: "https://unikraft.com",
+  sitemap: {
+    siteUrl: "https://unikraft.com",
+  },
   site: {
     logo: {
       src: { light: "/logo-light.svg", dark: "/logo-dark.svg" },
@@ -555,6 +563,12 @@ const config: ZudokuConfig = {
       label: "Platform API",
       icon: "unplug",
       to: "/api/platform/v1",
+    },
+    {
+      type: "link",
+      label: "Glossary",
+      icon: "book-a",
+      to: "https://unikraft.com/glossary",
     },
   ],
   search: {
