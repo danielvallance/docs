@@ -91,6 +91,7 @@ const config: ZudokuConfig = {
             "/features/managed-volumes",
             "/features/checkpoints",
             "/features/plugins",
+            "/features/custom-network-configuration",
           ],
         },
         {
