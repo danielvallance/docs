@@ -5,8 +5,13 @@ navigation_icon: save
 
 {/* vale off */}
 :::caution[**Limited Access**]
-Checkpointing is a new feature that **is not** enabled by default and requires a valid license.
-If you would like to try it out, please reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to `support@unikraft.com`.
+Checkpointing is a new feature which is available to enterprise customers, and is coming soon to the hosted platform.
+If you would like to try it out now, please reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+
+:::caution
+Dedicated `unikraft` CLI subcommands for checkpointing are coming soon.
+In the meantime, configure checkpointing through the [API](/api/platform/v1/instances/checkpoints), which you can invoke with `curl` or the [`unikraft api`](/cli/unikraft/api) command.
 :::
 {/* vale on */}
 
