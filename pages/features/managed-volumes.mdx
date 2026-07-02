@@ -29,6 +29,15 @@ The platform treats its quota policy as `dynamic`, and counts it toward the numb
 Total volume size quotas aren't yet enforced by the platform for managed volumes, so use them with caution to avoid filling up your host's disk.
 :::
 
+{/* vale off */}
+:::tip
+On BYOC or on-prem Unikraft Cloud installations, managed volumes can also use custom filesystems.
+Custom filesystem drivers can define lifecycle hooks for `format`, `fscheck`, `mount`, `unmount`, and `delete`, and can accept backend-specific arguments when you create the volume.
+
+This makes it possible to present shared object storage as a regular filesystem inside instances, for example by using a POSIX layer like JuiceFS on top of S3.
+:::
+{/* vale on */}
+
 ## Creating an instance with a managed volume
 
 To attach a managed volume, add an entry with a `host_path` to the `volumes` array when you create an instance.
