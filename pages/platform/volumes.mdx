@@ -638,6 +638,9 @@ unikraft volume create --metro fra \
 {/* vale off */}
 :::tip
 For BYOC or on-prem Unikraft Cloud installations, you can configure custom filesystems that can be backed by other media, such as S3 or network storage.
+Custom filesystem drivers support lifecycle hooks for `format`, `fscheck`, `mount`, `unmount`, and `delete`, so operators can control how storage is prepared, attached, and cleaned up.
+
+This is useful when you want shared storage semantics over non-block backends, for example exposing S3 through a POSIX layer such as JuiceFS while still integrating with the platform's volume lifecycle.
 :::
 {/* vale on */}
 
