@@ -458,6 +458,35 @@ Otherwise, the platform will queue it and trigger when the instance fully stops.
 Do **not** confuse a `stopped` instance with a [snapshotted](/features/snapshots/) instance, which is in `standby` state and has its volumes still mounted.
 :::
 
+## Warm-plug volume operations
+
+The platform supports **warm-plug** volume operations.
+This lets you attach volumes in more lifecycle states than before, but with important timing constraints.
+
+### What is supported
+
+- You can attach a volume to an instance created from a snapshot (for example, from a template).
+- You can attach a volume to an instance that is currently `running`.
+
+### Current behavior and limitations
+
+- Attaching to a `running` instance is not applied instantly.
+- The attach operation is scheduled and completes on the next scale-to-zero cycle.
+- This is warm-plug support, not full hot-plug support.
+- Detaching a volume still requires the instance to be fully shut down (not only scaled to zero).
+- If you request detach while the instance is not yet shut down, the platform schedules the update and applies it automatically once shutdown happens.
+
+### API usage note
+
+For now, volume attach and detach updates are available through dedicated endpoints:
+
+- `/v1/volumes/attach`
+- `/v1/volumes/detach`
+
+You can invoke these endpoints via the CLI using [`unikraft volumes attach`](/cli/unikraft/volumes/attach) and [`unikraft volumes detach`](/cli/unikraft/volumes/detach).
+
+The instance `PATCH` endpoint does not currently support volume operations.
+
 ## Volume templates
 
 A volume template is a volume that you can use as a base to create new volumes with the same data.
