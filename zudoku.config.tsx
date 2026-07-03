@@ -1,6 +1,9 @@
 import type { ZudokuConfig } from "zudoku";
 import { UnikraftCodeTabs } from "./src/UnikraftCodeTabs";
 
+const OIDC_CLIENT_ID = process.env.ZUDOKU_OIDC_CLIENT_ID;
+const OIDC_ISSUER = process.env.ZUDOKU_OIDC_ISSUER;
+
 const config: ZudokuConfig = {
   metadata: {
     title: "%s | Unikraft Cloud Docs",
@@ -15,6 +18,22 @@ const config: ZudokuConfig = {
     },
     showPoweredBy: false,
   },
+  ...(OIDC_CLIENT_ID && OIDC_ISSUER
+    ? {
+        authentication: {
+          type: "openid" as const,
+          clientId: OIDC_CLIENT_ID,
+          issuer: OIDC_ISSUER,
+          scopes: [
+            "openid",
+            "profile",
+            "email",
+            "docs:enterprise",
+            "org:metadata",
+          ],
+        },
+      }
+    : {}),
   docs: {
     files: "/pages/**/*.{md,mdx}",
     defaultOptions: {
