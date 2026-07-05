@@ -574,6 +574,7 @@ const config: ZudokuConfig = {
       items: [
         "/releases/index",
         "/releases/r11-metis",
+        "/releases/r10-themisto",
       ],
     },
   ],
