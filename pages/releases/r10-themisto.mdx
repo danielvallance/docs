@@ -81,36 +81,6 @@ This allows private VM instances without a service group to have scale-to-zero c
 A new `--db-path` option lets operators choose where the platform stores its databases.
 This makes it easier to place the databases on dedicated storage, separate from logs or other state.
 
-### Bug fixes
-
-- A race in the snapshot abort path could trigger a false assertion and leave an instance stuck in the `STOPPING` state.
-- Snapshot retries after abort now proceed correctly.
-- Race conditions during snapshot teardown when the VMM process died have been fixed.
-- Snapshots are now consistently cleaned up as part of orderly shutdown.
-- The dynamic worker pool used by the snapshot subsystem has been replaced with a fixed-size pool, eliminating scaling-related instability under bursty workloads.
-- An instance that had been through a restart cycle could crash the controller when subsequently stopped.
-- Draining no longer inadvertently clears the delete-on-stop property.
-- The suspend endpoint now handles instances that are still waiting on start prerequisites.
-- API wait operations now complete reliably for scale-to-zero instances.
-- The scale-to-zero notification path can no longer be stalled by guest behavior.
-- TAP device reuse is now gated to prevent misrouted connections when the proxy timeout exceeds interface retention time.
-- Volume clone deadlock and starvation issues have been resolved.
-- External heap references are no longer lost during the VMDB v0.7 to v0.8 upgrade.
-- Heap objects are now retained on the correct heap during imgdb upgrades.
-- A startup-time crash related to the VM message queue has been fixed.
-- Two separate race conditions in the image resolution path have been eliminated.
-- A retry of a previously failed image request no longer results in a crash.
-- A use-after-free condition has been fixed in the autoscale cleanup path.
-- Building inline ROMs now works on Debian 11.
-- The Prometheus metrics endpoint now reports stop times correctly instead of start times.
-- Listings with `order` but without `sortby` are now sorted correctly and pagination no longer skips objects.
-- Negative boot time is no longer reported for boots exceeding approximately 34 minutes.
-- The VMM now re-sends the shutdown signal if the first one arrives before the guest is ready, preventing instances from hanging in `STOPPING`.
-- The `cputime` metric now accurately reflects CPU time consumed by the instance.
-- Internal service groups can now be reached from other instances via the proxy for both TCP and UDP.
-- CoreDNS has been upgraded from v1.13.2 to v1.14.3.
-- The `ukpdns` plugin in CoreDNS now uses persistent connections, reducing DNS resolution latency under load.
-
 ---
 
 ## Tooling
@@ -261,13 +231,6 @@ unikraft build . --output my-org/my-app:latest --insecure registry.internal
 unikraft images pull my-org/my-app:latest --insecure
 ```
 
-#### Bug fixes
-
-- `unikraft build` no longer drops or renames dotfiles such as `.config` from the rootfs.
-- The builder now accepts custom Dockerfile names via `-f`.
-- Image references targeting Docker Hub under the implicit `docker.io/library` namespace are now canonicalized correctly, fixing push failures.
-- When the platform's new listing endpoint is unavailable, the CLI falls back to the previous endpoint instead of failing.
-
 ### KraftKit
 
 #### Kraftfile schema v0.7
@@ -283,11 +246,6 @@ When a metro has already cached an image locally, the pull resolves against it d
 # Lists images visible in the fra metro, including its local store
 kraft cloud image list --metro fra
 ```
-
-#### Bug fixes
-
-- Rollout image names are now sanitized before submission, and the `--insecure` flag is honored during the intermediate copy step of a rollout.
-- KraftKit no longer requires KraftKit-specific annotations on the images it consumes, so any standards-compliant OCI image can be used as a source.
 
 ### Kraftlet
 
