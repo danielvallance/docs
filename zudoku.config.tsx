@@ -567,6 +567,16 @@ const config: ZudokuConfig = {
       icon: "unplug",
       to: "/api/platform/v1",
     },
+    {
+      type: "category",
+      label: "Releases",
+      icon: "tag",
+      items: [
+        "/releases/index",
+        "/releases/r11-metis",
+        "/releases/r10-themisto",
+      ],
+    },
   ],
   search: {
     type: "pagefind",
@@ -576,6 +586,7 @@ const config: ZudokuConfig = {
     { from: "/cli", to: "/cli/overview" },
     { from: "/kraftfile", to: "/kraftfile/v0.7" },
     { from: "/guides", to: "/guides/overview" },
+    { from: "/releases", to: "/releases/index" },
   ],
   apis: [
     {
