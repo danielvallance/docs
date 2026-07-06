@@ -80,7 +80,11 @@ Expect higher server density, cost-savings, I/O performance boosts, active vCPU 
 1. Deploy your first scale-to-zero, serverless app with Unikraft Cloud.
 
    ```bash
-   unikraft run --metro fra -p 443:8080/http+tls --image nginx:latest
+   unikraft run \
+    --metro fra \
+    --publish 443:8080/http+tls \
+    --scale-to-zero policy=on,cooldown-time=1000 \
+    --image nginx:latest
    ```
 
 </Stepper>
