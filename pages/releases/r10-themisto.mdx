@@ -59,12 +59,15 @@ Operators can continue to export metrics for instances that the platform still r
 
 ### Image pull policy forwarding
 
+{/* vale off */}
 The image pull policy configured in the API is now forwarded to the host agent.
 This allows eliminating image pull latency when you use the `if_not_present` policy together with background image updates configured in the host agent.
+{/* vale on */}
 
 ### Merge image default environment with instance environment
 
-When starting an instance, the environment variables defined as defaults on the image are now merged with any instance-level environment variables, rather than the instance-level variables fully replacing the defaults.
+When starting an instance, the environment variables defined as defaults on the image are now merged with any instance-level environment variables.
+The instance-level variables no longer fully replace the defaults.
 This change also fixes a problem where environment variables weren't escaped correctly.
 
 ### Image fetch errors propagated to the proxy
@@ -137,7 +140,7 @@ rootfs:
 ```
 
 New optional `dockerfile:` field on `rootfs.source`.
-A Dockerfile-backed rootfs can now point at a Dockerfile separately from its build context, matching the behaviour of `docker build -f`.
+A Dockerfile-backed rootfs can now point at a Dockerfile independent of its build context, matching the behaviour of `docker build -f`.
 
 ```yaml
 spec: v0.7

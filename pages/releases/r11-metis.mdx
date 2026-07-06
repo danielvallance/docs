@@ -6,15 +6,17 @@ description: Unikraft Cloud Release 11 (Metis) release notes.
 
 ---
 
-{/* vale off */}
+Release 11 is a major step forward for the platform.
+It brings advanced snapshotting capabilities, including branching and checkpointing, alongside custom filesystems for persistent storage.
+A plugin API extends a microVM with your own code.
+Enterprise customers already have access to a sandbox plugin built on it.
 
-Release 11 is a major step forward for the platform, and it comes jam-packed. Headlining it are advanced snapshotting capabilities — branching and checkpointing — alongside custom filesystems for persistent storage, and a plugin API that transparently extends a microVM with your own code. A sandbox plugin built on it is already available to enterprise customers.
+Also new is the network shield.
+It sits between any microVM and the public Internet, filtering traffic and injecting tokens or secrets so they never have to live inside the microVM itself.
+The shield is a minimalist, scale-to-zero microVM, as isolated as everything else you run.
 
-Also on the sandbox track — but useful for all use cases — is our new network shield. It sits between any microVM and the public Internet, filtering traffic and injecting tokens, credentials or secrets so they never have to live inside the microVM (read: agent) itself. The shield is implemented as a minimalist, scale-to-zero microVM of its own, so it is as strongly isolated as everything else you run — and, being a microVM, extremely flexible in what it can do (iptables, eBPF, and so on).
-
-All features in this release are available immediately to enterprise customers and are coming to the hosted platform very soon. From now on, we will publish public release notes once a month. Below, the release is split into platform features and the tooling that supports them.
-
-{/* vale on */}
+All features in this release are available to enterprise customers now and coming to the hosted platform soon.
+Below, the notes cover platform features and the tooling that supports them.
 
 ---
 
@@ -42,7 +44,7 @@ Requires a valid license.
 
 **Why it matters:** Branching is the foundation for stateful instance workflows on the platform.
 It enables fast, low-downtime cloning of live workloads for testing, scaling, and recovery.
-It applies to many use cases, including launching sub-agents or branching large production databases to safely develop on them.
+It applies to many use cases, including launching sub-agents or branching large production databases to develop on them without risk.
 
 **Learn more:** [Branching](/features/branching)
 
@@ -89,7 +91,8 @@ This is an additive capability.
 
 **Requirements and limitations:** Requires a valid license.
 Checkpointing only works with block-based volumes (for example, `ext4`).
-You load checkpoints by creating a new instance from them; in-place rewind of an instance to a previous checkpoint isn't part of this release.
+You load checkpoints by creating a new instance from them.
+In-place rewind of an instance to a previous checkpoint isn't part of this release.
 
 **Why it matters:** Checkpointing gives you low-latency, point-in-time recovery and reproducible starting states for running workloads.
 This helps with debugging, experimentation, and rollback.
@@ -113,7 +116,7 @@ This is an additive capability.
 
 ### Custom network configuration
 
-You can now create microVMs with several network interfaces and fully custom network configuration via `POST /v1/instances`:
+You can now create microVMs with many network interfaces and fully custom network configuration via `POST /v1/instances`:
 
 ```json
 {
@@ -127,7 +130,8 @@ You can now create microVMs with several network interfaces and fully custom net
 ```
 
 The first interface is the **primary interface**: the `private_ip` that the instance returns always comes from it, and the proxy forwards traffic to the primary interface's IP.
-If you omit `ip` and `tap_name`, the platform chooses a TAP device from its pool; you must specify both fields or neither.
+If you omit `ip` and `tap_name`, the platform chooses a TAP device from its pool.
+You must specify both fields or neither.
 Interface names are user-global rather than instance-local, so another instance can reference your interface as its relay.
 If you omit `name`, the platform autogenerates it as `<instance_name>-ethX`, falling back to `eth-<random suffix>`.
 `autoconfig` (default `true`) controls whether the guest kernel configures the interface or leaves it to the app/image, independent of the TAP device used.
@@ -163,10 +167,14 @@ This lets you set up a gateway or proxy VM and configure its interface as the re
 ```
 
 Relay is a core part of the sandbox support in Unikraft Cloud.
-A typical topology pairs a sandbox instance with a shield microVM that scans all inbound and outbound traffic and injects secrets, so the sandbox never has unfiltered network access and never holds any secrets itself.
-All traffic passes over the relay, and several VMs can share a single relay.
+A typical topology pairs a sandbox instance with a shield microVM that scans all traffic and injects secrets.
+
+The sandbox never has unfiltered network access and never holds any secrets itself.
+
+All traffic passes over the relay, and many VMs can share one.
 Unikraft Cloud supports managed interfaces with custom TAP devices, and you don't need to enable VM-to-VM communication (which you wouldn't want in a sandbox setup anyway).
-The relay can handle DNS requests, or the platform's default DNS server can answer them via `relay_dns` (default `true`), which simplifies setups that don't run a DNS server in the relay VM.
+The relay can handle DNS requests, or the platform's default DNS server can answer them via `relay_dns` (default `true`).
+This simplifies setups that don't run a DNS server in the relay VM.
 A guest acting as a relay should set `net.ipv4.ip_forward=1` and `rp_filter=0`.
 
 **Breaking changes:** None.
@@ -177,19 +185,21 @@ As part of the custom network configuration, that feature gates relay.
 
 **Why it matters:** Shield and relay make a genuinely secure sandbox possible.
 They centralize traffic inspection and secret injection in a controlled gateway, which keeps untrusted workloads isolated from secrets and from unfiltered network access.
-Because each shield runs as a separate microVM, every shield instance stays fully isolated from the others, so you get isolation for your main workload (such as sandboxes, browsers, and databases) and for the shield protecting it.
+Each shield runs as a separate microVM, so every shield instance stays fully isolated from the others.
+You get isolation for your main workload (such as sandboxes, browsers, and databases) and for the shield protecting it.
 
 **Learn more:** [Network shield and relay](/features/custom-network-configuration#network-shield-and-relay)
 
 ### Plugin API
 
-The plugin API powers the native sandbox experience: a plugin runs a small HTTP server that accepts commands for execution in the VM, offers filesystem services, and more.
+The plugin API powers the native sandbox experience.
+A plugin runs a small HTTP server that accepts commands for execution in the VM, offers filesystem services, and more.
 The mechanism is general and supports other plugin types as well.
-Unlike running an HTTP server as a regular service, plugin HTTP access uses the same authentication as a normal API call, requires no service group, and talks directly to the instance/microVM.
+Unlike a regular service, plugin HTTP access uses the same authentication as a normal API call, requires no service group, and talks to the instance directly.
 When you enable scale-to-zero, the request wakes the instance, which stays up for the request's duration, exactly like a normal request.
 
-The plugin API loads plugins into an instance and exposes each plugin over an authenticated URL of the form `https://api.<REGION>.unikraft.cloud/v1/instances/<UUID>/plugins/<PLUGIN_NAME>/*`.
-The platform forwards everything after the plugin name (`*`) to the plugin as the URL.
+The plugin API loads plugins into an instance and exposes each plugin over an authenticated address of the form `https://api.<REGION>.unikraft.cloud/v1/instances/<UUID>/plugins/<PLUGIN_NAME>/*`.
+The platform forwards everything after the plugin name (`*`) to the plugin as the path.
 You declare plugins at instance creation time via `POST /v1/instances`, where `config` accepts arbitrary JSON:
 
 ```json
@@ -201,11 +211,14 @@ You declare plugins at instance creation time via `POST /v1/instances`, where `c
 }
 ```
 
-A plugin is a standard ROM image (a standard Unikraft Cloud feature; see the docs) with an executable named `init` in its root.
-The platform loads and mounts it at `/uk/plugins/<plugin_name>`, starts it, passes its `config` via STDIN, and passes an `--api_fd X` argument that carries the socket file descriptor it uses to accept connections.
-The controller assigns the socket port on a best-effort basis within a configurable range (`--vmm-plugin-port-start`, default 20000; `--vmm-plugin-port-end`, default 29999), skipping ports already in use by the guest.
+A plugin is a standard ROM image (see the docs) with an executable named `init` in its root.
+The platform loads and mounts it at `/uk/plugins/<plugin_name>`, starts it, and passes its `config` via STDIN.
+It also passes an `--api_fd X` argument that carries the socket file descriptor for accepting connections.
+The controller assigns the socket port on a best-effort basis within a configurable range (`--vmm-plugin-port-start`, default 20000, and `--vmm-plugin-port-end`, default 29999).
+It skips ports already in use by the guest.
 Plugin names can be up to 63 characters and contain only `a-z`, `A-Z`, `0-9`, `-`, and `_`.
-The PATCH endpoint fully supports plugins, which load on the scale-to-zero, suspend, and restart cycle like ROMs, and which an instance inherits when you clone it via branching or checkpointing.
+The PATCH endpoint fully supports plugins.
+They load on the scale-to-zero, suspend, and restart cycle like ROMs, and an instance inherits them when you clone it via branching or checkpointing.
 
 **Breaking changes:** None.
 This is an additive capability.
@@ -224,12 +237,15 @@ Dashboard support for the plugin API is coming soon.
 
 ## Tooling
 
+{/* vale off */}
+
 ### Agent
 
 #### Image pruning
 
 The agent now automatically prunes unused images from disk.
-When no running or stopped instance references an image any longer, the agent garbage-collects it to reclaim space; if you need the image again later, the agent pulls it on demand from the registry.
+When no running or stopped instance references an image, the agent garbage-collects it to reclaim space.
+If you need the image again later, the agent pulls it on demand from the registry.
 
 **Breaking changes:** Images that you push directly to the [local registry](/cli/registries) now become eligible for pruning, so don't treat them as long-term storage.
 Push images you want to keep to the global registry instead.
@@ -252,6 +268,8 @@ With root access, it can also include more metadata, such as version information
 **Why it matters:** Makes it easier to automate operations and diagnose issues across a fleet using a single, scriptable health endpoint.
 
 **Learn more:** [Unikraft Cloud documentation](https://unikraft.com/docs/introduction)
+
+{/* vale on */}
 
 ### CLI
 
@@ -277,7 +295,8 @@ A powerful product deserves a beautiful interface, and the dashboard now has a f
 You can now check real-time metrics for all your resources and inspect instance logs.
 You can start and stop instances directly from the UI and manage your organization, including user management.
 
-Coming soon, you'll also be able to SSH directly into a particular instance, create and delete instances, and inspect the lifetime of an instance as you checkpoint or fork it.
+Coming soon, you'll also be able to SSH directly into a particular instance and create or delete instances.
+You'll be able to inspect the lifetime of an instance as you checkpoint or fork it.
 
 **Breaking changes:** None.
 
