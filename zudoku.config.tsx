@@ -567,12 +567,6 @@ const config: ZudokuConfig = {
       icon: "unplug",
       to: "/api/platform/v1",
     },
-    {
-      type: "link",
-      label: "Glossary",
-      icon: "book-a",
-      to: "https://unikraft.com/glossary",
-    },
   ],
   search: {
     type: "pagefind",
