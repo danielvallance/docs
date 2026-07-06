@@ -237,15 +237,11 @@ Dashboard support for the plugin API is coming soon.
 
 ## Tooling
 
-{/* vale off */}
-
-### Agent
-
 #### Image pruning
 
-The agent now automatically prunes unused images from disk.
-When no running or stopped instance references an image, the agent garbage-collects it to reclaim space.
-If you need the image again later, the agent pulls it on demand from the registry.
+The platform now automatically prunes unused images from disk.
+When no running or stopped instance references an image, the platform garbage-collects it to reclaim space.
+If you need the image again later, the platform pulls it on demand from the registry.
 
 **Breaking changes:** Images that you push directly to the [local registry](/cli/registries) now become eligible for pruning, so don't treat them as long-term storage.
 Push images you want to keep to the global registry instead.
@@ -268,8 +264,6 @@ With root access, it can also include more metadata, such as version information
 **Why it matters:** Makes it easier to automate operations and diagnose issues across a fleet using a single, scriptable health endpoint.
 
 **Learn more:** [Unikraft Cloud documentation](https://unikraft.com/docs/introduction)
-
-{/* vale on */}
 
 ### CLI
 

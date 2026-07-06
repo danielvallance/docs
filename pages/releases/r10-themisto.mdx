@@ -59,10 +59,8 @@ Operators can continue to export metrics for instances that the platform still r
 
 ### Image pull policy forwarding
 
-{/* vale off */}
-The image pull policy configured in the API is now forwarded to the host agent.
-This allows eliminating image pull latency when you use the `if_not_present` policy together with background image updates configured in the host agent.
-{/* vale on */}
+The image pull policy configured in the API is now forwarded to the host platform.
+This allows eliminating image pull latency when you use the `if_not_present` policy together with background image updates configured in the host platform.
 
 ### Merge image default environment with instance environment
 
@@ -253,6 +251,8 @@ kraft cloud image list --metro fra
 ```
 
 ### Kraftlet
+
+Kraftlet is the Unikraft Cloud integration for Kubernetes, allowing you to run microVMs as Kubernetes pods.
 
 #### CSI integration
 
