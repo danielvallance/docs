@@ -36,9 +36,11 @@ jobs:
           exit 1
         fi
 
+    - name: Install Unikraft CLI
+      uses: unikraft/setup-action@main
 
-    - name: Setup KraftKit
-      uses: ./.github/actions/setup-kraftkit
+    - name: Authenticate unikraft CLI
+      run: echo $UKC_TOKEN | unikraft login --token -
 
     - name: Setup docs website
       id: www
