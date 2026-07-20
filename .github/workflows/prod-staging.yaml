@@ -44,6 +44,9 @@ jobs:
     - name: Authenticate unikraft CLI
       run: echo $UKC_TOKEN | unikraft login --token -
 
+    - name: Configure metro
+      uses: ./.github/actions/configure-insecure-metro
+
     - name: Setup docs website
       id: www
       uses: ./.github/actions/setup-www
