@@ -12,6 +12,7 @@ on:
 env:
   UKC_TOKEN: ${{ secrets.UKC_TOKEN }}
   UKC_METRO: ${{ vars.UKC_METRO }}
+  UKC_METRO_NAME: ${{ vars.UKC_METRO_NAME }}
   KRAFTKIT_LOG_LEVEL: debug
   KRAFTKIT_NO_CHECK_UPDATES: "true"
 
@@ -31,8 +32,8 @@ jobs:
     - name: Validate required secrets
       shell: bash
       run: |
-        if [[ -z "${{ vars.UKC_METRO }}" ]]; then
-          echo "Missing UKC_METRO variable" >&2
+        if [[ -z "${{ vars.UKC_METRO_NAME }}" ]]; then
+          echo "Missing UKC_METRO_NAME variable" >&2
           exit 1
         fi
 
@@ -50,7 +51,7 @@ jobs:
       with:
         environment: prod-staging
         name: com-docs-staging
-        metro: ${{ vars.UKC_METRO }}
+        metro: ${{ vars.UKC_METRO_NAME }}
         log-level: trace
         channel: staging
 
