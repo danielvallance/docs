@@ -1,4 +1,15 @@
 import type { ZudokuConfig } from "zudoku";
+import {
+  DiagramArrow,
+  DiagramBox,
+  DiagramStack,
+  DiagramStackItem,
+  UseCaseCard,
+  UseCaseDiagram,
+  UseCaseGroup,
+  ValueCard,
+  ValueCards,
+} from "./src/UseCaseComponents";
 
 const config: ZudokuConfig = {
   metadata: {
@@ -36,6 +47,19 @@ const config: ZudokuConfig = {
       llmsTxt: true, // Generate llms.txt
       llmsTxtFull: true, // Generate llms-full.txt
       includeProtected: false, // Exclude protected routes
+    },
+  },
+  mdx: {
+    components: {
+      DiagramArrow,
+      DiagramBox,
+      DiagramStack,
+      DiagramStackItem,
+      UseCaseCard,
+      UseCaseDiagram,
+      UseCaseGroup,
+      ValueCard,
+      ValueCards,
     },
   },
   syntaxHighlighting: {
@@ -122,6 +146,7 @@ const config: ZudokuConfig = {
           icon: "lightbulb",
           collapsed: false,
           items: [
+            "/use-cases/index",
             "/use-cases/sandboxes",
             "/use-cases/headless-browsers",
             "/use-cases/mcp-servers",
@@ -587,6 +612,7 @@ const config: ZudokuConfig = {
     { from: "/kraftfile", to: "/kraftfile/v0.7" },
     { from: "/guides", to: "/guides/overview" },
     { from: "/releases", to: "/releases/index" },
+    { from: "/use-cases", to: "/use-cases/index" },
   ],
   apis: [
     {
