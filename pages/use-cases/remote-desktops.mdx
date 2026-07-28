@@ -3,48 +3,40 @@ title: Remote Desktops
 navigation_icon: screen-share
 ---
 
-Full remote desktop environments power browser-based access to Linux GUIs, agentic computer-use workloads, secure browsing sessions, and disposable workstations.
-They're memory-hungry, security-sensitive, and often run in short, interactive bursts—making them a strong fit for microVM-based, scale-to-zero infrastructure.
+Give every user, human or automated, a full Linux desktop in the browser: cold-started in under 10 ms, suspended between sessions, restored exactly where it left off.
 
+<ValueCards>
+  <ValueCard title="A dedicated desktop per session" metric="1 microVM per session">
+    Every desktop runs in its own microVM with its own kernel.
+    Untrusted browsing, opened documents, and arbitrary user input stay behind hardware-enforced boundaries.
+  </ValueCard>
+  <ValueCard title="Pause the desktop, not the work" metric="restores in < 10 ms" metricHref="/features/scale-to-zero#stateful-scale-to-zero">
+    Full desktop environments cold start in under 10 ms.
+    Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends an idle session, open windows and all, and restores it in the same time.
+  </ValueCard>
+  <ValueCard title="Density that changes the economics" metric="100K+ microVMs / server" metricHref="/features/scale-to-zero">
+    A single server holds 100K+ microVMs, and suspended desktops cost nothing.
+    Pay for the minutes users are active, not the hours they're away.
+  </ValueCard>
+</ValueCards>
 
-## Why run remote desktops on Unikraft Cloud
-
-### ⚡ Instant session startups
-
-MicroVMs on Unikraft Cloud boot in milliseconds, so a full desktop is ready the moment a user opens the link:
-
-* No waiting for heavy VMs or container images to warm up.
-* Sessions resume from standby in milliseconds when traffic returns.
-
-### 🔒 Strong session isolation
-
-Remote desktops run untrusted browsers, untrusted documents, and arbitrary user input.
-With Unikraft Cloud:
-
-* Each desktop runs in its own VM, isolated by design.
-* A minimal, single-purpose image reduces attack surface.
-
-### 💸 Cost-efficient scale-to-zero
-
-Interactive sessions are bursty—active for minutes, idle for hours:
-
-* Desktops scale-to-zero between sessions, removing idle costs.
-* Pay only for the seconds users actively spend in the session.
-
-### 🤖 Built for automation
-
-Computer-use workloads drive a real desktop the same way a human does:
-
-* Expose a noVNC endpoint over HTTPS for browser or programmatic access.
-* Spin up a fresh, disposable environment per task or per session.
-
+<UseCaseDiagram caption="One image, one desktop per session: idle desktops sleep at zero cost and restore in milliseconds.">
+  <DiagramBox title="Desktop image">Your Dockerfile: desktop environment, apps, VNC server</DiagramBox>
+  <DiagramArrow label="deploy once" />
+  <DiagramBox accent title="Sleeping desktop" note="memory intact, zero cost">A microVM parked by stateful scale-to-zero</DiagramBox>
+  <DiagramArrow accent label="restores in < 10 ms" sublabel="when the user returns" />
+  <DiagramStack more="...100K+ per server, asleep between sessions">
+    <DiagramStackItem label="desktop" chip="user: alice" />
+    <DiagramStackItem label="desktop" chip="secure browsing" />
+    <DiagramStackItem label="desktop" chip="computer-use agent" />
+  </DiagramStack>
+</UseCaseDiagram>
 
 ## Getting started
 
-Remote desktops on **Unikraft Cloud** run faster, safer, and cheaper.
-From disposable browsers to a Linux GUI in a tab, you get instant scale-out and zero idle costs—without sacrificing isolation.
-
-This guide shows you how to use [noVNC](https://novnc.com/info.html), an open source Virtual Network Computing (VNC) client that runs in the browser, paired with a minimal Linux desktop and Firefox.
+This pattern works with a Linux desktop environment and any browser-facing remote display stack.
+The image is whatever your Dockerfile produces: XFCE, GNOME, or a bare window manager, running whichever applications your users need.
+This guide uses one such combination: [noVNC](https://novnc.com/info.html), an open source Virtual Network Computing (VNC) client that runs in the browser, paired with a minimal Linux desktop and Firefox.
 
 To run it, follow these steps:
 
@@ -90,7 +82,8 @@ A noVNC desktop instance on Unikraft Cloud requires 4GB to run.
 Request an increase in the instance memory quota when you need more memory.
 :::
 
-When done, invoke the following command to deploy this app on Unikraft Cloud:
+When done, invoke the following command to deploy this app on Unikraft Cloud.
+The `--scale-to-zero` flag enables stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), so the desktop suspends with its memory intact when idle and restores when the user reconnects:
 
 <CodeTabs syncKey="cli">
 
@@ -195,6 +188,8 @@ vnc-browser  weathered-fog-y5jjmwfd.fra.unikraft.app  [0;36mstandby[0m  standb
 
 </CodeTabs>
 
+The instance sits in the `standby` [state](/platform/instances#instance-states): [scale-to-zero](/features/scale-to-zero) parked it, desktop intact, until the next session begins.
+
 When done, you can remove the instance:
 
 <CodeTabs syncKey="cli">
@@ -217,6 +212,27 @@ You can also adjust the screen geometry through the `WIDTH`, `HEIGHT`, and `DISP
 
 [Anthropic's Computer Use Demo](https://github.com/anthropics/claude-quickstarts/tree/main/computer-use-demo) inspired this example, which works well as a sandbox for computer-use automation that needs to drive a real desktop.
 
+## Why this pattern works
+
+Remote desktops power browser-based Linux GUIs, computer-use agents, secure browsing sessions, and disposable workstations.
+These workloads are memory-hungry, security-sensitive, and interactive in bursts, and each of those pressures maps to a platform feature:
+
+1. **Hardware isolation per session**:
+   A desktop session runs untrusted browsers, untrusted documents, and arbitrary user input.
+   Each desktop on Unikraft Cloud is its own microVM with its own kernel, and the minimal, single-purpose image keeps the attack surface small.
+
+1. **Stateful suspend fits interactive sessions**:
+   Users are active for minutes and away for hours.
+   Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) snapshots the whole microVM, open windows and running apps included, and restores it in under 10 ms when the user returns, so you pay for the seconds of actual use.
+
+1. **Density that makes a desktop per user viable**:
+   Desktop environments are memory-hungry, which normally rules out one VM per user.
+   Unikraft Cloud packs 100K+ microVMs onto a single server, and suspended desktops consume no resources at all.
+
+1. **Built for automation**:
+   Computer-use agents drive a real desktop the same way a human does.
+   Every desktop gets an ordinary HTTPS endpoint, so you can spin up a fresh, disposable environment per task and control it from a browser or a program.
+
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
@@ -234,3 +250,7 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
+For more information on the features used in this use case and how to use them, check out the following documentation:
+
+* [Scale-to-zero](/features/scale-to-zero) for suspending idle desktops and restoring them with memory intact.
+* [Sandboxes](/use-cases/sandboxes) for running computer-use agents and other untrusted workloads.
