@@ -3,50 +3,40 @@ title: Headless Browsers
 navigation_icon: app-window
 ---
 
-Headless browsers power web scraping, automated testing, Search Engine Optimization (SEO) rendering, and synthetic monitoring.
-They're resource-intensive, security-sensitive, and often run in short bursts—making them ideal candidates for microVM-based, scale-to-zero infrastructure.
+Run a full browser per job: hardware-isolated, cold-started in under 10 ms, and asleep at zero cost between bursts.
 
+<ValueCards>
+  <ValueCard title="Bring your own browser" metric="Chromium, Firefox, ...">
+    The image is whatever your Dockerfile produces: Chromium with Puppeteer, Firefox with Playwright, or any other stack.
+    Each browser runs in its own microVM, so untrusted pages render behind hardware-enforced boundaries.
+  </ValueCard>
+  <ValueCard title="Start and resume in milliseconds" metric="resumes in < 10 ms" metricHref="/features/scale-to-zero#stateful-scale-to-zero">
+    Instances cold-start in under 10 ms.
+    Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends an idle browser with its memory intact and resumes it in the same time.
+  </ValueCard>
+  <ValueCard title="Absorb peaks, pay for bursts" metric="scale out in seconds" metricHref="/features/autoscale">
+    Scraping and test traffic are spiky.
+    [Autoscale](/features/autoscale) adds browsers in seconds when load arrives, and idle ones cost nothing.
+  </ValueCard>
+</ValueCards>
 
-## Why headless browsers on Unikraft Cloud
-
-### ⚡ Instant startups
-
-Instances on Unikraft Cloud boot in milliseconds, so browsers spin up only when needed:
-
-* Perfect for on-demand scraping and CI/CD testing.
-* No idle costs when browsers aren't running.
-
-### 🔒 Strong security
-
-Untrusted content exposes browsers.
-With Unikraft Cloud:
-
-* Each browser runs in its own VM, isolated by design.
-* Minimal OS footprint drastically reduces attack surface.
-
-### 💸 Cost-efficient scale-to-zero
-
-Scraping jobs or test suites often run in short, irregular bursts:
-
-* Browsers scale-to-zero when idle, cutting infrastructure waste.
-* Pay only for the seconds of actual execution.
-
-### 🌍 Serverless-ready
-
-Integrate with pipelines and workloads that demand ephemeral execution:
-
-* Trigger browsers via APIs or serverless functions.
-* Distribute workloads globally to run close to data sources.
-
+<UseCaseDiagram caption="One image, one browser per job: idle browsers sleep at zero cost and wake in milliseconds.">
+  <DiagramBox title="Browser image">Your Dockerfile: browser, driver, runtime</DiagramBox>
+  <DiagramArrow label="deploy once" />
+  <DiagramBox accent title="Sleeping browser" note="memory intact, zero cost">A microVM parked by stateful scale-to-zero</DiagramBox>
+  <DiagramArrow accent label="wakes in < 10 ms" sublabel="per request" />
+  <DiagramStack more="...scaled out in seconds when peaks arrive">
+    <DiagramStackItem label="browser" chip="render: pdf" />
+    <DiagramStackItem label="browser" chip="scrape: listings" />
+    <DiagramStackItem label="browser" chip="test: e2e" />
+  </DiagramStack>
+</UseCaseDiagram>
 
 ## Getting started
 
-Headless browsers on **Unikraft Cloud** run faster, safer, and cheaper.
-Whether scraping, testing, or monitoring, you get instant scale-out and zero idle costs—without sacrificing isolation.
-
-This guide shows you how to use [Puppeteer](https://pptr.dev/), a Node.js
-library which provides a high-level API to control browsers, including the
-option to run them headless (no UI).
+This pattern works with any headless browser and any automation library that drives it.
+The image is whatever your Dockerfile produces: Chromium driven by Puppeteer, Firefox driven by Playwright, or any other pairing.
+This guide uses one such combination: [Puppeteer](https://pptr.dev/), a Node.js library which provides a high-level API to control browsers, including the option to run them headless (no UI).
 
 To run it, follow these steps:
 
@@ -90,7 +80,8 @@ A Puppeteer instance on Unikraft Cloud requires 4GB to run.
 Request an increase in the instance memory quota if you need more memory.
 :::
 
-When done, invoke the following command to deploy this app on Unikraft Cloud:
+When done, invoke the following command to deploy this app on Unikraft Cloud.
+The `--scale-to-zero` flag enables stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), so the browser suspends with its memory intact when idle and resumes on the next request:
 
 <CodeTabs syncKey="cli">
 
@@ -217,6 +208,27 @@ The current deployment uses an ExpressJS service that uses the [PDF generating f
 Customizing the deployment means updating the service, such as adding new functionalities provided by Puppeteer.
 You can update the service to provide a REST-like interface.
 
+## Why this pattern works
+
+Headless browsers power web scraping, automated testing, Search Engine Optimization (SEO) rendering, and synthetic monitoring.
+These workloads are resource-intensive, security-sensitive, and bursty, and each of those pressures maps to a platform feature:
+
+1. **Hardware isolation for untrusted content**:
+A browser executes whatever JavaScript the pages it visits ship.
+Each browser on Unikraft Cloud runs in its own microVM with its own kernel, so a compromised page stays behind hardware-enforced boundaries, and the minimal OS footprint keeps the attack surface small.
+
+1. **Stateful suspend instead of cold Chromium starts**:
+Launching Chromium from scratch takes seconds.
+Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) snapshots the whole microVM, browser process included, and resumes it in under 10 ms with its memory intact.
+
+1. **Capacity that follows the burst**:
+Scraping runs, test suites, and monitoring checks arrive in short, irregular spikes.
+Instances boot in milliseconds and [autoscale](/features/autoscale) adds or removes browsers in seconds, so you pay for the seconds of actual execution rather than for a standing pool.
+
+1. **A serverless building block**:
+Because a browser wakes on an incoming request, you can trigger it directly from APIs, webhooks, or [serverless functions](/use-cases/serverless-functions) with no orchestration layer.
+Deploying to more than one [metro](/platform/metros) puts browsers close to the data sources they scrape and the sites they watch.
+
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
@@ -234,3 +246,7 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
+For more information on the features used in this use case and how to use them, check out the following documentation:
+
+* [Scale-to-zero](/features/scale-to-zero) for suspending idle browsers and resuming them with memory intact.
+* [Autoscale](/features/autoscale) for scaling browser capacity out and in with load.
