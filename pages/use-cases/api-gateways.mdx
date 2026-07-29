@@ -3,60 +3,40 @@ title: API Gateways
 navigation_icon: door-open
 ---
 
-API Gateways are the critical entry point to your services.
-They manage authentication, routing, rate-limiting, observability, and security at the edge of your infrastructure.
-In modern architectures—especially microservices and serverless platforms—the API Gateway is the first line of defence and performance optimisation.
+Front your APIs with a gateway that costs nothing between bursts: a hardware-isolated microVM that wakes on the first request and keeps every back end off the public Internet.
 
-With **Unikraft Cloud**, API Gateways gain advantage from a microVM-based, scale-to-zero infrastructure that delivers the performance of specialised systems with the flexibility of serverless deployment.
+<ValueCards>
+  <ValueCard title="An edge that sleeps between requests" metric="wakes on the first request" metricHref="/features/scale-to-zero">
+    Your gateway parks itself when traffic stops and cold boots again in milliseconds when it returns.
+    [Scale-to-zero](/features/scale-to-zero) removes the always-on cluster you would otherwise pay for overnight.
+  </ValueCard>
+  <ValueCard title="Absorb peaks without a warm pool" metric="scales out in milliseconds" metricHref="/features/autoscale">
+    API traffic spikes at launches and quiets down at night.
+    [Autoscale](/features/autoscale) grows your edge with the traffic instead of ahead of it.
+  </ValueCard>
+  <ValueCard title="One public door to your services" metric="back ends stay private" metricHref="/platform/networking">
+    Only the gateway needs a public address.
+    [Private networking](/platform/networking) keeps functions, databases, and caches reachable from the gateway alone, and wakes them the same way.
+  </ValueCard>
+</ValueCards>
 
-## Why run an API gateway on Unikraft Cloud
-
-### ⚡ Ultra-low latency
-
-MicroVMs remove the overhead of general-purpose operating systems by compiling only the required OS components alongside the API Gateway app.
-This results in:
-
-* Single-digit-millisecond cold-start times (perfect for bursty API traffic).
-* Minimal memory footprint, allowing more requests per node.
-* Consistent, predictable response latency at scale.
-
-### 🛡️ Secure by design
-
-The open internet exposes API Gateways, making them often the most attacked component.
-Unikraft Cloud isolates each instance at the virtual machine level while keeping footprint minimal:
-
-* Immutable, single-purpose microVM images reduce attack surface.
-* Strong VM-level isolation without container overhead.
-* Built-in memory safety and image signing to ensure trust at deployment.
-
-### 💸 Scale-to-zero economics
-
-Traffic to APIs often fluctuates—peaking during business hours, quiet overnight, and spiking during product launches.
-Traditional gateway clusters waste resources when idle.
-With Unikraft Cloud:
-
-* API Gateways scale-to-zero when not in use, reducing idle costs to **zero**.
-* Instant cold-starts ensure gateways are ready in milliseconds when traffic resumes.
-* Fine-grained billing: pay only for requests and runtime, not for idle VMs.
-
-### 🔄 Serverless-ready
-
-API Gateways are a natural control point for serverless workloads.
-Running them on Unikraft Cloud enables:
-
-* On-demand routing to serverless functions.
-* Dynamic policy enforcement per request without worrying about idle nodes.
-* Lightweight integration with edge compute for global distribution.
-
+<UseCaseDiagram caption="One public entry point: the gateway wakes on the first request and reaches every back end over the private network.">
+  <DiagramBox title="API traffic" note="bursty by nature">Apps, partners, and webhooks over HTTPS</DiagramBox>
+  <DiagramArrow label="TLS at the edge" sublabel="load balanced" />
+  <DiagramBox accent title="API gateway" note="asleep between bursts">A microVM doing auth, routing, and rate limiting</DiagramBox>
+  <DiagramArrow accent label="*.internal" sublabel="private network" />
+  <DiagramStack more="...every back end asleep at zero cost until a request needs it">
+    <DiagramStackItem label="back end" chip="serverless function" />
+    <DiagramStackItem label="back end" chip="database" />
+    <DiagramStackItem label="back end" chip="cache: redis" />
+  </DiagramStack>
+</UseCaseDiagram>
 
 ## Getting started
 
-API Gateways on Unikraft Cloud combine VM-grade security with serverless agility.
-Ultra-fast, cost-efficient, and scale-to-zero—so your API edge is always ready, never idle.
-
-This guide shows you how to use [Tyk](https://tyk.io/), a universal API management tool for Representational State Transfer (REST), GraphQL, gRPC and async APIs.
-It offers open standards, scalability, governance, and AI-ready features for API development, security, and performance.
-Often, you deploy Tyk alongside a caching layer like Redis to store API tokens and OAuth clients.
+This pattern works with any API gateway or reverse proxy, since the image is whatever your Dockerfile produces.
+This guide uses [Tyk](https://tyk.io/), a universal API management tool for Representational State Transfer (REST), GraphQL, gRPC and async APIs.
+Tyk keeps API tokens and OAuth clients in Redis, so the deployment below pairs the gateway with a Redis instance that only the gateway can reach.
 
 To run it, follow these steps:
 
@@ -97,9 +77,10 @@ export UKC_METRO=fra
 
 ## Redis
 
-The `REDIS_PASSWORD` environment variable sets the Redis `requirepass` directive.
-If not provided, it defaults to `unikraft`.
-Build and deploy the Redis instance (used internally by Tyk):
+The `REDIS_PASSWORD` environment variable sets the Redis `requirepass` directive, and defaults to `unikraft`.
+Build and deploy the Redis instance that backs Tyk.
+The `--domain tyk-redis.internal` flag gives it a private FQDN on your [internal network](/platform/networking), so the gateway can reach it while the Internet can't.
+Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends it with its memory intact, which keeps the cache warm across idle periods:
 
 <CodeTabs syncKey="cli">
 
@@ -176,7 +157,9 @@ The output shows the Redis instance details:
 
 ## Tyk
 
-Build and deploy the Tyk instance:
+Build and deploy the Tyk instance.
+The `-p 443:8080/tls+http` mapping creates a [service](/platform/services), the public entry point that terminates TLS and load balances across the instances behind it.
+Here it forwards HTTPS traffic on port 443 to Tyk on port 8080:
 
 <CodeTabs syncKey="cli">
 
@@ -288,6 +271,8 @@ redis-6vgvc  tyk-redis.internal                  [0;32mrunning[0m  since 1min 
 
 </CodeTabs>
 
+The gateway sits in the `standby` [state](/platform/instances#instance-states) once its cooldown expires: scale-to-zero parked it, and the next request wakes it again.
+
 When done, you can remove the instances:
 
 <CodeTabs syncKey="cli">
@@ -301,6 +286,42 @@ kraft cloud instance remove redis-6vgvc tyk-s9ixd
 ```
 
 </CodeTabs>
+
+## Why this pattern works
+
+A gateway sits on the request path of everything you serve, so its idle cost, its behavior under bursts, and its exposure all matter:
+
+1. **No always-on tier**:
+[Scale-to-zero](/features/scale-to-zero) puts an idle gateway on standby, and the platform cold boots it again on the next request within milliseconds, a negligible amount of time next to Internet round trips.
+Gateways that take longer to initialize, such as Tyk reconnecting to Redis or a JVM-based proxy warming up, can use [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) instead, which suspends the microVM with its memory intact and resumes it in under 10 ms.
+Internal traffic wakes instances the same way public traffic does, so the back ends behind the gateway sleep between calls too, and the whole request path idles at zero cost.
+
+1. **Small enough to sit on the hot path**:
+Every call to your APIs passes through the gateway, so any overhead the platform adds shows up in every response.
+Instances cold boot in milliseconds and run in a small memory footprint.
+That keeps the platform's share of each request small, and lets a single gateway instance serve more concurrent requests before you need a second one.
+The external load balancer terminates TLS before traffic reaches the gateway, which keeps certificate work off it entirely.
+
+1. **Bursts absorbed by waking instances, not by provisioning them**:
+Attaching more than one instance to a [service](/platform/services) turns on [load balancing](/features/load-balancing) across them, which counts in-flight requests for HTTP services and open connections for TCP ones.
+A per-instance soft limit tells the load balancer when to wake another standby instance, and a hard limit caps how many requests a single instance takes.
+[Autoscale](/features/autoscale) takes over the instance count entirely and scales out in milliseconds, which removes the reason to keep hot spares around for peaks.
+
+1. **A gateway in every metro, not one central cluster**:
+A single server holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a gateway nobody calls costs nothing.
+That turns a gateway per environment, per tenant, or per [metro](/platform/metros) into a routing decision rather than a capacity one.
+Regional gateways wait at zero cost until traffic reaches their region, which puts TLS termination and policy enforcement close to your users.
+
+1. **Hardware isolation where the exposure is highest**:
+The gateway faces the open Internet, which makes it the most attacked component of the stack.
+Each instance runs as its own microVM with its own kernel and hardware-level isolation, so a compromised gateway shares no kernel with the rest of your deployment.
+The image contains only what the gateway needs, which keeps the attack surface small, and deploying [by image digest](/platform/images) gives you the identical, immutable image on every start.
+
+1. **Back ends the Internet can't route to**:
+Only instances you attach to a public service take traffic from the Internet, and that traffic always travels through the external load balancer.
+Instance-to-instance traffic instead uses each instance's private FQDN (`<instance-name>.internal`) and stays on your [private network](/platform/networking).
+In this guide, Tyk holds the only public service, while Redis answers only at `tyk-redis.internal`.
+The same split applies to [serverless functions](/use-cases/serverless-functions) and [databases](/use-cases/serverless-databases) behind the gateway.
 
 ## Learn more
 
@@ -319,6 +340,14 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
+For more information on the features used in this use case and how to use them, check out the following documentation:
+
+* [Scale-to-zero](/features/scale-to-zero) for parking an idle gateway and waking it on the next request.
+* [Load balancing](/features/load-balancing) for spreading traffic across the instances of a service.
+* [Autoscale](/features/autoscale) for matching the instance count to the current traffic load.
+* [Services](/platform/services) for public entry points and TLS termination.
+* [Networking](/platform/networking) for private `.internal` addressing between the gateway and its back ends.
+
 For more references, check out also:
 
 * [Tyk](/guides/tyk) on Unikraft Cloud interactive guide.
