@@ -3,56 +3,39 @@ title: MCP Servers
 navigation_icon: tool-case
 ---
 
-[MCP (Model Context Protocol)](https://modelcontextprotocol.io/docs/getting-started/intro) servers enable AI assistants and LLMs to access external tools, data sources, and capabilities in a standardized way.
-They act as bridges between AI models and real-world resources—file systems, databases, APIs, search engines, and custom business logic.
-As AI assistants become more capable, MCP servers are becoming critical infrastructure for grounding AI in reality.
+Give every agent session its own [MCP (Model Context Protocol)](https://modelcontextprotocol.io/docs/getting-started/intro) server: a hardware-isolated microVM that wakes on the first tool call and costs nothing while the model thinks.
 
-With **Unikraft Cloud**, you are enhancing your MCP servers with instant deployment, scale-to-zero economics, and millisecond-level cold starts—perfect for the on-demand nature of AI interactions.
+<ValueCards>
+  <ValueCard title="Asleep between tool calls" metric="wakes in milliseconds" metricHref="/features/scale-to-zero">
+    An agent spends most of a session reasoning rather than calling tools.
+    [Scale-to-zero](/features/scale-to-zero) parks the MCP server between calls and it wakes in milliseconds on the next call, so the waiting costs you nothing.
+  </ValueCard>
+  <ValueCard title="An isolated MCP server per session, not one shared endpoint" metric="1 microVM per session">
+    MCP servers reach into file systems, databases, and internal APIs on a model's behalf, holding the credentials for each.
+    Every server runs in its own microVM with its own kernel, so one session's tools stay out of another's reach.
+  </ValueCard>
+  <ValueCard title="Bring the server as it is" metric="starts in < 10 ms" metricHref="/platform/instances#instance-templates">
+    Most MCP servers are Python or Node packages with heavy dependency trees, and the image is whatever your Dockerfile produces.
+    Snapshot one as a [template](/platform/instances#instance-templates) once it has imported everything, and every server you start from it skips that work.
+  </ValueCard>
+</ValueCards>
 
-## Why run MCP servers on Unikraft Cloud
-
-### ⚡ Zero-latency context injection
-
-AI assistants need instant access to tools and data.
-Every millisecond of latency impacts the user experience.
-Unikraft Cloud's microVM architecture reduces OS overhead:
-
-* Single-digit-millisecond cold starts mean MCP servers are ready instantly.
-* Minimal memory footprint allows dense packing of specialized servers.
-
-### 🔒 Isolated execution
-
-MCP servers often access sensitive data—file systems, databases, proprietary APIs.
-Unikraft Cloud provides VM-level isolation for each server instance:
-
-* Strong isolation prevents cross-contamination between different MCP contexts.
-* Minimal attack surface with only essential components included.
-
-### 💸 Pay-per-query economics
-
-AI interactions are inherently bursty—periods of intense activity followed by silence.
-Traditional server architectures waste resources during idle periods.
-With Unikraft Cloud:
-
-* MCP servers scale-to-zero when not in use, costing nothing.
-* Instant wake-up ensures your queries have no noticeable delay.
-* Fine-grained billing means you only pay for actual AI interactions.
-
-### 🌍 Edge-ready deployment
-
-Unikraft Cloud help you reduce the latency of your applications:
-
-* Choose to deploy to your closest [metro](/platform/metros).
-* Lightweight footprint enables cost-effective multi-region deployment.
-* Fast startup times ensure consistent performance across all locations.
-
+<UseCaseDiagram caption="One image, one template, an MCP server per session: cloning and waking both happen in milliseconds.">
+  <DiagramBox title="MCP server image">Your Dockerfile: server, tools, dependencies</DiagramBox>
+  <DiagramArrow label="build once" />
+  <DiagramBox accent title="Template" note="imports done, caches warm">A snapshot taken once the server has finished starting up</DiagramBox>
+  <DiagramArrow accent label="< 10 ms each" sublabel="one per session" />
+  <DiagramStack more="...and a template per integration, each scaled to zero between tool calls">
+    <DiagramStackItem label="mcp server" chip="session: agent-42" />
+    <DiagramStackItem label="mcp server" chip="session: review-bot" />
+    <DiagramStackItem label="mcp server" chip="session: ci-triage" />
+  </DiagramStack>
+</UseCaseDiagram>
 
 ## Getting started
 
-MCP servers on Unikraft Cloud provide the perfect runtime for AI tool integration, being fast, secure, and cost-efficient.
-Scale-to-zero economics meet instant availability, ensuring your AI assistants always have the tools they need, exactly when they need them.
-
-This guide shows you how to deploy two types of MCP servers:
+This pattern works with any MCP server, since the image is whatever your Dockerfile produces.
+This guide walks through two of them: a community server that fronts an external archive, and a minimal custom server you write yourself.
 
 ### Example 1: ArXiv MCP server
 
@@ -223,7 +206,36 @@ Common use cases for custom MCP servers:
 * **Custom business logic**: Integrate company-specific calculations, validations, or workflows.
 * **Document retrieval**: Search and retrieve from internal knowledge bases or document stores.
 
-Unikraft Cloud's instant deployment and scale-to-zero model makes it ideal for hosting dozens of specialized MCP servers.
+Each of these fits in its own small server rather than one endpoint exposing every tool.
+
+## Why this pattern works
+
+An MCP server sits inside an agent's loop: called in bursts, trusted with real credentials, and abandoned the moment the session ends:
+
+1. **Wake-up that disappears into the model's own latency**:
+   [Scale-to-zero](/features/scale-to-zero) puts an idle server on standby, and the next tool call cold boots it again within milliseconds.
+   The model already spends far longer generating that call than the instance spends starting, so the wake-up never reaches the user.
+   Servers with heavy startup work, such as a Python server importing a large dependency tree, pay that cost once.
+   Snapshot the initialized server as an [instance template](/platform/instances#instance-templates), and every clone resumes from that state, memory and warm caches included, in under 10 ms.
+   A long-lived server gets the same effect from [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), which snapshots the instance before standby and loads that memory back on the next request.
+
+1. **Isolation for tools that hold real credentials**:
+   A server reaches file systems, databases, and third-party APIs on the model's behalf, with tokens for each of them.
+   Each instance runs as its own microVM with its own kernel and hardware-level isolation, so a tool call steered by a poisoned document stays inside the microVM that ran it.
+   The image carries only what that server needs, which keeps the attack surface small.
+
+1. **Cleanup you configure once**:
+   Servers created per session pile up unless something removes them.
+   [Autokill](/features/autokill) deletes an instance a set time after it stops, or once it has served a set number of requests, and it can remove a [service group](/platform/services) after its last instance leaves.
+   Instances cloned from an [instance template](/platform/instances#instance-templates) inherit that configuration, so the rule follows every server you start from it.
+
+1. **Density that makes a server per integration affordable**:
+   A single physical node holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a server nobody calls costs nothing.
+   That turns a specialized server per integration, per team, or per tenant into a design decision rather than a budget one, and keeps each one small enough to reason about.
+
+1. **A server in the metro your agent talks to**:
+   Every tool call inserts a network round trip into the model's loop, so distance shows up in the answer.
+   Deploying the same image to more than one [metro](/platform/metros) puts the server near its clients, and idle regional servers wait at zero cost.
 
 ## Learn more
 
@@ -242,6 +254,13 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
+For more information on the features used in this use case and how to use them, check out the following documentation:
+
+* [Instance templates](/platform/instances#instance-templates) for cloning a fully initialized server in milliseconds.
+* [Scale-to-zero](/features/scale-to-zero) for parking a server between tool calls and waking it on the next one.
+* [Autokill](/features/autokill) for deleting instances a set time after they stop or after a request limit.
+* [Services](/platform/services) for the public HTTPS endpoint that MCP clients connect to.
+* [Metros](/platform/metros) for running servers close to the clients that call them.
 
 For more information about the Model Context Protocol:
 
