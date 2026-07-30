@@ -244,15 +244,56 @@ kraft cloud volume rm code-workspace
 
 </CodeTabs>
 
+## Checkpointing an environment
+
+:::caution[**Limited Access**]
+Checkpointing is a new feature that **is not** enabled by default and requires a valid license.
+The interface described here reflects the current implementation and may change before general availability.
+:::
+
+A volume keeps the files, but it doesn't capture the running environment.
+[Checkpointing](/features/checkpoints) captures both, memory and volume together, without interrupting the session, which gives you a known-good environment to hand out or roll back to.
+Call the [`POST /instances/checkpoints`](/api/platform/v1/instances) endpoint with the instance name:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances/checkpoints \
+  -d '{
+    "name": "course-week-1",
+    "from": {
+      "name": "code-server-6gxsp"
+    }
+  }'
+```
+
+</CodeTabs>
+
+Then create environments from that checkpoint, each one starting from the same configured workspace:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances \
+  -d '{
+    "name": "code-server-student-1",
+    "checkpoint": {
+      "name": "course-week-1"
+    }
+  }'
+```
+
+</CodeTabs>
+
 ## Why this pattern works
 
 A development environment is expensive to build, idle most of the day, and full of state a developer expects to survive lunch:
 
-1. **Sessions that transparently scale to zero**:
+1. **Sessions that transparently scale-to-zero**:
    Once the cooldown expires, four seconds in the deployment above, stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) snapshots the instance's memory and scales it to zero.
-   Nothing runs while the developer is away, and nothing is billed.
+   Nothing runs while the developer is away, so you pay nothing.
    The next connection starts the instance again and loads that snapshot, so the editor, its terminals, and its language servers come back exactly as they were, in under 10 ms.
-   Without the stateful flag the instance boots from scratch instead, and the developer arrives to an empty terminal.
+   Without the stateful flag the instance boots from scratch instead, and the developer returns to an empty terminal.
 
 1. **A workspace the instance doesn't own**:
    The environment mounts a [volume](/platform/volumes) at `/workspace`, so repositories, dependencies, and build caches live outside the instance.
@@ -262,7 +303,7 @@ A development environment is expensive to build, idle most of the day, and full 
 1. **Isolation for code that runs all day**:
    A development environment executes untrusted code constantly: dependency install scripts, test suites, and coding agents.
    Each environment runs as its own microVM with its own kernel and hardware-level isolation, so none of that reaches another developer's environment.
-   Instances get virtual machine resources and efficient I/O, so builds and test runs behave the way they do locally.
+   Builds and test runs behave the way they do locally.
 
 1. **The rest of your stack, reachable but not exposed**:
    Every instance gets a private FQDN of the form `<instance-name>.internal` on your [private network](/platform/networking).
@@ -270,7 +311,7 @@ A development environment is expensive to build, idle most of the day, and full 
    Only the published service, the IDE itself on port 443, has a public address.
 
 1. **Density that makes an environment per branch affordable**:
-   A single server holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so an environment nobody is using costs nothing.
+   A single server holds up to 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so an environment nobody is using costs nothing.
    That covers a classroom of students, an environment per feature branch, or a distributed team whose machines idle overnight.
 
 ## Learn more
@@ -296,3 +337,5 @@ For more information on the features used in this use case and how to use them, 
 * [Volumes](/platform/volumes) for keeping a workspace across instance restarts and image rebuilds.
 * [Checkpoints](/features/checkpoints) for saving a working environment as a restore point.
 * [Networking](/platform/networking) for reaching databases and services over the private network.
+
+Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first development environment.

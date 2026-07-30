@@ -12,23 +12,23 @@ Give every task its own sandbox: a hardware-isolated microVM, booted from a snap
   </ValueCard>
   <ValueCard title="Start big environments instantly" metric="boots in < 10 ms" metricHref="/platform/instances#instance-templates">
     Pack GBs of tools and models into a [template](/platform/instances#instance-templates) and launch sandboxes from it in milliseconds.
-    [Fork](/features/forking) a running sandbox to spawn sub-agents mid-task.
+    [Branch](/features/branching) a running sandbox to spawn sub-agents mid-task.
   </ValueCard>
-  <ValueCard title="Scale to swarms, pay for work" metric="100K+ sandboxes / server" metricHref="/features/scale-to-zero">
+  <ValueCard title="Scale to swarms, pay for work" metric="up to 100K+ sandboxes / server">
     [Scale-to-zero](/features/scale-to-zero) parks idle sandboxes and wakes them on the next request.
     [Checkpoint](/features/checkpoints) long-running agents in under 10 ms.
   </ValueCard>
 </ValueCards>
 
-<UseCaseDiagram caption="One microVM per task. Forks, checkpoints, and wake-ups all happen in milliseconds.">
+<UseCaseDiagram caption="One microVM per task, where branches, checkpoints, and wake-ups all happen in milliseconds.">
   <DiagramBox title="Sandbox image">Your Dockerfile: runtimes, tools, packages</DiagramBox>
   <DiagramArrow label="build once" />
   <DiagramBox accent title="Template" note="GBs of state, pre-booted">A snapshot with the environment fully initialized</DiagramBox>
   <DiagramArrow accent label="< 10 ms each" sublabel="one per task" />
-  <DiagramStack more="...100K+ per server, scaled to zero when idle">
+  <DiagramStack more="...up to 100K+ per server, scaled to zero when idle">
     <DiagramStackItem label="sandbox" chip="agent session" />
     <DiagramStackItem label="sandbox" chip="code run" />
-    <DiagramStackItem label="sandbox" chip="fork: sub-agent" />
+    <DiagramStackItem label="sandbox" chip="branch: sub-agent" />
   </DiagramStack>
 </UseCaseDiagram>
 
@@ -210,20 +210,6 @@ openclaw-8tosm  divine-flower-bxsaapup.fra.unikraft.app  [0;36mstandby[0m  sta
 
 The instance sits in the `standby` [state](/platform/instances#instance-states): [scale-to-zero](/features/scale-to-zero) parked it, memory intact, until the next connection arrives.
 
-When done, you can remove the instance using:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instances delete openclaw-8tosm
-```
-
-```bash title="kraft"
-kraft cloud instance remove openclaw-8tosm
-```
-
-</CodeTabs>
-
 {/* vale off */}
 
 ## OpenClaw Setup
@@ -303,25 +289,163 @@ Once you approve your device, refresh your OpenClaw web dashboard.
 
 You now have full access to your own OpenClaw deployment on Unikraft Cloud!
 
+## One sandbox per task
+
+The deployment above gives you one long-lived sandbox.
+To hand every task its own, snapshot the initialized sandbox into a [template](/platform/instances#instance-templates) and clone it per task.
+Cloning restores the template's exact system state, so a sandbox packed with GBs of tools still starts in milliseconds.
+
+Turn the running instance into a template:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instance template create openclaw-8tosm
+```
+
+```bash title="kraft"
+kraft cloud instance template create openclaw-8tosm
+```
+
+</CodeTabs>
+
+Then start a sandbox per task from it.
+The `--rm` flag deletes the instance when it stops, so a sandbox disappears with the task that needed it:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft run --metro fra \
+  --template openclaw-8tosm \
+  --name sandbox-task-1 \
+  -p 18789:18789/tls \
+  -p 2222:2222/tls \
+  --scale-to-zero policy=on,cooldown-time=10000,stateful=true \
+  --rm
+```
+
+```bash title="kraft"
+kraft cloud instance create \
+  --start \
+  --template openclaw-8tosm \
+  --name sandbox-task-1 \
+  -p 18789:18789/tls \
+  -p 2222:2222/tls \
+  --scale-to-zero on \
+  --scale-to-zero-stateful \
+  --scale-to-zero-cooldown 10s \
+  --feature delete-on-stop
+```
+
+</CodeTabs>
+
+## Checkpointing a long-running sandbox
+
+:::caution[**Limited Access**]
+Checkpointing is a new feature that **is not** enabled by default and requires a valid license.
+The interface described here reflects the current implementation and may change before general availability.
+:::
+
+An agent that has been working for an hour holds context you don't want to lose to a bad step.
+[Checkpointing](/features/checkpoints) captures a running sandbox's complete state, memory and volume, without interrupting it.
+Call the [`POST /instances/checkpoints`](/api/platform/v1/instances) endpoint with the source instance name:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances/checkpoints \
+  -d '{
+    "name": "before-risky-step",
+    "from": {
+      "name": "openclaw-8tosm"
+    }
+  }'
+```
+
+</CodeTabs>
+
+Later, roll back by creating a fresh sandbox from that checkpoint:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances \
+  -d '{
+    "name": "openclaw-restored",
+    "checkpoint": {
+      "name": "before-risky-step"
+    }
+  }'
+```
+
+</CodeTabs>
+
+A bad step then costs you a restore rather than the whole task.
+
+## Branching a sandbox for sub-agents
+
+:::caution[**Limited Access**]
+Instance branching is a preview feature and isn't yet available on the public Unikraft Cloud.
+The interface described here reflects the current implementation and may change before general availability.
+:::
+
+When a task needs to explore two or more approaches at once, [branch](/features/branching) the running sandbox instead of building each sub-agent's context from scratch.
+Each branch is an independent copy that starts from the source's exact memory and volume state, and the source keeps running unaffected:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft api /v1/instances \
+  -d '{
+    "name": "sub-agent-1",
+    "branch_from": {
+      "name": "openclaw-8tosm"
+    }
+  }'
+```
+
+</CodeTabs>
+
+A branch inherits the source's image, resources, and environment, so you can't set those in the request.
+Repeat the call with a different `name` for each sub-agent you want to run in parallel.
+
+## Cleanup
+
+Remove the sandboxes you started, along with any branches, and then the template they clone from:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete openclaw-8tosm sandbox-task-1 sub-agent-1
+unikraft instances template delete openclaw-8tosm
+```
+
+```bash title="kraft"
+kraft cloud instance remove openclaw-8tosm sandbox-task-1 sub-agent-1
+kraft cloud instance template remove openclaw-8tosm
+```
+
+</CodeTabs>
+
 ## Why this pattern works
 
 Sandboxes on Unikraft Cloud combine four properties that normally trade off against each other:
 
 1. **Hardware isolation without shared state**:
-Every sandbox is its own microVM with its own kernel, so there is no shared kernel between tenants.
-Hardware-enforced boundaries remove the container-escape risk that comes with namespace-based isolation, and the minimal OS footprint keeps the attack surface small for every run.
+   Every sandbox is its own microVM with its own kernel, so there is no shared kernel between tenants.
+   Hardware-enforced boundaries remove the container-escape risk that comes with namespace-based isolation, and the minimal OS footprint keeps the attack surface small for every run.
 
 1. **Container-like startup speed**:
-Instances cold-boot in milliseconds, and [templates](/platform/instances#instance-templates) extend that to arbitrarily large environments by snapshotting a fully initialized sandbox once and cloning it per task.
-Long-running sandboxes resume from stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) with their memory intact, so you never need pre-warmed pools or reserved capacity.
+   Instances cold-boot in milliseconds, and [templates](/platform/instances#instance-templates) extend that to arbitrarily large environments by snapshotting a fully initialized sandbox once and cloning it per task.
+   Long-running sandboxes resume from stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) with their memory intact, so you never need pre-warmed pools or reserved capacity.
 
 1. **A cost model that fits bursty work**:
-Some sandboxes finish in milliseconds, others run for hours.
-[Scale-to-zero](/features/scale-to-zero) releases the resources of idle sandboxes and wakes them on the next request, so you pay for execution time rather than for idle infrastructure between tasks.
+   Some sandboxes finish in milliseconds, others run for hours.
+   [Scale-to-zero](/features/scale-to-zero) releases the resources of idle sandboxes and wakes them on the next request, so you pay for execution time rather than for idle infrastructure between tasks.
 
-1. **Fork and checkpoint mid-task**:
-[Forking](/features/forking) clones a running sandbox in milliseconds, so a long-running task can branch into parallel copies that inherit its exact state instead of rebuilding context from scratch.
-[Checkpoints](/features/checkpoints) save a long-running sandbox without interrupting it, so a bad step costs you a restore rather than the whole task.
+1. **Branch and checkpoint mid-task**:
+   [Branching](/features/branching) clones a running sandbox in milliseconds, so a long-running task can split into parallel copies that inherit its exact memory and volume state instead of rebuilding context from scratch.
+   [Checkpoints](/features/checkpoints) save a long-running sandbox without interrupting it, so a bad step costs you a restore rather than the whole task.
 
 ## Learn more
 
@@ -339,10 +463,12 @@ kraft cloud --help
 
 </CodeTabs>
 
-Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/overview).
+Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
 For more information on the features used in this use case and how to use them, check out the following documentation:
 
 * [Instance templates](/platform/instances#instance-templates) for starting pre-initialized sandboxes in milliseconds.
-* [Forking](/features/forking) for cloning a running sandbox into sub-agents.
+* [Branching](/features/branching) for cloning a running sandbox into sub-agents.
 * [Checkpoints](/features/checkpoints) for saving and restoring sandbox state.
 * [Scale-to-zero](/features/scale-to-zero) for parking idle sandboxes between tasks.
+
+Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first sandbox.

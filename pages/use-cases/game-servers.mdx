@@ -14,21 +14,21 @@ Give every world or match its own game server: a hardware-isolated microVM that 
     When the last player disconnects, [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends the server with its memory intact.
     The next connection wakes it exactly where it left off.
   </ValueCard>
-  <ValueCard title="Isolated VMs, superior unit economics" metric="100K+ microVMs / server" metricHref="/features/scale-to-zero">
+  <ValueCard title="Isolated VMs, superior unit economics" metric="up to 100K+ microVMs / server">
     Each game server is a strongly isolated virtual machine, not a container.
-    A single physical node hosts 100K+ microVMs, so a dedicated microVM per world stays affordable.
+    A single physical node hosts up to 100K+ microVMs, so a dedicated microVM per world stays affordable.
   </ValueCard>
 </ValueCards>
 
-<UseCaseDiagram caption="Thousands of worlds, each in their own microVM.">
-  <DiagramBox title="Game server image" note="Your Dockerfile: server runtime and assets" />
+<UseCaseDiagram caption="World initialization happens once in the template, every world after that clones from it in milliseconds, and each one suspends with its memory intact when the last player disconnects.">
+  <DiagramBox title="Game server image">Your Dockerfile: server runtime and assets</DiagramBox>
   <DiagramArrow label="build once" sublabel="snapshot after init" />
-  <DiagramBox title="Template" note="Initialization complete, config written" accent />
-  <DiagramArrow label="< 10 ms each" sublabel="one per world" accent />
-  <DiagramStack more="...asleep at zero cost between sessions">
-    <DiagramStackItem label="Game server" chip="world: survival" />
-    <DiagramStackItem label="Game server" chip="world: bingo" />
-    <DiagramStackItem label="Game server" chip="match: duel-42" />
+  <DiagramBox accent title="Template" note="initialization complete">A snapshot taken once the server has warmed up, with settings from a ROM</DiagramBox>
+  <DiagramArrow accent label="< 10 ms each" sublabel="one per world" />
+  <DiagramStack more="...suspended when the last player leaves, resumed where it stopped">
+    <DiagramStackItem label="world: survival" chip="running" active />
+    <DiagramStackItem label="world: bingo" chip="standby" />
+    <DiagramStackItem label="match: duel-42" chip="standby" />
   </DiagramStack>
 </UseCaseDiagram>
 
@@ -406,7 +406,7 @@ kraft cloud instance template remove minecraft-tpl
 1. **Hardware isolation per server**: each game server runs in its own microVM with its own kernel.
    No shared kernel between tenants, no container-escape surface, and no noisy-neighbour risk when one world spikes.
 
-1. **Density that changes the economics**: a single server hosts 100K+ microVMs, and an idle world costs nothing.
+1. **Density that changes the economics**: a single server hosts up to 100K+ microVMs, and an idle world costs nothing.
    A dedicated server per world, match, or community becomes affordable at fleet scale.
 
 1. **Configuration as [ROMs](/features/roms), not rebuilds**: server settings ship as read-only images attached at instance creation.
@@ -437,3 +437,5 @@ For more information on the features used in this use case and how to use them, 
 * [ROMs](/features/roms) for shipping server configuration without rebuilding the image.
 * [`minecraft` example](https://github.com/unikraft-cloud/examples/tree/main/minecraft) for the full source of this guide.
 * [itzg/minecraft-server documentation](https://docker-minecraft-server.readthedocs.io/en/latest/) for available server configuration options.
+
+Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first game server.

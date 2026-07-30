@@ -14,18 +14,18 @@ Run each function in its own microVM: your full runtime, started in under 10 ms,
     Function code ships as a [ROM](/features/roms)—a small read-only image attached at start.
     Update by pushing a new ROM, roll back by pointing at the previous one, and never rebuild the runtime.
   </ValueCard>
-  <ValueCard title="Any runtime, superior unit economics" metric="100K+ microVMs / server" metricHref="/features/scale-to-zero">
-    Keep thousands of templates, one per runtime, and pack 100K+ microVMs onto a single server.
+  <ValueCard title="Any runtime, superior unit economics" metric="up to 100K+ microVMs / server">
+    Keep thousands of templates, one per runtime, and pack up to 100K+ microVMs onto a single server.
     [Scale-to-zero](/features/scale-to-zero) makes idle functions free.
   </ValueCard>
 </ValueCards>
 
 <UseCaseDiagram caption="One runtime image, one template, and a small ROM per function: everything to the right of the template happens in milliseconds.">
-  <DiagramBox title="Runtime image" note="Your Dockerfile: language runtime and dependencies" />
+  <DiagramBox title="Runtime image">Your Dockerfile: language runtime and dependencies</DiagramBox>
   <DiagramArrow label="build once" />
   <DiagramBox accent title="Template" note="1,000s per account">A snapshot with the runtime fully pre-initialized</DiagramBox>
   <DiagramArrow accent label="< 10 ms each" sublabel="+ ROM per function" />
-  <DiagramStack more="...100K+ per server, scaled to zero when idle">
+  <DiagramStack more="...up to 100K+ per server, scaled to zero when idle">
     <DiagramStackItem label="function" chip="rom: checkout" />
     <DiagramStackItem label="function" chip="rom: resize-image" />
     <DiagramStackItem label="function" chip="rom: webhook" />
@@ -375,7 +375,7 @@ Bye, World!
 Auf Wiedersehen!
 ```
 
-## Why this pattern works
+## How it works
 
 The ROM deployment model has three layers:
 
@@ -389,13 +389,6 @@ The ROM deployment model has three layers:
 
 1. **Instance [template](/platform/instances#instance-templates)**: A pre-initialized snapshot of the runtime, created automatically when the base image boots without a ROM.
    New instances boot from this snapshot, skipping initialization and reducing cold-start latency to milliseconds.
-
-Three platform properties round out the model:
-
-* **Stateful scale-to-zero**: the `stateful=true` flag above turns on [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), which snapshots an idle instance before parking it and reloads that snapshot on the next request.
-  Templates cut the cost of creating a function; stateful resume cuts the cost of waking one that has already run.
-* **Isolation per function**: every function instance is its own microVM with its own kernel, so there is no shared kernel, no noisy-neighbour risk, and no container-escape surface between tenants.
-* **Economics that fit bursty traffic**: [scale-to-zero](/features/scale-to-zero) means an idle function costs nothing, and a single server holds 100K+ microVMs, so even a large fleet of low-traffic functions stays cheap.
 
 ## Cleanup
 
@@ -412,6 +405,31 @@ kraft cloud instance template remove node-exec
 ```
 
 </CodeTabs>
+
+## Why this pattern works
+
+Three numbers decide whether a function platform works: how long a request waits for a cold instance, what an idle function costs, and how much of your code a tenant boundary protects:
+
+1. **Runtime initialization stays off the request path**:
+   An [instance template](/platform/instances#instance-templates) holds the runtime with its interpreter loaded and its dependencies imported.
+   Every instance cloned from it starts from that snapshot instead of initializing again, so adding a function is a clone that lands in milliseconds.
+   Requests to a function that already exists take the other path.
+   A function instance isn't discarded once it has answered: it parks in the [`standby` state](/platform/instances#instance-states), and the platform starts it again when the next request arrives.
+   Setting `stateful=true`, as the deployment above does, snapshots that instance's memory before it parks and loads the snapshot back when a request wakes it, so repeat requests skip initialization as well.
+
+1. **Deployments that move a payload, not an image**:
+   A [ROM](/features/roms) carries the function source alone, so a deployment pushes kilobytes rather than rebuilding and pushing a runtime image.
+   Rolling back means pointing an instance at a previous ROM, and the runtime image, the slow part that seldom changes, stays untouched.
+   One base image can then back many specialized functions that share a single template.
+
+1. **A tenant boundary per function, not per cluster**:
+   Every function instance is its own microVM with its own kernel, so there is no shared kernel, no noisy-neighbor risk, and no container-escape surface between tenants.
+   Functions typically run code that arrives from somewhere else, whether from a customer, a partner, or a model, and hardware isolation is what keeps one of those runs away from the next.
+   The image carries only the runtime the function needs, which keeps the attack surface small.
+
+1. **Economics that fit bursty traffic**:
+   [Scale-to-zero](/features/scale-to-zero) means an idle function costs nothing, and a single server holds up to 100K+ microVMs, so even a large fleet of low-traffic functions stays cheap.
+   Because Unikraft Cloud charges for active vCPU time, splitting one endpoint into a function per route, per tenant, or per [metro](/platform/metros) is a design decision rather than a budget one.
 
 ## Learn more
 
@@ -436,3 +454,5 @@ For more information on the features used in this use case and how to use them, 
 * [ROMs](/features/roms) for injecting function code without rebuilding the runtime image.
 * [Scale-to-zero](/features/scale-to-zero) for parking idle functions between requests.
 * [`node-code-execution` example](https://github.com/unikraft-cloud/examples/tree/main/node-code-execution) for the full source of this guide.
+
+Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first function.

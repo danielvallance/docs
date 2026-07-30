@@ -20,15 +20,15 @@ Give every app or tenant its own database: a strongly isolated microVM that wake
   </ValueCard>
 </ValueCards>
 
-<UseCaseDiagram caption="One image, a database per tenant: branches, checkpoints, and wake-ups all happen in milliseconds.">
+<UseCaseDiagram caption="One database per tenant, asleep between queries, with branching for an independent copy of a running database and checkpoints for a state to restore from later.">
   <DiagramBox title="Database image">Your Dockerfile: engine, extensions, config</DiagramBox>
-  <DiagramArrow label="deploy once" />
-  <DiagramBox accent title="Primary database" note="asleep between queries">A microVM parked by stateful scale-to-zero</DiagramBox>
+  <DiagramArrow label="deploy once" sublabel="one per tenant" />
+  <DiagramBox accent title="Tenant database" note="asleep between queries">A microVM suspended with its buffer pool intact, woken by the next query</DiagramBox>
   <DiagramArrow accent label="< 10 ms each" sublabel="branch / checkpoint" />
-  <DiagramStack more="...a database per tenant, asleep at zero cost">
-    <DiagramStackItem label="database" chip="tenant: acme" />
-    <DiagramStackItem label="database" chip="branch: staging" />
-    <DiagramStackItem label="database" chip="restore: pre-migration" />
+  <DiagramStack more="...the source keeps serving queries throughout">
+    <DiagramStackItem label="branch: staging" chip="independent copy" />
+    <DiagramStackItem label="branch: migration test" chip="independent copy" />
+    <DiagramStackItem label="checkpoint: pre-migration" chip="restore point" />
   </DiagramStack>
 </UseCaseDiagram>
 
@@ -213,20 +213,6 @@ postgres-saan9  young-thunder-fbafrsxj.fra.unikraft.app  [0;32mrunning[0m  6 m
 
 </CodeTabs>
 
-When done, you can remove the instance:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instances delete postgres-saan9
-```
-
-```bash title="kraft"
-kraft cloud instance remove postgres-saan9
-```
-
-</CodeTabs>
-
 ## Using volumes
 
 You can use [volumes](/platform/volumes) for data persistence for your PostgreSQL instance.
@@ -358,20 +344,6 @@ The branch boots immediately from the same state as the source.
 Connect to it like any other instance.
 Whatever you do, the source instance remains unaffected.
 
-When you're done, remove the branch:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instances delete <branch-name>
-```
-
-```bash title="kraft"
-kraft cloud instance remove <branch-name>
-```
-
-</CodeTabs>
-
 ## Customize your deployment
 
 Your deployment is a standard PostgreSQL installation.
@@ -384,26 +356,44 @@ You could also use a different location to mount your volume or set more configu
 
 And, you can use the PostgreSQL instance in conjunction with a frontend service, [see the guide here](/platform/services).
 
+## Cleanup
+
+Remove the database and any branches you created, then the volume if you no longer need the data:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete postgres-saan9 <branch-name>
+unikraft volumes delete postgres
+```
+
+```bash title="kraft"
+kraft cloud instance remove postgres-saan9 <branch-name>
+kraft cloud volume rm postgres
+```
+
+</CodeTabs>
+
 ## Why this pattern works
 
 Databases are resource-hungry, slow to scale, and costly to operate at low utilisation, and each of those pressures maps to a platform feature:
 
 1. **Isolation by design**:
-Each database runs as its own microVM with its own kernel, so tenants never share a kernel the way containers do.
-The minimal OS footprint keeps the attack surface small, which matters when every instance holds customer data.
+   Each database runs as its own microVM with its own kernel, so tenants never share a kernel the way containers do.
+   The minimal OS footprint keeps the attack surface small, which matters when every instance holds customer data.
 
 1. **Scale-to-zero without cold-start penalties**:
-Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends the whole microVM, buffer pools and caches included, and resumes it in under 10 ms on the next query.
-Idle databases consume no resources, so a fleet can grow to thousands of instances while you pay only for active queries: a fit for spiky workloads, dev/test environments, and SaaS platforms with a database per tenant.
-Because a database wakes on the first query, it composes with [serverless functions](/use-cases/serverless-functions) and [API gateways](/use-cases/api-gateways) into a back end with no always-on tier.
+   Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends the whole microVM, buffer pools and caches included, and resumes it in under 10 ms on the next query.
+   Idle databases consume no resources, so a fleet can grow to thousands of instances while you pay only for active queries: a fit for spiky workloads, dev/test environments, and SaaS platforms with a database per tenant.
+   Because a database wakes on the first query, it composes with [serverless functions](/use-cases/serverless-functions) and [API gateways](/use-cases/api-gateways) into a back end with no always-on tier.
 
 1. **Checkpoints for point-in-time recovery**:
-[Checkpointing](/features/checkpoints) saves the complete state of a running microVM without interrupting execution.
-Checkpoints are incremental and keep a history, so you can restore the database to any previous point to recover from a failed migration or an erroneous write.
+   [Checkpointing](/features/checkpoints) saves the complete state of a running microVM without interrupting execution.
+   Checkpoints are incremental and keep a history, so you can restore the database to any previous point to recover from a failed migration or an erroneous write.
 
 1. **Branching for instant clones**:
-[Branching](/features/branching) creates an identical, independent copy of a running database in milliseconds while leaving the original untouched.
-Test migrations or destructive changes on a byte-for-byte copy of production before applying them.
+   [Branching](/features/branching) creates an identical, independent copy of a running database in milliseconds while leaving the original untouched.
+   Test migrations or destructive changes on a byte-for-byte copy of production before applying them.
 
 ## Learn more
 
@@ -428,3 +418,5 @@ For more information on the features used in this use case and how to use them, 
 * [Checkpoints](/features/checkpoints) for point-in-time recovery of a running database.
 * [Branching](/features/branching) for cloning a running database in milliseconds.
 * [Volumes](/platform/volumes) for persisting data across instance restarts.
+
+Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first database.
