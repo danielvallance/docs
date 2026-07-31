@@ -109,10 +109,10 @@ export const DiagramArrow = ({
   sublabel?: string;
   accent?: boolean;
 }) => (
-  <div className="flex shrink-0 flex-col items-center gap-1 px-2 py-1 lg:max-w-[7rem]">
+  <div className="flex shrink-0 flex-col items-center gap-1 px-2 py-1">
     {label && (
       <div
-        className={`text-center font-mono text-xs ${
+        className={`font-mono text-xs ${
           accent ? "text-primary" : "text-muted-foreground"
         }`}
       >
@@ -134,9 +134,7 @@ export const DiagramArrow = ({
       />
     </svg>
     {sublabel && (
-      <div className="text-center font-mono text-xs text-muted-foreground">
-        {sublabel}
-      </div>
+      <div className="font-mono text-xs text-muted-foreground">{sublabel}</div>
     )}
   </div>
 );

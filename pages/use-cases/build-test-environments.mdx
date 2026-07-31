@@ -415,15 +415,15 @@ Auf Wiedersehen!
 This build/test environment uses three reusable layers:
 
 1. **Base runtime image**:
-   Your toolchain plus a small control server (Go in this example).
-   Build once, reuse many times.
+Your toolchain plus a small control server (Go in this example).
+Build once, reuse many times.
 
 1. **[ROM](/features/roms) payload**:
-   A source-only image (here, `rom.go`).
-   Update per job.
+A source-only image (here, `rom.go`).
+Update per job.
 
 1. **[Template](/platform/instances#instance-templates) snapshot**:
-   A pre-initialized runtime used to speed up new instance startup.
+A pre-initialized runtime used to speed up new instance startup.
 
 ## Cleanup
 
