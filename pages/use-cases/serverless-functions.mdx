@@ -3,40 +3,46 @@ title: Serverless Functions
 navigation_icon: function-square
 ---
 
-Run each function in its own microVM: your full runtime, started in under 10 ms, with the function's code injected at boot.
+Serverless functions let you deploy small pieces of business logic without managing servers or runtimes.
+They're ideal for event-driven pipelines, API backends, and dynamic code execution—but traditional function-as-a-service platforms often suffer from cold-start penalties and opaque sandboxing.
 
-<ValueCards>
-  <ValueCard title="Initialize the runtime once, launch it fast" metric="boots in < 10 ms" metricHref="/platform/instances#instance-templates">
-    Pack a full runtime environment—Node.js, Python, a JVM—into a [template](/platform/instances#instance-templates): a pre-initialized snapshot.
-    Start any number of function instances from it in under 10 ms.
-  </ValueCard>
-  <ValueCard title="Update functions without rebuilding" metric="swap by image tag" metricHref="/features/roms">
-    Function code ships as a [ROM](/features/roms)—a small read-only image attached at start.
-    Update by pushing a new ROM, roll back by pointing at the previous one, and never rebuild the runtime.
-  </ValueCard>
-  <ValueCard title="Any runtime, superior unit economics" metric="100K+ microVMs / server" metricHref="/features/scale-to-zero">
-    Keep thousands of templates, one per runtime, and pack 100K+ microVMs onto a single server.
-    [Scale-to-zero](/features/scale-to-zero) makes idle functions free.
-  </ValueCard>
-</ValueCards>
+With **Unikraft Cloud**, you can run serverless functions inside microVMs: instant availability, VM-level isolation, and true scale-to-zero economics.
+The ROM (Read-Only Memory) model goes one step further—package your function code independently of the runtime image, and swap it in at instance creation time.
 
-<UseCaseDiagram caption="One runtime image, one template, and a small ROM per function: everything to the right of the template happens in milliseconds.">
-  <DiagramBox title="Runtime image" note="Your Dockerfile: language runtime and dependencies" />
-  <DiagramArrow label="build once" />
-  <DiagramBox accent title="Template" note="1,000s per account">A snapshot with the runtime fully pre-initialized</DiagramBox>
-  <DiagramArrow accent label="< 10 ms each" sublabel="+ ROM per function" />
-  <DiagramStack more="...100K+ per server, scaled to zero when idle">
-    <DiagramStackItem label="function" chip="rom: checkout" />
-    <DiagramStackItem label="function" chip="rom: resize-image" />
-    <DiagramStackItem label="function" chip="rom: webhook" />
-  </DiagramStack>
-</UseCaseDiagram>
+## Why run serverless functions on Unikraft Cloud
+
+### ⚡ Millisecond cold starts with instance templates
+
+Unikraft Cloud's [instance templates](/platform/instances#instance-templates) pre-initialize a runtime once, then stamp out new instances from that snapshot.
+Combined with stateful scale-to-zero, instances resume from a warm snapshot rather than booting from scratch:
+
+* Single-digit-millisecond wake-ups, even under burst traffic.
+* No re-execution of startup logic between requests.
+
+### 🔒 Strong isolation per function
+
+Every function instance runs in its own microVM.
+No shared kernel, no noisy-neighbour risk, and no container escape surface.
+Sensitive business logic stays protected even when other tenants share the same platform.
+
+### 💸 Pay only for execution
+
+Functions are inherently bursty.
+Scale-to-zero means an idle function costs nothing.
+The ROM model makes this even leaner: you package the base runtime image once, and only the lightweight function ROM changes per deployment.
+
+### 🔄 Decouple runtime from function code
+
+ROMs separate the runtime image (Node.js, Python, etc.) from the function payload:
+
+* Update function code by pushing a new ROM—no runtime rebuild required.
+* Run many specialised functions from a single base image.
+* Instant rollback by pointing an instance at a previous ROM version.
 
 ## Getting started
 
-This pattern works with any language runtime.
 This guide uses the [`node-code-execution`](https://github.com/unikraft-cloud/examples/tree/main/node-code-execution) example.
-It deploys a Node.js runtime as the base image, then attaches JavaScript or TypeScript function [ROMs](/features/roms) (small, read-only data blobs) to instances of that runtime.
+It deploys a Node.js runtime as the base image, then attaches JavaScript or TypeScript function ROMs to instances of that runtime.
 
 ### Prerequisites
 
@@ -78,7 +84,7 @@ export UKC_METRO=fra
 ### Step 1: Package and push the base runtime image
 
 The base image contains a Node.js server (`server.ts`) that loads a function from the attached ROM and executes it on each HTTP request.
-Right before starting the server, it writes `1` to `/uk/libukp/template_instance`, which triggers Unikraft Cloud to convert the running instance into a [template](/platform/instances#instance-templates) (a pre-initialized snapshot).
+Right before starting the server, it writes `1` to `/uk/libukp/template_instance`, which triggers Unikraft Cloud to convert the running instance into a [template](/platform/instances#instance-templates).
 
 <CodeTabs syncKey="cli">
 
@@ -225,7 +231,6 @@ kraft pkg \
 
 Stamp out instances from the template, each with a different ROM.
 New instances skip the cold-start initialization phase because they restore from the template snapshot.
-The `--scale-to-zero` flag enables [scale-to-zero](/features/scale-to-zero), so each function releases its resources when idle and wakes on the next request.
 
 Create the first instance with the JavaScript ROM attached:
 
@@ -361,8 +366,6 @@ node-exec-rom1  sparkling-dawn-syowlbtj.fra.unikraft.app  [0;36mstandby[0m  st
 
 </CodeTabs>
 
-Both instances already sit in the `standby` [state](/platform/instances#instance-states): [scale-to-zero](/features/scale-to-zero) parked them until the next request arrives.
-
 Test both instances using the FQDNs from the listing:
 
 ```bash
@@ -375,27 +378,19 @@ Bye, World!
 Auf Wiedersehen!
 ```
 
-## Why this pattern works
+## How it works
 
 The ROM deployment model has three layers:
 
 1. **Base runtime image**: A generic Node.js server that loads and executes code from a well-known path (`/rom/rom.js` or `/rom/rom.ts`).
    Push it once; it changes infrequently.
 
-1. **Function [ROM](/features/roms)**: A read-only filesystem image containing only the function source file.
+1. **Function ROM**: A read-only filesystem image containing only the function source file.
    Lightweight, fast to build and push.
-   Attached to an instance at creation time and mounted in the guest's filesystem.
-   Update a function by pushing a new ROM, and roll back by pointing at a previous version—the runtime image doesn't change.
+   Attached to an instance at creation time and mounted at `/rom`.
 
-1. **Instance [template](/platform/instances#instance-templates)**: A pre-initialized snapshot of the runtime, created automatically when the base image boots without a ROM.
+1. **Instance template**: A pre-initialized snapshot of the runtime, created automatically when the base image boots without a ROM.
    New instances boot from this snapshot, skipping initialization and reducing cold-start latency to milliseconds.
-
-Three platform properties round out the model:
-
-* **Stateful scale-to-zero**: the `stateful=true` flag above turns on [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), which snapshots an idle instance before parking it and reloads that snapshot on the next request.
-  Templates cut the cost of creating a function; stateful resume cuts the cost of waking one that has already run.
-* **Isolation per function**: every function instance is its own microVM with its own kernel, so there is no shared kernel, no noisy-neighbour risk, and no container-escape surface between tenants.
-* **Economics that fit bursty traffic**: [scale-to-zero](/features/scale-to-zero) means an idle function costs nothing, and a single server holds 100K+ microVMs, so even a large fleet of low-traffic functions stays cheap.
 
 ## Cleanup
 
@@ -430,9 +425,9 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
-For more information on the features used in this use case and how to use them, check out the following documentation:
 
-* [Instance templates](/platform/instances#instance-templates) for starting pre-initialized runtimes in milliseconds.
-* [ROMs](/features/roms) for injecting function code without rebuilding the runtime image.
-* [Scale-to-zero](/features/scale-to-zero) for parking idle functions between requests.
-* [`node-code-execution` example](https://github.com/unikraft-cloud/examples/tree/main/node-code-execution) for the full source of this guide.
+For more on the ROM and template features:
+
+* [Instance templates](/platform/instances#instance-templates)
+* [ROMs](/platform/instances#roms)
+* [`node-code-execution` example](https://github.com/unikraft-cloud/examples/tree/main/node-code-execution)
