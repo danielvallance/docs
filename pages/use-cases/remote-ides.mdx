@@ -3,36 +3,48 @@ title: Remote IDEs
 navigation_icon: square-chevron-right
 ---
 
-Give every developer or branch a full development environment in the browser: a microVM that scales to zero shortly after the developer disconnects and restores, terminals and all, in under 10 ms.
+Remote Integrated Development Environments (IDEs) have become essential for cloud-native development, collaboration, and education.
+But traditional setups often suffer from **slow startup times, high idle costs, and complex resource management**.
+With **Unikraft Cloud**, remote IDEs gain the advantages of **microVMs**, making them **fast, secure, and truly serverless**.
 
-<ValueCards>
-  <ValueCard title="Pick up exactly where you left off" metric="restores in < 10 ms" metricHref="/features/scale-to-zero#stateful-scale-to-zero">
-    An idle environment [scales to zero](/features/scale-to-zero#stateful-scale-to-zero), so nobody pays for the hours a developer is away.
-    It restores in under 10 ms, with editors, terminals, and language servers exactly where they were.
-  </ValueCard>
-  <ValueCard title="A workspace that outlives the instance" metric="files on a volume" metricHref="/platform/volumes">
-    Repositories, dependencies, and build caches live on a [volume](/platform/volumes) (persistent storage you attach to an instance).
-    Rebuild the image or delete the instance, and the next one mounts the same files.
-  </ValueCard>
-  <ValueCard title="An isolated environment per developer or branch" metric="1 microVM per workspace">
-    Dependency install scripts, test suites, and coding agents all run inside a microVM with its own kernel.
-    Nothing they do reaches another developer, and an idle environment costs nothing.
-  </ValueCard>
-</ValueCards>
+## Why run remote IDEs on Unikraft Cloud
 
-<UseCaseDiagram caption="One microVM per developer or branch: the browser wakes it over HTTPS, it scales to zero between sessions and restores from a memory snapshot, and the workspace sits on a volume that outlives it.">
-  <DiagramBox title="Browser" note="nothing installed locally">The developer's tab, from any machine</DiagramBox>
-  <DiagramArrow label="HTTPS" sublabel="wakes the instance" />
-  <DiagramBox accent title="IDE microVM" note="scaled to zero between sessions">Editor server, toolchain, terminals, and language servers, restored from a memory snapshot</DiagramBox>
-  <DiagramArrow accent label="mounted at" sublabel="/workspace" />
-  <DiagramBox title="Volume" note="outlives the instance">Repositories, dependencies, build caches</DiagramBox>
-</UseCaseDiagram>
+### ⚡ Instant developer environments
+
+Unikraft microVMs boot in milliseconds, enabling **instant spin-up of full-featured IDEs** on demand.
+Developers start coding immediately without waiting for heavy VMs or containers to initialise.
+
+
+### 🔒 Secure, isolated workspaces
+
+Each IDE runs as a **dedicated microVM instance**, ensuring strong workload isolation and reducing the risk of cross-tenant data leaks.
+Sensitive code stays protected in a **minimal, hardened environment**.
+
+
+### 💰 Cost-effective scale-to-zero
+
+Idle IDE sessions automatically scale down to zero, eliminating wasteful spending on unused developer environments.
+Pay only for active usage, whether it's a classroom full of students or a globally distributed engineering team.
+
+
+### 🌍 Seamless collaboration
+
+Unikraft Cloud integrates with serverless backends, databases, and API gateways—so IDEs can connect effortlessly to the developer's toolchain.
+Perfect for **pair programming, CI/CD pipelines, or education platforms**.
+
+### 🚀 High performance with low overhead
+
+MicroVMs run closer to bare metal than containers, providing developers with
+**snappy, low-latency environments** that feel as fast as local coding—without
+sacrificing portability or scalability.
+
 
 ## Getting started
 
-This pattern works with any browser-based IDE, since the image is whatever your Dockerfile produces.
-This guide uses [Code Server](https://code.visualstudio.com/docs/remote/vscode-server), which runs [Visual Studio Code](https://code.visualstudio.com/) on a remote machine and serves it to a browser or a local VS Code client.
-The deployment below mounts a volume at `/workspace` and turns on stateful [scale-to-zero](/features/scale-to-zero), so the environment scales to zero four seconds after the last connection and restores on the next one.
+This guide will show you how to run [Visual Studio Code](https://code.visualstudio.com/) as a serverless app on Unikraft Cloud.
+The [Code Server](https://code.visualstudio.com/docs/remote/vscode-server) allows you to run Visual Studio Code on a remote server and access it through a web browser or a local VS Code client.
+When not in use, the instance will [scale-to-zero](/docs/features/scale-to-zero) and resume in milliseconds depending on usage.
+
 
 To run it, follow these steps:
 
@@ -159,7 +171,7 @@ The output shows the instance address and other details:
 
 </CodeTabs>
 
-This creates a volume for data persistence and mounts it at `/workspace` inside the microVM.
+This will create a volume for data persistence, and mount it at `/workspace` inside the VM.
 In this case, the instance name is `code-server-6gxsp` and the address is `https://blue-shape-chmxf1g4.fra.unikraft.app`.
 They're different for each run.
 Enter the provided address into your browser of choice to access the Code server instance.
@@ -193,8 +205,6 @@ code-server-6gxsp  blue-shape-chmxf1g4.fra.unikraft.app  [0;36mstandby[0m  sta
 ```
 
 </CodeTabs>
-
-Once the cooldown expires, the instance sits in the `standby` [state](/platform/instances#instance-states): stateful scale-to-zero snapshotted its memory and scaled it to zero, and the next connection starts it again with that state restored.
 
 ## Volume
 
@@ -244,35 +254,6 @@ kraft cloud volume rm code-workspace
 
 </CodeTabs>
 
-## Why this pattern works
-
-A development environment is expensive to build, idle most of the day, and full of state a developer expects to survive lunch:
-
-1. **Sessions that transparently scale to zero**:
-   Once the cooldown expires, four seconds in the deployment above, stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) snapshots the instance's memory and scales it to zero.
-   Nothing runs while the developer is away, and nothing is billed.
-   The next connection starts the instance again and loads that snapshot, so the editor, its terminals, and its language servers come back exactly as they were, in under 10 ms.
-   Without the stateful flag the instance boots from scratch instead, and the developer arrives to an empty terminal.
-
-1. **A workspace the instance doesn't own**:
-   The environment mounts a [volume](/platform/volumes) at `/workspace`, so repositories, dependencies, and build caches live outside the instance.
-   Delete the instance or rebuild the image, and the next instance mounts the same volume with the files intact.
-   [Checkpoints](/features/checkpoints) (saved snapshots of a running instance) go further and capture memory and volume together, giving you an environment to restore from later.
-
-1. **Isolation for code that runs all day**:
-   A development environment executes untrusted code constantly: dependency install scripts, test suites, and coding agents.
-   Each environment runs as its own microVM with its own kernel and hardware-level isolation, so none of that reaches another developer's environment.
-   Instances get virtual machine resources and efficient I/O, so builds and test runs behave the way they do locally.
-
-1. **The rest of your stack, reachable but not exposed**:
-   Every instance gets a private FQDN of the form `<instance-name>.internal` on your [private network](/platform/networking).
-   The IDE reaches a database, a queue, or an internal API over that network, and none of them take traffic from the Internet.
-   Only the published service, the IDE itself on port 443, has a public address.
-
-1. **Density that makes an environment per branch affordable**:
-   A single server holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so an environment nobody is using costs nothing.
-   That covers a classroom of students, an environment per feature branch, or a distributed team whose machines idle overnight.
-
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
@@ -290,9 +271,3 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
-For more information on the features used in this use case and how to use them, check out the following documentation:
-
-* [Stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) for scaling an idle environment to zero and restoring its state on the next connection.
-* [Volumes](/platform/volumes) for keeping a workspace across instance restarts and image rebuilds.
-* [Checkpoints](/features/checkpoints) for saving a working environment as a restore point.
-* [Networking](/platform/networking) for reaching databases and services over the private network.
