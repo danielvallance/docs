@@ -3,45 +3,45 @@ title: Build and Test Environments
 navigation_icon: tool-case
 ---
 
-Give every build or test job its own microVM: your full toolchain, started from a snapshot in milliseconds, with that job's code injected at boot.
+Build and test workloads often need dynamic code execution in a controlled runtime.
+You want to swap test logic, keep startup latency low, and avoid rebuilding full images for every test change.
 
-<ValueCards>
-  <ValueCard title="Start chunky environments fast" metric="boots in < 10 ms" metricHref="/platform/instances#instance-templates">
-    Pack the whole build environment—compilers, dependencies, warm caches—into a [template](/platform/instances#instance-templates): a snapshot with all that state already initialized.
-    Size stops mattering.
-  </ValueCard>
-  <ValueCard title="Run as many as you need" metric="100K+ microVMs / server" metricHref="/features/scale-to-zero">
-    The platform scales to fleets, not to a handful of runners: thousands of distinct templates, and idle environments cost nothing between runs.
-  </ValueCard>
-  <ValueCard title="Inject the code to build, instantly" metric="swap by image tag" metricHref="/features/roms">
-    The code under test arrives as a [ROM](/features/roms)—a small data file attached at start.
-    Same environment, different payload per job, no image rebuild.
-  </ValueCard>
-</ValueCards>
+With **Unikraft Cloud**, you can run a reusable Go runtime image and inject test logic via ROMs.
+At startup, the instance compiles ROM code into a Go plugin and executes it, giving you fast iteration with strong isolation.
 
-<UseCaseDiagram caption="One base image, one template, and a small ROM per job. Everything to the right of the template happens in milliseconds.">
-  <DiagramBox title="Base image">Your Dockerfile: toolchain and dependencies</DiagramBox>
-  <DiagramArrow label="build once" />
-  <DiagramBox accent title="Template" note="1,000s per account">A snapshot with the environment fully pre-initialized</DiagramBox>
-  <DiagramArrow accent label="< 10 ms each" sublabel="+ ROM per job" />
-  <DiagramStack more="...thousands more, scaled to zero when idle">
-    <DiagramStackItem label="build env" chip="rom: pr-482" />
-    <DiagramStackItem label="build env" chip="rom: pr-483" />
-    <DiagramStackItem label="build env" chip="rom: nightly" />
-  </DiagramStack>
-</UseCaseDiagram>
+## Why run build and test environments on Unikraft Cloud
+
+### Fast test iteration
+
+Build and test logic changes frequently.
+With ROM-based deployment, you package and push a small ROM instead of rebuilding the full runtime image:
+
+* Keep the runtime stable.
+* Update only test payloads.
+* Roll forward and back by switching ROM image tags.
+
+### Runtime compilation in isolated microVMs
+
+Each environment runs in its own microVM.
+The runtime compiles ROM code inside the instance (`go build -buildmode=plugin`) and loads it as a plugin.
+This isolates compilation and execution while keeping the runtime reusable.
+
+### Template-based cold start optimization
+
+The base image can create an [instance template](/platform/instances#instance-templates).
+New environments launch from that template, reducing startup time for bursty CI-style workloads.
+
+### Scale-to-zero economics
+
+Test environments are often idle between runs.
+With scale-to-zero enabled, idle instances consume no active resources while still waking when needed.
 
 ## Getting started
 
-This pattern works with any toolchain.
-The base image is whatever your Dockerfile produces: for example a JVM, a Node.js toolchain, or a Rust compiler.
-Warm state such as fetched Gradle dependencies, installed `node_modules`, or a populated registry cache belongs to the [template](/platform/instances#instance-templates), captured once the environment has started up.
-The [ROM](/features/roms) is a small data blob that contains files which are specific to a job.
-
-This guide walks through the pattern with a Go toolchain, using the [`build-environments`](https://github.com/unikraft-cloud/examples/tree/main/build-environments) example.
+This guide uses the [`build-environments`](https://github.com/unikraft-cloud/examples/tree/main/build-environments) example.
 The base image contains a Go server (`server.go`) that:
 
-1. Writes to `/uk/libukp/template_instance` to turn the instance into a [template](/platform/instances#instance-templates).
+1. Writes to `/uk/libukp/template_instance` to create a template.
 2. Reads ROM source from `/rom/rom.go`.
 3. Compiles it to `/run/rom.so` using `go build -buildmode=plugin`.
 4. Loads the `Handler()` function from the plugin and serves its output over HTTP.
@@ -50,8 +50,7 @@ The base image contains a Go server (`server.go`) that:
 
 1. Install the CLI.
    Use the [unikraft CLI](/docs/cli/unikraft) or the legacy [kraft CLI](https://unikraft.org/docs/cli/install).
-   You need a [BuildKit](https://github.com/moby/buildkit) builder.
-   The easiest way to get one is via [Docker](https://docs.docker.com/engine/install/).
+   You need a [BuildKit](https://github.com/moby/buildkit) builder. The easiest way to get one is via [Docker](https://docs.docker.com/engine/install/).
    You can also set up and use BuildKit directly; see the [quick start](https://github.com/moby/buildkit#quick-start).
 
    :::note
@@ -200,8 +199,7 @@ go-build-env  oci://unikraft.io/<my-org>/go-build-env@sha256:1cbd6474386c9df5468
 
 ### Step 3: Package ROM payloads
 
-A [ROM](/features/roms) can carry any files a job needs: sources, test suites, or configuration.
-In this example, each ROM contains a Go function implementation.
+Each ROM contains a Go function implementation.
 
 <CodeTabs syncKey="cli">
 
@@ -231,8 +229,7 @@ kraft pkg \
 
 ### Step 4: Launch test environments from template
 
-Create an instance with the first ROM.
-The `--scale-to-zero` flag enables [scale-to-zero](/features/scale-to-zero), so the environment releases its resources when idle and wakes on the next request:
+Create an instance with the first ROM:
 
 <CodeTabs syncKey="cli">
 
@@ -362,7 +359,7 @@ kraft cloud instance logs go-build-env-rom2 -f
 
 </CodeTabs>
 
-Both instances start from the same template but execute different ROM payloads: same environment, different code per job.
+Both instances run the same base Go runtime, but execute different ROM payloads, demonstrating fast iteration with reusable layers.
 
 List the instances and note their FQDN values:
 
@@ -396,8 +393,6 @@ go-build-env-rom1  sparkling-dawn-syowlbtj.fra.unikraft.app  [0;36mstandby[0m 
 
 </CodeTabs>
 
-Both instances already sit in the `standby` state: [scale-to-zero](/features/scale-to-zero) parked them until the next request arrives.
-
 Test both instances using the FQDNs from the listing:
 
 ```bash
@@ -415,14 +410,14 @@ Auf Wiedersehen!
 This build/test environment uses three reusable layers:
 
 1. **Base runtime image**:
-Your toolchain plus a small control server (Go in this example).
+A Go server plus toolchain.
 Build once, reuse many times.
 
-1. **[ROM](/features/roms) payload**:
-A source-only image (here, `rom.go`).
-Update per job.
+1. **ROM payload**:
+A source-only image (`rom.go`).
+Update per test case.
 
-1. **[Template](/platform/instances#instance-templates) snapshot**:
+1. **Template snapshot**:
 A pre-initialized runtime used to speed up new instance startup.
 
 ## Cleanup
@@ -456,8 +451,3 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
-For more information on the features used in this use case and how to use them, check out the following documentation:
-
-* [ROMs](/features/roms) for injecting per-job files into instances.
-* [Instance templates](/platform/instances#instance-templates) for starting pre-initialized environments in milliseconds.
-* [Scale-to-zero](/features/scale-to-zero) for parking idle environments between runs.
