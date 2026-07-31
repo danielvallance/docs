@@ -3,39 +3,51 @@ title: Serverless Databases
 navigation_icon: database-zap
 ---
 
-Give every app or tenant its own database: a strongly isolated microVM that wakes on the first query, and clones itself in milliseconds.
+Databases are central to modern apps, but they're notoriously resource-hungry, slow to scale, and costly to operate at low utilisation.
+Traditional VM- or container-based solutions keep idle resources running, resulting in waste and inefficiency.
+With **Unikraft Cloud**, serverless databases gain the advantages of **microVMs**, combining **extreme performance** with **true scale-to-zero efficiency**.
 
-<ValueCards>
-  <ValueCard title="Run any database, isolated" metric="Postgres, MongoDB, Redis, ...">
-    The image is whatever your Dockerfile produces: any database engine, any extensions.
-    Each one runs as a hardware-isolated microVM with its own kernel, not a container.
-  </ValueCard>
-  <ValueCard title="Idle for free, wake instantly" metric="resumes in < 10 ms" metricHref="/features/scale-to-zero#stateful-scale-to-zero">
-    Databases cold start in under 10 ms.
-    Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends an idle database with its memory intact and resumes it on the next query.
-  </ValueCard>
-  <ValueCard title="Clone and restore in milliseconds" metric="branches in < 10 ms" metricHref="/features/branching">
-    [Branch](/features/branching) a running database into an independent, byte-for-byte copy.
-    [Checkpoint](/features/checkpoints) it in under 10 ms for point-in-time recovery.
-  </ValueCard>
-</ValueCards>
+## Why run serverless databases on Unikraft Cloud
 
-<UseCaseDiagram caption="One database per tenant, asleep between queries, with branching for an independent copy of a running database and checkpoints for a state to restore from later.">
-  <DiagramBox title="Database image">Your Dockerfile: engine, extensions, config</DiagramBox>
-  <DiagramArrow label="deploy once" sublabel="one per tenant" />
-  <DiagramBox accent title="Tenant database" note="asleep between queries">A microVM suspended with its buffer pool intact, woken by the next query</DiagramBox>
-  <DiagramArrow accent label="< 10 ms each" sublabel="branch / checkpoint" />
-  <DiagramStack more="...the source keeps serving queries throughout">
-    <DiagramStackItem label="branch: staging" chip="independent copy" />
-    <DiagramStackItem label="branch: migration test" chip="independent copy" />
-    <DiagramStackItem label="checkpoint: pre-migration" chip="restore point" />
-  </DiagramStack>
-</UseCaseDiagram>
+### ⚡ Instant boot, millisecond latency
+
+Unikraft microVMs start in milliseconds, enabling databases to **scale up instantly** when requests arrive and **shut down to zero** when idle.
+This ensures the system uses resources **only when needed**, without cold-start penalties.
+
+### 🔒 Stronger security by design
+
+Each database instance runs as a **specialised, single-process microVM**, drastically reducing the attack surface compared to general-purpose OSes.
+This isolation protects customer data with **built-in, lightweight security**.
+
+### 💰 Cost-efficient scale-to-zero
+
+Unikraft's microVM architecture allows serverless databases to **consume no resources when idle** and scale to thousands of instances under load.
+You pay only for active queries, making it ideal for **spiky workloads, dev/test environments, and SaaS platforms**.
+
+### 🛠 Seamless serverless integration
+
+Unikraft Cloud natively supports serverless architectures.
+Databases can integrate with API gateways, event triggers, and headless services running on Unikraft, forming a **fully serverless back end** that's fast, elastic, and efficient.
+
+### 📈 Performance without trade-offs
+
+Unlike traditional serverless platforms where databases often suffer from high overhead, microVM-based instances deliver **bare-metal-like throughput and predictable latency**.
+These instances optimise both Online Transaction Processing (OLTP) and Online Analytical Processing (OLAP) workloads.
+
+### 📸 Checkpoints for point-in-time recovery
+
+**Checkpointing** saves the complete state of a running microVM at any time, **without interrupting execution**.
+Checkpoints are incremental, fast, and keep a history, so you can restore the database to any previous checkpoint to recover from a failed migration or an erroneous write.
+
+### 🔀 Instance branching for instant clones
+
+Unikraft Cloud lets you **branch** a running instance, creating an identical, **independent copy in milliseconds** while leaving the original untouched.
+Test your migrations or destructive changes on a byte-for-byte copy of production before applying them, so you can proceed with confidence.
 
 ## Getting started
 
-This pattern works with any database engine.
 This guide shows you how to use [PostgreSQL](https://www.postgresql.org/), a powerful, open source object-relational database system, in a serverless fashion.
+With Unikraft Cloud, you can run PostgreSQL in a lightweight virtual machine, with minimal overhead and millisecond-fast startup times.
 The instance will [scale-to-zero](/features/scale-to-zero) when not in use.
 
 To run it, follow these steps:
@@ -77,8 +89,7 @@ export UKC_METRO=fra
 
 The `UKC_TOKEN` and `UKC_METRO` environment variables are only supported by the legacy CLI.
 
-When done, invoke the following command to deploy this app on Unikraft Cloud.
-The `--scale-to-zero` flag enables stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), so the database suspends with its memory intact when idle and resumes on the next query:
+When done, invoke the following command to deploy this app on Unikraft Cloud:
 
 <CodeTabs syncKey="cli">
 
@@ -209,6 +220,20 @@ fra    postgres-saan9  [38;2;0;188;125mrunning[0m  <my-org>/postgres        1.
 ```ansi title="kraft"
 [1mNAME[0m            [1mFQDN[0m                                     [1mSTATE[0m    [1mSTATUS[0m         [1mIMAGE[0m                                           [1mMEMORY[0m   [1mVCPUS[0m  [1mARGS[0m  [1mBOOT TIME[0m
 postgres-saan9  young-thunder-fbafrsxj.fra.unikraft.app  [0;32mrunning[0m  6 minutes ago  oci://unikraft.io/<my-org>/postgres@sha256:...  1.0 GiB  1            603.42 ms
+```
+
+</CodeTabs>
+
+When done, you can remove the instance:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete postgres-saan9
+```
+
+```bash title="kraft"
+kraft cloud instance remove postgres-saan9
 ```
 
 </CodeTabs>
@@ -344,6 +369,20 @@ The branch boots immediately from the same state as the source.
 Connect to it like any other instance.
 Whatever you do, the source instance remains unaffected.
 
+When you're done, remove the branch:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instances delete <branch-name>
+```
+
+```bash title="kraft"
+kraft cloud instance remove <branch-name>
+```
+
+</CodeTabs>
+
 ## Customize your deployment
 
 Your deployment is a standard PostgreSQL installation.
@@ -355,45 +394,6 @@ For that you use a different `POSTGRES_PASSWORD` environment variable when start
 You could also use a different location to mount your volume or set more configuration options.
 
 And, you can use the PostgreSQL instance in conjunction with a frontend service, [see the guide here](/platform/services).
-
-## Cleanup
-
-Remove the database and any branches you created, then the volume if you no longer need the data:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instances delete postgres-saan9 <branch-name>
-unikraft volumes delete postgres
-```
-
-```bash title="kraft"
-kraft cloud instance remove postgres-saan9 <branch-name>
-kraft cloud volume rm postgres
-```
-
-</CodeTabs>
-
-## Why this pattern works
-
-Databases are resource-hungry, slow to scale, and costly to operate at low utilisation, and each of those pressures maps to a platform feature:
-
-1. **Isolation by design**:
-   Each database runs as its own microVM with its own kernel, so tenants never share a kernel the way containers do.
-   The minimal OS footprint keeps the attack surface small, which matters when every instance holds customer data.
-
-1. **Scale-to-zero without cold-start penalties**:
-   Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends the whole microVM, buffer pools and caches included, and resumes it in under 10 ms on the next query.
-   Idle databases consume no resources, so a fleet can grow to thousands of instances while you pay only for active queries: a fit for spiky workloads, dev/test environments, and SaaS platforms with a database per tenant.
-   Because a database wakes on the first query, it composes with [serverless functions](/use-cases/serverless-functions) and [API gateways](/use-cases/api-gateways) into a back end with no always-on tier.
-
-1. **Checkpoints for point-in-time recovery**:
-   [Checkpointing](/features/checkpoints) saves the complete state of a running microVM without interrupting execution.
-   Checkpoints are incremental and keep a history, so you can restore the database to any previous point to recover from a failed migration or an erroneous write.
-
-1. **Branching for instant clones**:
-   [Branching](/features/branching) creates an identical, independent copy of a running database in milliseconds while leaving the original untouched.
-   Test migrations or destructive changes on a byte-for-byte copy of production before applying them.
 
 ## Learn more
 
@@ -412,11 +412,3 @@ kraft cloud --help
 </CodeTabs>
 
 Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/docs/cli/kraft/overview).
-For more information on the features used in this use case and how to use them, check out the following documentation:
-
-* [Scale-to-zero](/features/scale-to-zero) for suspending idle databases and resuming them with memory intact.
-* [Checkpoints](/features/checkpoints) for point-in-time recovery of a running database.
-* [Branching](/features/branching) for cloning a running database in milliseconds.
-* [Volumes](/platform/volumes) for persisting data across instance restarts.
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first database.

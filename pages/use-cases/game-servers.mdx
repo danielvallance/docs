@@ -3,43 +3,41 @@ title: Game Servers
 navigation_icon: gamepad-2
 ---
 
-Give every world or match its own game server: a hardware-isolated microVM that cold-starts in under 10 ms and sleeps at zero cost between sessions.
+Running multiplayer game servers often means keeping long-lived VMs online, pre-warming for peak hours, and paying for idle time between sessions.
+On Unikraft Cloud, you can run game servers in microVMs with [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), so instances pause when idle and resume when players reconnect.
 
-<ValueCards>
-  <ValueCard title="Cold start in milliseconds" metric="boots in < 10 ms" metricHref="/platform/instances#instance-templates">
-    Expensive startup work, such as world initialization, happens once in a [template](/platform/instances#instance-templates) snapshot.
-    Every server after that boots from the template.
-  </ValueCard>
-  <ValueCard title="Pause the world, keep the state" metric="resumes in < 10 ms" metricHref="/features/scale-to-zero#stateful-scale-to-zero">
-    When the last player disconnects, [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends the server with its memory intact.
-    The next connection wakes it exactly where it left off.
-  </ValueCard>
-  <ValueCard title="Isolated VMs, superior unit economics" metric="up to 100K+ microVMs / server">
-    Each game server is a strongly isolated virtual machine, not a container.
-    A single physical node hosts up to 100K+ microVMs, so a dedicated microVM per world stays affordable.
-  </ValueCard>
-</ValueCards>
+Minecraft is a strong example of this pattern.
+JVM startup and world initialization are expensive, but template snapshots and stateful resume keep player experience smooth without running infrastructure every day.
 
-<UseCaseDiagram caption="World initialization happens once in the template, every world after that clones from it in milliseconds, and each one suspends with its memory intact when the last player disconnects.">
-  <DiagramBox title="Game server image">Your Dockerfile: server runtime and assets</DiagramBox>
-  <DiagramArrow label="build once" sublabel="snapshot after init" />
-  <DiagramBox accent title="Template" note="initialization complete">A snapshot taken once the server has warmed up, with settings from a ROM</DiagramBox>
-  <DiagramArrow accent label="< 10 ms each" sublabel="one per world" />
-  <DiagramStack more="...suspended when the last player leaves, resumed where it stopped">
-    <DiagramStackItem label="world: survival" chip="running" active />
-    <DiagramStackItem label="world: bingo" chip="standby" />
-    <DiagramStackItem label="match: duel-42" chip="standby" />
-  </DiagramStack>
-</UseCaseDiagram>
+## Why use Unikraft Cloud for game servers
+
+### Fast restarts from template snapshots
+
+Game servers often have expensive startup paths: loading assets, initializing runtime state, and binding network services.
+Unikraft Cloud's [instance templates](/platform/instances#instance-templates) snapshot the server after initialization, so later starts resume from a warm state instead of repeating full initialization.
+For Minecraft specifically, this avoids repeated JVM warm-up and world initialization work.
+
+### Stateful scale-to-zero
+
+When all players disconnect, the instance enters standby and consumes no active resources.
+On the next connection it wakes from the same in-memory snapshot, preserving server state without a full restart.
+For Minecraft, this means your world and server process resume from snapshot instead of cold booting.
+
+### Isolation per server
+
+Each server runs in its own microVM: no shared kernel with other tenants, no container escape surface, and no noisy-neighbour risk.
+
+### Quick iteration with ROM
+
+Server settings can ship as auxiliary ROMs at instance creation time.
+You can run distinct game-server variants by swapping ROM configuration rather than rebuilding the base image.
 
 ## Getting started
 
-This pattern works with any game server.
-This guide uses Minecraft, whose expensive JVM startup and world initialization make the [template](/platform/instances#instance-templates) model shine.
-A template is a preinitialized snapshot of an instance that new instances clone from, resuming its exact system state.
-The [`minecraft`](https://github.com/unikraft-cloud/examples/tree/main/minecraft) example builds its base image from [itzg/minecraft-server](https://hub.docker.com/r/itzg/minecraft-server) (Java 25) and includes:
+This guide uses the [`minecraft`](https://github.com/unikraft-cloud/examples/tree/main/minecraft) example.
+The base image is built from [itzg/minecraft-server](https://hub.docker.com/r/itzg/minecraft-server) (Java 25) and includes:
 
-- A `wrapper.sh` entrypoint that starts SSH, loads configuration from a [ROM](/features/roms)—a read-only blob of code or data attached to an instance at creation—and disables [scale-to-zero](/features/scale-to-zero) during initialization.
+- A `wrapper.sh` entrypoint that starts SSH, loads ROM configuration, and disables scale-to-zero during initialization.
 - Patched startup scripts that snapshot the instance into a template before full server warm-up.
 
 ### Prerequisites
@@ -110,17 +108,17 @@ The image contains the files from the Docker image [itzg/minecraft-server](https
 
 - The entrypoint uses a custom `wrapper.sh` script that:
   - Starts an SSH server
-  - Loads the environment configuration from the attached [ROMs](/features/roms)
-  - Disables [scale-to-zero](/features/scale-to-zero) before executing the original entrypoint
-- The server configuration scripts from the original image have patches to trigger the [template](/platform/instances#instance-templates) snapshot, which allows faster instance creation from the template.
+  - Loads the environment configuration from the attached ROMs
+  - Disables scale-to-zero before executing the original entrypoint
+- The server configuration scripts from the original image have patches to trigger the template snapshot before the full warm-up of the server, which allows faster instance creation from the template.
   Scale-to-zero is then re-enabled after server initialization.
 
 ### Step 2: Create a template from the base image
 
 Boot a short-lived instance from the base image.
-The startup script snapshots it into a [template](/platform/instances#instance-templates) before world generation, then the instance exits.
+The startup script snapshots it into a template before world generation, then the instance exits.
 
-Pass your server settings as a [ROM](/features/roms):
+Pass your server settings as a ROM:
 
 <CodeTabs syncKey="cli">
 
@@ -244,8 +242,6 @@ minecraft-tpl  oci://unikraft.io/<my-org>/minecraft@sha256:fdb4887e84362ebbaf54c
 </CodeTabs>
 
 ### Step 3: Launch a server from the template
-
-The `--scale-to-zero` flag (with `stateful=true`) enables [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero): when the last player disconnects, the server suspends with its memory intact and wakes on the next connection.
 
 <CodeTabs syncKey="cli">
 
@@ -395,23 +391,6 @@ kraft cloud instance template remove minecraft-tpl
 
 </CodeTabs>
 
-## Why this pattern works
-
-1. **Warm starts from template snapshots**: game servers have expensive startup paths, such as loading assets, warming the JVM, and initializing the world.
-   [Instance templates](/platform/instances#instance-templates) snapshot the server after that work completes, so every later start boots warm in milliseconds instead of repeating it.
-
-1. **Stateful suspend fits session-based play**: when the last player disconnects, [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends the microVM with its memory intact—world, entities, JVM heap.
-   The next connection resumes the same process: no restart, no save/load cycle.
-
-1. **Hardware isolation per server**: each game server runs in its own microVM with its own kernel.
-   No shared kernel between tenants, no container-escape surface, and no noisy-neighbour risk when one world spikes.
-
-1. **Density that changes the economics**: a single server hosts up to 100K+ microVMs, and an idle world costs nothing.
-   A dedicated server per world, match, or community becomes affordable at fleet scale.
-
-1. **Configuration as [ROMs](/features/roms), not rebuilds**: server settings ship as read-only images attached at instance creation.
-   Distinct server variants come from swapping a ROM rather than rebuilding the base image.
-
 ## Learn more
 
 Use the `--help` option for detailed information on using Unikraft Cloud:
@@ -432,10 +411,8 @@ Or visit the [CLI Reference](/docs/cli/unikraft) or the [legacy CLI reference](/
 
 For more information on the features used in this use case and how to use them, check out the following documentation:
 
-* [Instance templates](/platform/instances#instance-templates) for starting warm game servers in milliseconds.
-* [Scale-to-zero](/features/scale-to-zero) for suspending idle servers between sessions.
-* [ROMs](/features/roms) for shipping server configuration without rebuilding the image.
-* [`minecraft` example](https://github.com/unikraft-cloud/examples/tree/main/minecraft) for the full source of this guide.
-* [itzg/minecraft-server documentation](https://docker-minecraft-server.readthedocs.io/en/latest/) for available server configuration options.
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first game server.
+* [Instance templates](/platform/instances#instance-templates)
+* [Scale-to-zero](/features/scale-to-zero)
+* [ROMs](/features/roms)
+* [`minecraft` example](https://github.com/unikraft-cloud/examples/tree/main/minecraft)
+* [itzg/minecraft-server documentation](https://docker-minecraft-server.readthedocs.io/en/latest/)
