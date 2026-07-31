@@ -14,19 +14,21 @@ Give every user, human or automated, a full Linux desktop in the browser: cold-s
     Full desktop environments cold start in under 10 ms.
     Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends an idle session, open windows and all, and restores it in the same time.
   </ValueCard>
-  <ValueCard title="Density that changes the economics" metric="up to 100K+ microVMs / server">
-    A single server holds up to 100K+ microVMs, and suspended desktops cost nothing.
+  <ValueCard title="Density that changes the economics" metric="100K+ microVMs / server" metricHref="/features/scale-to-zero">
+    A single server holds 100K+ microVMs, and suspended desktops cost nothing.
     Pay for the minutes users are active, not the hours they're away.
   </ValueCard>
 </ValueCards>
 
-<UseCaseDiagram caption="Every session gets its own desktop over HTTPS, suspended when its user leaves and restored with the same windows open when they come back, so the hours away cost nothing.">
-  <DiagramBox title="Users and agents" note="active in bursts">Browser tabs and computer-use automation, with nothing installed locally</DiagramBox>
-  <DiagramArrow accent label="noVNC over TLS" sublabel="restores in < 10 ms" />
-  <DiagramStack more="...up to 100K+ per server, suspended between sessions">
-    <DiagramStackItem label="desktop: alice" chip="running" active />
-    <DiagramStackItem label="desktop: secure browsing" chip="standby" />
-    <DiagramStackItem label="desktop: computer-use agent" chip="standby" />
+<UseCaseDiagram caption="One image, one desktop per session: idle desktops sleep at zero cost and restore in milliseconds.">
+  <DiagramBox title="Desktop image">Your Dockerfile: desktop environment, apps, VNC server</DiagramBox>
+  <DiagramArrow label="deploy once" />
+  <DiagramBox accent title="Sleeping desktop" note="memory intact, zero cost">A microVM parked by stateful scale-to-zero</DiagramBox>
+  <DiagramArrow accent label="restores in < 10 ms" sublabel="when the user returns" />
+  <DiagramStack more="...100K+ per server, asleep between sessions">
+    <DiagramStackItem label="desktop" chip="user: alice" />
+    <DiagramStackItem label="desktop" chip="secure browsing" />
+    <DiagramStackItem label="desktop" chip="computer-use agent" />
   </DiagramStack>
 </UseCaseDiagram>
 
@@ -188,17 +190,7 @@ vnc-browser  weathered-fog-y5jjmwfd.fra.unikraft.app  [0;36mstandby[0m  standb
 
 The instance sits in the `standby` [state](/platform/instances#instance-states): [scale-to-zero](/features/scale-to-zero) parked it, desktop intact, until the next session begins.
 
-### Customize your deployment
-
-The current deployment ships with Firefox, a tiling panel, and a small set of X11 utilities on top of Ubuntu.
-Customizing the deployment means editing the `Dockerfile` to add the apps your users need, such as a different browser, an editor, or developer tools.
-You can also adjust the screen geometry through the `WIDTH`, `HEIGHT`, and `DISPLAY_NUM` environment variables in `wrapper.sh`.
-
-[Anthropic's Computer Use Demo](https://github.com/anthropics/claude-quickstarts/tree/main/computer-use-demo) inspired this example, which works well as a sandbox for computer-use automation that needs to drive a real desktop.
-
-## Cleanup
-
-When done, you can remove the desktop:
+When done, you can remove the instance:
 
 <CodeTabs syncKey="cli">
 
@@ -211,6 +203,14 @@ kraft cloud instance remove vnc-browser
 ```
 
 </CodeTabs>
+
+### Customize your deployment
+
+The current deployment ships with Firefox, a tiling panel, and a small set of X11 utilities on top of Ubuntu.
+Customizing the deployment means editing the `Dockerfile` to add the apps your users need, such as a different browser, an editor, or developer tools.
+You can also adjust the screen geometry through the `WIDTH`, `HEIGHT`, and `DISPLAY_NUM` environment variables in `wrapper.sh`.
+
+[Anthropic's Computer Use Demo](https://github.com/anthropics/claude-quickstarts/tree/main/computer-use-demo) inspired this example, which works well as a sandbox for computer-use automation that needs to drive a real desktop.
 
 ## Why this pattern works
 
@@ -227,7 +227,7 @@ These workloads are memory-hungry, security-sensitive, and interactive in bursts
 
 1. **Density that makes a desktop per user viable**:
    Desktop environments are memory-hungry, which normally rules out one VM per user.
-   Unikraft Cloud packs up to 100K+ microVMs onto a single server, and suspended desktops consume no resources at all.
+   Unikraft Cloud packs 100K+ microVMs onto a single server, and suspended desktops consume no resources at all.
 
 1. **Built for automation**:
    Computer-use agents drive a real desktop the same way a human does.
@@ -254,5 +254,3 @@ For more information on the features used in this use case and how to use them, 
 
 * [Scale-to-zero](/features/scale-to-zero) for suspending idle desktops and restoring them with memory intact.
 * [Sandboxes](/use-cases/sandboxes) for running computer-use agents and other untrusted workloads.
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first desktop.

@@ -14,21 +14,21 @@ Run a full browser per job: hardware-isolated, cold-started in under 10 ms, and 
     Instances cold-start in under 10 ms.
     Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) suspends an idle browser with its memory intact and resumes it in the same time.
   </ValueCard>
-  <ValueCard title="Absorb peaks, pay for bursts" metric="scales out in milliseconds" metricHref="/features/autoscale">
+  <ValueCard title="Absorb peaks, pay for bursts" metric="scale out in seconds" metricHref="/features/autoscale">
     Scraping and test traffic are spiky.
-    [Autoscale](/features/autoscale) adds browsers in milliseconds when load arrives, and idle ones cost nothing.
+    [Autoscale](/features/autoscale) adds browsers in seconds when load arrives, and idle ones cost nothing.
   </ValueCard>
 </ValueCards>
 
-<UseCaseDiagram caption="Jobs arrive in bursts, the service hands each one its own browser, and a browser suspends with its memory intact when its job ends, so only the browsers doing work cost anything.">
-  <DiagramBox title="Automation jobs" note="arrive in bursts">Scrapes, PDF renders, and end-to-end test runs over HTTPS</DiagramBox>
-  <DiagramArrow label="TLS at the edge" sublabel="load balanced" />
-  <DiagramBox accent title="Service" note="one public endpoint">Spreads jobs across the browsers behind it and wakes one per job</DiagramBox>
-  <DiagramArrow accent label="restores in < 10 ms" sublabel="memory intact" />
-  <DiagramStack more="...more browsers added in milliseconds when peaks arrive">
-    <DiagramStackItem label="scrape: listings" chip="running" active />
-    <DiagramStackItem label="render: pdf" chip="standby" />
-    <DiagramStackItem label="test: e2e" chip="standby" />
+<UseCaseDiagram caption="One image, one browser per job: idle browsers sleep at zero cost and wake in milliseconds.">
+  <DiagramBox title="Browser image">Your Dockerfile: browser, driver, runtime</DiagramBox>
+  <DiagramArrow label="deploy once" />
+  <DiagramBox accent title="Sleeping browser" note="memory intact, zero cost">A microVM parked by stateful scale-to-zero</DiagramBox>
+  <DiagramArrow accent label="wakes in < 10 ms" sublabel="per request" />
+  <DiagramStack more="...scaled out in seconds when peaks arrive">
+    <DiagramStackItem label="browser" chip="render: pdf" />
+    <DiagramStackItem label="browser" chip="scrape: listings" />
+    <DiagramStackItem label="browser" chip="test: e2e" />
   </DiagramStack>
 </UseCaseDiagram>
 
@@ -188,47 +188,7 @@ httpserver-node-express-puppeteer-7afg3  nameless-fog-0tvh1uov.fra.unikraft.app 
 
 </CodeTabs>
 
-## Running a browser per job
-
-Scraping runs and test suites arrive in bursts, and a browser is busy for the length of one job.
-Attach more instances to the service the deploy created and the external load balancer spreads jobs across them:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft run --metro fra \
-  -m 4G \
-  --service little-snow-7qwu6vv5 \
-  --scale-to-zero policy=idle,cooldown-time=1000,stateful=true \
-  --image <my-org>/httpserver-node-express-puppeteer:latest
-```
-
-```bash title="kraft"
-kraft cloud instance create \
-  --start \
-  -M 4Gi \
-  --service little-snow-7qwu6vv5 \
-  --scale-to-zero idle \
-  --scale-to-zero-stateful \
-  --scale-to-zero-cooldown 1s \
-  --image <my-org>/httpserver-node-express-puppeteer:latest
-```
-
-</CodeTabs>
-
-The service name comes from the deploy output above.
-Each browser keeps its own stateful scale-to-zero setting, so the extra instances sit suspended and cost nothing between bursts, and [load balancing](/features/load-balancing) wakes one when a job needs it.
-Use `--replicas n` to start a group in one command, or turn on [autoscale](/features/autoscale) for the service to let the platform add and remove browsers as load moves.
-
-## Customize your deployment
-
-The current deployment uses an ExpressJS service that uses the [PDF generating functionality of Puppeteer](https://devdocs.io/puppeteer/).
-Customizing the deployment means updating the service, such as adding new functionalities provided by Puppeteer.
-You can update the service to provide a REST-like interface.
-
-## Cleanup
-
-Remove the browsers you started, including any extra instances you attached to the service:
+When done, you can remove the instance:
 
 <CodeTabs syncKey="cli">
 
@@ -242,26 +202,32 @@ kraft cloud instance remove httpserver-node-express-puppeteer-7afg3
 
 </CodeTabs>
 
+## Customize your deployment
+
+The current deployment uses an ExpressJS service that uses the [PDF generating functionality of Puppeteer](https://devdocs.io/puppeteer/).
+Customizing the deployment means updating the service, such as adding new functionalities provided by Puppeteer.
+You can update the service to provide a REST-like interface.
+
 ## Why this pattern works
 
 Headless browsers power web scraping, automated testing, Search Engine Optimization (SEO) rendering, and synthetic monitoring.
 These workloads are resource-intensive, security-sensitive, and bursty, and each of those pressures maps to a platform feature:
 
 1. **Hardware isolation for untrusted content**:
-   A browser executes whatever JavaScript the pages it visits ship.
-   Each browser on Unikraft Cloud runs in its own microVM with its own kernel, so a compromised page stays behind hardware-enforced boundaries, and the minimal OS footprint keeps the attack surface small.
+A browser executes whatever JavaScript the pages it visits ship.
+Each browser on Unikraft Cloud runs in its own microVM with its own kernel, so a compromised page stays behind hardware-enforced boundaries, and the minimal OS footprint keeps the attack surface small.
 
 1. **Stateful suspend instead of cold Chromium starts**:
-   Launching Chromium from scratch takes seconds.
-   Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) snapshots the whole microVM, browser process included, and resumes it in under 10 ms with its memory intact.
+Launching Chromium from scratch takes seconds.
+Stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) snapshots the whole microVM, browser process included, and resumes it in under 10 ms with its memory intact.
 
 1. **Capacity that follows the burst**:
-   Scraping runs, test suites, and monitoring checks arrive in short, irregular spikes.
-   Instances boot in milliseconds and [autoscale](/features/autoscale) adds or removes browsers in milliseconds, so you pay for the seconds of actual execution rather than for a standing pool.
+Scraping runs, test suites, and monitoring checks arrive in short, irregular spikes.
+Instances boot in milliseconds and [autoscale](/features/autoscale) adds or removes browsers in seconds, so you pay for the seconds of actual execution rather than for a standing pool.
 
 1. **A serverless building block**:
-   Because a browser wakes on an incoming request, you can trigger it directly from APIs, webhooks, or [serverless functions](/use-cases/serverless-functions) with no orchestration layer.
-   Deploying to more than one [metro](/platform/metros) puts browsers close to the data sources they scrape and the sites they watch.
+Because a browser wakes on an incoming request, you can trigger it directly from APIs, webhooks, or [serverless functions](/use-cases/serverless-functions) with no orchestration layer.
+Deploying to more than one [metro](/platform/metros) puts browsers close to the data sources they scrape and the sites they watch.
 
 ## Learn more
 
@@ -284,5 +250,3 @@ For more information on the features used in this use case and how to use them, 
 
 * [Scale-to-zero](/features/scale-to-zero) for suspending idle browsers and resuming them with memory intact.
 * [Autoscale](/features/autoscale) for scaling browser capacity out and in with load.
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first browser.

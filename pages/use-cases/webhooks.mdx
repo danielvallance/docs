@@ -20,15 +20,15 @@ Give every webhook source its own receiver: a hardware-isolated microVM that sle
   </ValueCard>
 </ValueCards>
 
-<UseCaseDiagram caption="Each source delivers to its own receiver, the delivery itself wakes the microVM that handles it, and the receivers nobody is calling stay parked.">
-  <DiagramBox title="Webhook senders" note="no schedule">GitHub, Stripe, Slack, and partner integrations</DiagramBox>
-  <DiagramArrow label="HTTPS delivery" sublabel="platform-issued certificate" />
-  <DiagramBox accent title="Receiver endpoint" note="one per source">TLS terminated before the payload reaches your handler</DiagramBox>
-  <DiagramArrow accent label="wakes in milliseconds" sublabel="inside the sender's timeout" />
+<UseCaseDiagram caption="One receiver per source: each gets its own HTTPS endpoint, sleeps between deliveries, and wakes on the event itself.">
+  <DiagramBox title="Receiver image">Your Dockerfile: handler, signature validation</DiagramBox>
+  <DiagramArrow label="deploy once" />
+  <DiagramBox accent title="Sleeping receiver" note="wakes in milliseconds">A microVM parked by scale-to-zero, woken by the delivery</DiagramBox>
+  <DiagramArrow accent label="one per source" sublabel="or per tenant" />
   <DiagramStack more="...idle receivers cost nothing between deliveries">
-    <DiagramStackItem label="github: push" chip="running" active />
-    <DiagramStackItem label="stripe: payment" chip="standby" />
-    <DiagramStackItem label="slack: events" chip="standby" />
+    <DiagramStackItem label="receiver" chip="github: push" />
+    <DiagramStackItem label="receiver" chip="stripe: payment" />
+    <DiagramStackItem label="receiver" chip="slack: events" />
   </DiagramStack>
 </UseCaseDiagram>
 
@@ -73,40 +73,11 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-When done, build and deploy the receiver.
-`GITHUB_WEBHOOK_SECRET` is the secret the receiver uses to verify incoming deliveries, so set it to a high-entropy string and give GitHub the same value later.
-The `--scale-to-zero` flag enables stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), so the receiver suspends one second after the last delivery and the next delivery wakes it:
+Follow the instructions in the example's README to set it up and grab the server's FQDN.
+Most webhook senders deliver only to HTTPS endpoints, and the deploy gives you one.
+The platform exposes the instance on a subdomain of `unikraft.app` and issues its [certificate](/platform/certificates) for you.
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft build . --output <my-org>/github-webhook-node:latest
-unikraft run --metro fra \
-  -m 1G \
-  -p 443:3000/tls+http \
-  --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  -e GITHUB_WEBHOOK_SECRET=your_secret_here \
-  --image <my-org>/github-webhook-node:latest
-```
-
-```bash title="kraft"
-kraft cloud deploy \
-  -M 1Gi \
-  -p 443:3000/tls+http \
-  --scale-to-zero on \
-  --scale-to-zero-stateful \
-  --scale-to-zero-cooldown 1s \
-  -e GITHUB_WEBHOOK_SECRET=your_secret_here \
-  .
-```
-
-</CodeTabs>
-
-The `-p 443:3000/tls+http` mapping creates a [service](/platform/services), which is what makes the receiver reachable over HTTPS.
-Most webhook senders deliver only to HTTPS endpoints, and this gives you one: the platform exposes the instance on a subdomain of `unikraft.app` and issues its [certificate](/platform/certificates) for you.
-The output includes the FQDN to hand to GitHub.
-
-Check that the receiver is up:
+After that, check that the service is up:
 
 ```bash
 curl https://<your-server-fqdn>/health
@@ -117,67 +88,17 @@ curl https://<your-server-fqdn>/health
 ```
 
 To create a webhook in GitHub, follow the [official documentation](https://docs.github.com/en/webhooks/using-webhooks/creating-webhooks) and the indications in the example's README.
-Point it at `https://<your-server-fqdn>/webhook` and give it the same secret you deployed with.
 
 The example includes:
 
 * **Signature validation** using GitHub's webhook secret (via Octokit library).
 * **Event logging** with timestamps for debugging and auditing.
 * **Health check** endpoint for monitoring and load balancer integration.
-
-## Absorbing delivery bursts
-
-A retry storm or a batch of queued deliveries arrives all at once.
-Attach a second receiver to the service the deploy created, and the external load balancer spreads deliveries across both:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft run --metro fra \
-  -m 1G \
-  --service <service-name> \
-  --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  -e GITHUB_WEBHOOK_SECRET=your_secret_here \
-  --image <my-org>/github-webhook-node:latest
-```
-
-```bash title="kraft"
-kraft cloud instance create \
-  --start \
-  -M 1Gi \
-  --service <service-name> \
-  --scale-to-zero on \
-  --scale-to-zero-stateful \
-  --scale-to-zero-cooldown 1s \
-  -e GITHUB_WEBHOOK_SECRET=your_secret_here \
-  --image <my-org>/github-webhook-node:latest
-```
-
-</CodeTabs>
-
-The service name comes from the deploy output above.
-The second receiver waits on standby and costs nothing until [load balancing](/features/load-balancing) sends it a delivery.
-To let the platform own the instance count instead, turn on [autoscale](/features/autoscale) for the service.
+* **Scale-to-zero configuration** in the `Kraftfile`, so the receiver parks itself once the cooldown expires.
 
 To customize for other webhook sources ([Stripe](https://docs.stripe.com/webhooks), [Slack](https://docs.slack.dev/tools/node-slack-sdk/webhook/), [GitLab](https://docs.gitlab.com/user/project/integrations/webhooks/), etc.), it's best to refer to their specific libraries and signature validation methods.
 Webhooks aren't a standardized protocol, so each service has its own conventions.
 Also follow [Webhooks.fyi](https://webhooks.fyi/) for best practices.
-
-## Cleanup
-
-Remove the receivers you started:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instances delete <instance-name>
-```
-
-```bash title="kraft"
-kraft cloud instance remove <instance-name>
-```
-
-</CodeTabs>
 
 ## Why this pattern works
 
@@ -204,7 +125,7 @@ A webhook endpoint has to answer a request that arrives without warning, from a 
    [Autoscale](/features/autoscale) takes over the instance count entirely and scales out in milliseconds, which matches replays and retry storms that arrive with no notice.
 
 1. **Density that makes a receiver per integration cheap**:
-   A single server holds up to 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a receiver nobody calls costs nothing.
+   A single server holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a receiver nobody calls costs nothing.
    That turns one receiver per source, per tenant, or per [metro](/platform/metros) into a design decision rather than a budget one.
    Specialized receivers stay small, and you pay for the events you process rather than for the hours you wait.
 
@@ -239,5 +160,3 @@ For more information, check out these resources:
 * [GitHub Webhooks Documentation](https://docs.github.com/en/webhooks).
 * [Securing GitHub Webhooks](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries).
 * [Webhook Best Practices](https://webhooks.fyi/).
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first receiver.

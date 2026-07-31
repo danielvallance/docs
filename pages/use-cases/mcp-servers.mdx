@@ -79,80 +79,9 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-When done, build and deploy the server.
-The `--scale-to-zero` flag enables stateful [scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero), so the server suspends with its memory intact one second after the last tool call and resumes on the next one:
+Follow the instructions in the example's README to set it up and grab the server's FQDN.
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft build . --output <my-org>/mcp-server-arxiv:latest
-unikraft run --metro fra \
-  -m 2G \
-  -p 443:8080/tls+http \
-  --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  --image <my-org>/mcp-server-arxiv:latest
-```
-
-```bash title="kraft"
-kraft cloud deploy \
-  -M 2Gi \
-  -p 443:8080/tls+http \
-  --scale-to-zero on \
-  --scale-to-zero-stateful \
-  --scale-to-zero-cooldown 1s \
-  .
-```
-
-</CodeTabs>
-
-The output shows the instance details:
-
-<CodeTabs syncKey="cli">
-
-```ansi title="unikraft"
-[1mmetro[22m:        fra
-[1mname[22m:         mcp-server-arxiv-l7l24
-[1muuid[22m:         1a721bb8-4472-4149-9870-789b1df5f80a
-[1mstate[22m:        [38;2;144;161;185mstarting[0m
-[1mimage[22m:        <my-org>/mcp-server-arxiv
-[1mresources[22m:
-[3m  memory[23m:     2048MiB
-[3m  vcpus[23m:      1
-[1mservice[22m:
-[3m  uuid[23m:       94b10356-3df8-b2fa-cd17-60ca8193c86c
-[3m  name[23m:       billowing-breeze-nuusy7l2
-[3m  domains[23m:
-[3m  - fqdn[23m:     billowing-breeze-nuusy7l2.fra.unikraft.app
-[1mnetworks[22m:
-[3m- uuid[23m:       e6754486-5398-bb06-420e-de23ed73da3f
-[3m  private-ip[23m: 10.0.1.149
-[3m  mac[23m:        12:b0:26:13:a0:89
-[1mtimestamps[22m:
-[3m  created[23m:    just now
-```
-
-```ansi title="kraft"
-[38;5;245m[[0m[92m●[0m[38;5;245m][0m Deployed successfully!
- [38;5;245m│[0m
- [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245mname[0m: mcp-server-arxiv-l7l24
- [38;5;245m├[0m[38;5;245m─────────[0m [38;5;245muuid[0m: 1a721bb8-4472-4149-9870-789b1df5f80a
- [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mmetro[0m: https://api.fra.unikraft.cloud/v1
- [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mstate[0m: [92mstarting[0m
- [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mdomain[0m: https://billowing-breeze-nuusy7l2.fra.unikraft.app
- [38;5;245m├[0m[38;5;245m────────[0m [38;5;245mimage[0m: oci://unikraft.io/<my-org>/mcp-server-arxiv@sha256:ea1e677ccc03628a3e7d57a4cd41118e3d2a631bcb2c34203bb9b175e7977f00
- [38;5;245m├[0m[38;5;245m───────[0m [38;5;245mmemory[0m: 2048 MiB
- [38;5;245m├[0m[38;5;245m──────[0m [38;5;245mservice[0m: billowing-breeze-nuusy7l2
- [38;5;245m├[0m[38;5;245m─[0m [38;5;245mprivate fqdn[0m: mcp-server-arxiv-l7l24.internal
- [38;5;245m└[0m[38;5;245m───[0m [38;5;245mprivate ip[0m: 10.0.1.149
-```
-
-</CodeTabs>
-
-In this case the instance name is `mcp-server-arxiv-l7l24` and the address is `https://billowing-breeze-nuusy7l2.fra.unikraft.app`.
-They're different for each run.
-For the included example client, and for mounting a [volume](/platform/volumes) to keep downloaded papers, see the [example's README](https://github.com/unikraft-cloud/examples/tree/main/mcp-server-arxiv).
-
-Connect to the server with your favourite MCP client.
+You can use the included example client to test the server, or connect to it using your favourite MCP client.
 For example, using [Visual Studio Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers#_add-an-mcp-server), you can add the following to your `.vscode/mcp.json` file:
 
 ```json
@@ -232,36 +161,9 @@ export UKC_METRO=fra
 
 </CodeTabs>
 
-When done, build and deploy the server.
-This one is far smaller than the arXiv server, so 512M is enough:
+Follow the instructions in the example's README to set it up and grab the server's FQDN.
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft build . --output <my-org>/mcp-server-simple:latest
-unikraft run --metro fra \
-  -m 512M \
-  -p 443:8080/tls+http \
-  --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  --image <my-org>/mcp-server-simple:latest
-```
-
-```bash title="kraft"
-kraft cloud deploy \
-  -M 512Mi \
-  -p 443:8080/tls+http \
-  --scale-to-zero on \
-  --scale-to-zero-stateful \
-  --scale-to-zero-cooldown 1s \
-  .
-```
-
-</CodeTabs>
-
-The output has the same shape as before, and gives you the server's FQDN.
-For the included example client, see the [example's README](https://github.com/unikraft-cloud/examples/tree/main/mcp-server-simple).
-
-Connect to the server with your favourite MCP client.
+You can use the included example client to test the server, or connect to it using your favourite MCP client.
 For example, using [Visual Studio Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers#_add-an-mcp-server), you can add the following to your `.vscode/mcp.json` file:
 
 ```json
@@ -304,76 +206,7 @@ Common use cases for custom MCP servers:
 * **Custom business logic**: Integrate company-specific calculations, validations, or workflows.
 * **Document retrieval**: Search and retrieve from internal knowledge bases or document stores.
 
-Each of these fits in its own microVM rather than one endpoint exposing every tool.
-
-## A server per agent session
-
-The deployments above give you one long-lived server.
-To hand each agent session its own, snapshot the running server into a [template](/platform/instances#instance-templates) once it has imported its dependencies, then clone the template per session.
-
-Turn the instance you deployed above into a template:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instance template create mcp-server-arxiv-l7l24
-```
-
-```bash title="kraft"
-kraft cloud instance template create mcp-server-arxiv-l7l24
-```
-
-</CodeTabs>
-
-Every clone then starts from that snapshot, with imports done and caches warm, instead of repeating startup.
-Add `--rm` so the platform deletes the instance when it stops, which keeps per-session servers from piling up:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft run --metro fra \
-  --template mcp-server-arxiv-l7l24 \
-  --name mcp-session-agent-42 \
-  -p 443:8080/tls+http \
-  --scale-to-zero policy=on,cooldown-time=1000,stateful=true \
-  --rm
-```
-
-```bash title="kraft"
-kraft cloud instance create \
-  --start \
-  --template mcp-server-arxiv-l7l24 \
-  --name mcp-session-agent-42 \
-  -p 443:8080/tls+http \
-  --scale-to-zero on \
-  --scale-to-zero-stateful \
-  --scale-to-zero-cooldown 1s \
-  --feature delete-on-stop
-```
-
-</CodeTabs>
-
-Repeat that command per session, changing `--name`, and each agent gets a server that shares no kernel with any other.
-For cleanup rules that outlive a single instance, such as deleting a server a set time after it stops or after it has served a set number of requests, use [autokill](/features/autokill) instead of `--rm`.
-Instances cloned from a template inherit the template's autokill configuration.
-
-## Cleanup
-
-Remove the servers you started, along with any per-session clones, and then the template:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft instances delete mcp-server-arxiv-l7l24 mcp-session-agent-42
-unikraft instances template delete mcp-server-arxiv-l7l24
-```
-
-```bash title="kraft"
-kraft cloud instance remove mcp-server-arxiv-l7l24 mcp-session-agent-42
-kraft cloud instance template remove mcp-server-arxiv-l7l24
-```
-
-</CodeTabs>
+Each of these fits in its own small server rather than one endpoint exposing every tool.
 
 ## Why this pattern works
 
@@ -397,7 +230,7 @@ An MCP server sits inside an agent's loop: called in bursts, trusted with real c
    Instances cloned from an [instance template](/platform/instances#instance-templates) inherit that configuration, so the rule follows every server you start from it.
 
 1. **Density that makes a server per integration affordable**:
-   A single physical node holds up to 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a server nobody calls costs nothing.
+   A single physical node holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a server nobody calls costs nothing.
    That turns a specialized server per integration, per team, or per tenant into a design decision rather than a budget one, and keeps each one small enough to reason about.
 
 1. **A server in the metro your agent talks to**:
@@ -435,5 +268,3 @@ For more information about the Model Context Protocol:
 * [Reference MCP Servers](https://github.com/modelcontextprotocol/servers).
 * [Building MCP Servers](https://modelcontextprotocol.io/docs/develop/build-server).
 * [Building MCP Clients](https://modelcontextprotocol.io/docs/develop/build-client).
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first MCP server.

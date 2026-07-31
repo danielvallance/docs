@@ -159,8 +159,7 @@ The output shows the Redis instance details:
 
 Build and deploy the Tyk instance.
 The `-p 443:8080/tls+http` mapping creates a [service](/platform/services), the public entry point that terminates TLS and load balances across the instances behind it.
-Here it forwards HTTPS traffic on port 443 to Tyk on port 8080.
-The `TYK_GW_STORAGE_HOST` variable points the gateway at Redis over the [private network](/platform/networking), and `TYK_GW_STORAGE_PASSWORD` has to match the password you gave Redis above:
+Here it forwards HTTPS traffic on port 443 to Tyk on port 8080:
 
 <CodeTabs syncKey="cli">
 
@@ -170,8 +169,6 @@ unikraft run --metro fra \
   -m 256M \
   -p 443:8080/tls+http \
   --scale-to-zero policy=on,cooldown-time=1000 \
-  -e TYK_GW_STORAGE_HOST=tyk-redis.internal \
-  -e TYK_GW_STORAGE_PASSWORD=unikraft \
   --image <my-org>/tyk:latest
 ```
 
@@ -181,8 +178,6 @@ kraft cloud deploy \
   -p 443:8080/tls+http \
   --scale-to-zero on \
   --scale-to-zero-cooldown 1s \
-  -e TYK_GW_STORAGE_HOST=tyk-redis.internal \
-  -e TYK_GW_STORAGE_PASSWORD=unikraft \
   ./tyk/
 ```
 
@@ -278,44 +273,7 @@ redis-6vgvc  tyk-redis.internal                  [0;32mrunning[0m  since 1min 
 
 The gateway sits in the `standby` [state](/platform/instances#instance-states) once its cooldown expires: scale-to-zero parked it, and the next request wakes it again.
 
-## Scaling the edge
-
-A single gateway instance handles a lot of traffic, but a service can hold more than one.
-Attach a second instance to the service that the Tyk deployment created (`icy-haze-8ph4u8cz` above) and the external load balancer starts spreading requests across both:
-
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
-unikraft run --metro fra \
-  -m 256M \
-  --service icy-haze-8ph4u8cz \
-  --scale-to-zero policy=on,cooldown-time=1000 \
-  -e TYK_GW_STORAGE_HOST=tyk-redis.internal \
-  -e TYK_GW_STORAGE_PASSWORD=unikraft \
-  --image <my-org>/tyk:latest
-```
-
-```bash title="kraft"
-kraft cloud instance create \
-  --start \
-  -M 256Mi \
-  --service icy-haze-8ph4u8cz \
-  --scale-to-zero on \
-  --scale-to-zero-cooldown 1s \
-  -e TYK_GW_STORAGE_HOST=tyk-redis.internal \
-  -e TYK_GW_STORAGE_PASSWORD=unikraft \
-  --image <my-org>/tyk:latest
-```
-
-</CodeTabs>
-
-Both instances keep their own scale-to-zero setting, so the second one waits on standby and costs nothing until [load balancing](/features/load-balancing) needs it.
-Use `--replicas n` on the first command to start a group of instances in one go.
-To hand the instance count to the platform instead of setting it yourself, turn on [autoscale](/features/autoscale) for the service, which adds and removes instances in milliseconds as traffic moves.
-
-## Cleanup
-
-Remove the gateway and its Redis back end, including any extra instances you attached to the service:
+When done, you can remove the instances:
 
 <CodeTabs syncKey="cli">
 
@@ -334,37 +292,36 @@ kraft cloud instance remove redis-6vgvc tyk-s9ixd
 A gateway sits on the request path of everything you serve, so its idle cost, its behavior under bursts, and its exposure all matter:
 
 1. **No always-on tier**:
-   [Scale-to-zero](/features/scale-to-zero) puts an idle gateway on standby, and the platform cold boots it again on the next request within milliseconds, a negligible amount of time next to Internet round trips.
-   Tyk boots fast enough that the guide leaves it on the plain `on` policy; a gateway with a slower startup path, such as a JVM-based proxy warming up, can use [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) instead, which suspends the microVM with its memory intact and resumes it in milliseconds.
-   Redis gets the stateful flag in this guide for a different reason: its value lives in memory, so suspending it keeps the cache warm across idle periods instead of rebuilding it on the next request.
-   Internal traffic wakes instances the same way public traffic does, so the back ends behind the gateway sleep between calls too, and the whole request path idles at zero cost.
+[Scale-to-zero](/features/scale-to-zero) puts an idle gateway on standby, and the platform cold boots it again on the next request within milliseconds, a negligible amount of time next to Internet round trips.
+Gateways that take longer to initialize, such as Tyk reconnecting to Redis or a JVM-based proxy warming up, can use [stateful scale-to-zero](/features/scale-to-zero#stateful-scale-to-zero) instead, which suspends the microVM with its memory intact and resumes it in under 10 ms.
+Internal traffic wakes instances the same way public traffic does, so the back ends behind the gateway sleep between calls too, and the whole request path idles at zero cost.
 
 1. **Small enough to sit on the hot path**:
-   Every call to your APIs passes through the gateway, so any overhead the platform adds shows up in every response.
-   Instances cold boot in milliseconds and run in a small memory footprint.
-   That keeps the platform's share of each request small, and lets a single gateway instance serve more concurrent requests before you need a second one.
-   The external load balancer terminates TLS before traffic reaches the gateway, which keeps certificate work off it entirely.
+Every call to your APIs passes through the gateway, so any overhead the platform adds shows up in every response.
+Instances cold boot in milliseconds and run in a small memory footprint.
+That keeps the platform's share of each request small, and lets a single gateway instance serve more concurrent requests before you need a second one.
+The external load balancer terminates TLS before traffic reaches the gateway, which keeps certificate work off it entirely.
 
 1. **Bursts absorbed by waking instances, not by provisioning them**:
-   Attaching more than one instance to a [service](/platform/services) turns on [load balancing](/features/load-balancing) across them, which counts in-flight requests for HTTP services and open connections for TCP ones.
-   A per-instance soft limit tells the load balancer when to wake another standby instance, and a hard limit caps how many requests a single instance takes.
-   [Autoscale](/features/autoscale) takes over the instance count entirely and scales out in milliseconds, which removes the reason to keep hot spares around for peaks.
+Attaching more than one instance to a [service](/platform/services) turns on [load balancing](/features/load-balancing) across them, which counts in-flight requests for HTTP services and open connections for TCP ones.
+A per-instance soft limit tells the load balancer when to wake another standby instance, and a hard limit caps how many requests a single instance takes.
+[Autoscale](/features/autoscale) takes over the instance count entirely and scales out in milliseconds, which removes the reason to keep hot spares around for peaks.
 
 1. **A gateway in every metro, not one central cluster**:
-   A single server holds up to 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a gateway nobody calls costs nothing.
-   That turns a gateway per environment, per tenant, or per [metro](/platform/metros) into a routing decision rather than a capacity one.
-   Regional gateways wait at zero cost until traffic reaches their region, which puts TLS termination and policy enforcement close to your users.
+A single server holds 100K+ microVMs, and Unikraft Cloud charges for active vCPU time, so a gateway nobody calls costs nothing.
+That turns a gateway per environment, per tenant, or per [metro](/platform/metros) into a routing decision rather than a capacity one.
+Regional gateways wait at zero cost until traffic reaches their region, which puts TLS termination and policy enforcement close to your users.
 
 1. **Hardware isolation where the exposure is highest**:
-   The gateway faces the open Internet, which makes it the most attacked component of the stack.
-   Each instance runs as its own microVM with its own kernel and hardware-level isolation, so a compromised gateway shares no kernel with the rest of your deployment.
-   The image contains only what the gateway needs, which keeps the attack surface small, and deploying [by image digest](/platform/images) gives you the identical, immutable image on every start.
+The gateway faces the open Internet, which makes it the most attacked component of the stack.
+Each instance runs as its own microVM with its own kernel and hardware-level isolation, so a compromised gateway shares no kernel with the rest of your deployment.
+The image contains only what the gateway needs, which keeps the attack surface small, and deploying [by image digest](/platform/images) gives you the identical, immutable image on every start.
 
 1. **Back ends the Internet can't route to**:
-   Only instances you attach to a public service take traffic from the Internet, and that traffic always travels through the external load balancer.
-   Instance-to-instance traffic instead uses each instance's private FQDN (`<instance-name>.internal`) and stays on your [private network](/platform/networking).
-   In this guide, Tyk holds the only public service, while Redis answers only at `tyk-redis.internal`.
-   The same split applies to [serverless functions](/use-cases/serverless-functions) and [databases](/use-cases/serverless-databases) behind the gateway.
+Only instances you attach to a public service take traffic from the Internet, and that traffic always travels through the external load balancer.
+Instance-to-instance traffic instead uses each instance's private FQDN (`<instance-name>.internal`) and stays on your [private network](/platform/networking).
+In this guide, Tyk holds the only public service, while Redis answers only at `tyk-redis.internal`.
+The same split applies to [serverless functions](/use-cases/serverless-functions) and [databases](/use-cases/serverless-databases) behind the gateway.
 
 ## Learn more
 
@@ -395,5 +352,3 @@ For more references, check out also:
 
 * [Tyk](/guides/tyk) on Unikraft Cloud interactive guide.
 * [Redis](/guides/redis7.2) on Unikraft Cloud interactive guide.
-
-Ready to try it? [Sign up for Unikraft Cloud](https://console.unikraft.cloud/auth/signin) and deploy your first gateway.

@@ -158,29 +158,17 @@ export const DiagramStack = ({
   </div>
 );
 
-/* `active` marks the one item that is currently running, so a stack can show
-   which instances are awake and which are parked at zero cost. */
 export const DiagramStackItem = ({
   label,
   chip,
-  active,
 }: {
   label: string;
   chip?: string;
-  active?: boolean;
 }) => (
-  <div
-    className={`flex items-center justify-between gap-3 rounded-lg border bg-card px-4 py-2.5 ${
-      active ? "border-primary/40" : "border-border"
-    }`}
-  >
+  <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-2.5">
     <div className="text-sm font-semibold text-card-foreground">{label}</div>
     {chip && (
-      <div
-        className={`rounded px-2 py-1 font-mono text-xs ${
-          active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-        }`}
-      >
+      <div className="rounded bg-muted px-2 py-1 font-mono text-xs text-muted-foreground">
         {chip}
       </div>
     )}
