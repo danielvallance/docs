@@ -573,6 +573,7 @@ const config: ZudokuConfig = {
       icon: "tag",
       items: [
         "/releases/index",
+        "/releases/r12-thebe",
         "/releases/r11-metis",
         "/releases/r10-themisto",
       ],
