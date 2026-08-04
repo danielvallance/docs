@@ -138,6 +138,7 @@ VPC
 (?i)GitLab
 (?i)Go
 (?i)Golang
+(?i)GPU(s)?
 (?i)grafana
 (?i)GraphQL
 (?i)gui
