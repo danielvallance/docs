@@ -46,7 +46,7 @@ GPU snapshots are on the roadmap for the next release.
 
 ### Shared instance templates
 
-Instance templates used to be node-local: every controller had to build its own copy before cloning instances from it.
+[Instance templates](/features/on-demand-templates) used to be node-local: every controller had to build its own copy before cloning instances from it.
 You can now publish templates to a directory shared between controllers:
 
 ```sh
@@ -91,7 +91,7 @@ Two new endpoints, `POST /v1/images` and `DELETE /v1/images`, let you pull an im
 `timeout_s` lets you wait until the image is ready.
 If the platform can't pull the image, the API response contains the underlying error.
 
-`GET /v1/images` now also reports the state of each image:
+[`GET /v1/images`](/platform/images) now also reports the state of each image:
 
 ```json
 {
@@ -192,7 +192,7 @@ The instance and volume pages now show more information, making it faster to dia
 
 ### Kraftlet
 
-Kraftlet is the Unikraft Cloud integration for Kubernetes, allowing you to run microVMs as Kubernetes pods.
+Kraftlet is the Unikraft Cloud [integration for Kubernetes](/integrations/kubernetes), allowing you to run microVMs as Kubernetes pods.
 
 #### CNI plugin support
 
