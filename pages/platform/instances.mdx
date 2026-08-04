@@ -330,7 +330,7 @@ kraft cloud deploy --replicas 2 ...
 ### GPUs
 
 :::caution[**Limited Access**]
-GPU support is a preview feature and isn't yet available on the public Unikraft Cloud.
+GPU support is currently only available as a preview for enterprise customers.
 The interface described here reflects the current implementation and may change before general availability.
 :::
 
@@ -342,6 +342,7 @@ Pass the `gpus` field in the [`POST /instances`](/api/platform/v1/instances#crea
   ...
   "image": "my-inference-app:latest",
   "memory_mb": 4096,
+  "type": "full",
   "gpus": 1,
   ...
 }
