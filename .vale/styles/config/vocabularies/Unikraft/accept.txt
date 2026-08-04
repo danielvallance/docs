@@ -57,15 +57,20 @@ POSIX
 PV
 PVC
 EROFS
+GPU
+GPUs
+NVIDIA
 CPIO
 CDP
 FTP
 CIDR
 PATCH
 TAP
+CNI
 CSI
 CNI
 VPC
+XFS
 
 # ==============================================================================
 # NAMES OF THINGS
