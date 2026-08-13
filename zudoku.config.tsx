@@ -5,7 +5,7 @@ const config: ZudokuConfig = {
     title: "%s | Unikraft Cloud Docs",
     description:
       "Unikraft Cloud documentation: guides, platform reference, CLI, and API docs for the millisecond, Linux-based microVM cloud platform.",
-    favicon: "/docs/favicon.ico",
+    favicon: "/favicon.ico",
   },
   basePath: "/docs",
   // Emit <link rel="canonical"> on every docs page (origin + basePath + route),
