@@ -205,6 +205,7 @@ const config: ZudokuConfig = {
         "/guides/node-playwright-webkit", // Playwright (WebKit) with Node.js
         "/guides/postgres", // PostgreSQL
         "/guides/httpserver-prisma-expressjs4.19-node18", // Prisma HTTP Server
+        "/guides/prometheus-grafana", // Prometheus and Grafana
         "/guides/httpserver-node-express-puppeteer", // Puppeteer HTTP Server
         "/guides/httpserver-python3.12", // Python HTTP Server
         "/guides/httpserver-node22-react-router", // React Router HTTP Server
@@ -220,7 +221,7 @@ const config: ZudokuConfig = {
         "/guides/skipper0.18", // Skipper
         "/guides/httpserver-node21-solid-start", // SolidJS HTTP Server
         "/guides/spin-wagi-http", // Spin
-        "/guides/httpserver-java17-springboot3.5.x", // Spring Boot HTTP Server
+        "/guides/httpserver-java17-springboot", // Spring Boot HTTP Server
         "/guides/httpserver-java17-spring-petclinic", // Spring PetClinic
         "/guides/httpserver-c-debug", // SSH and HTTP Server with C and Debugging Tools
         "/guides/httpserver-node22-sveltekit", // SvelteKit HTTP Server
