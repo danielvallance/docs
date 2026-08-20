@@ -1,4 +1,11 @@
 import type { ZudokuConfig } from "zudoku";
+import {
+  FlowArrow,
+  FlowBox,
+  FlowDiagram,
+  FlowStack,
+  FlowStackItem,
+} from "./src/DiagramComponents";
 
 const config: ZudokuConfig = {
   metadata: {
@@ -36,6 +43,15 @@ const config: ZudokuConfig = {
       llmsTxt: true, // Generate llms.txt
       llmsTxtFull: true, // Generate llms-full.txt
       includeProtected: false, // Exclude protected routes
+    },
+  },
+  mdx: {
+    components: {
+      FlowArrow,
+      FlowBox,
+      FlowDiagram,
+      FlowStack,
+      FlowStackItem,
     },
   },
   syntaxHighlighting: {
@@ -92,6 +108,7 @@ const config: ZudokuConfig = {
             "/features/checkpoints",
             "/features/plugins",
             "/features/custom-network-configuration",
+            "/features/network-shield",
             "/features/annotations",
           ],
         },
@@ -606,6 +623,11 @@ const config: ZudokuConfig = {
     },
   ],
   theme: {
+    customCss: `
+      .prose td code {
+        white-space: normal;
+      }
+    `,
     fonts: {
       sans: {
         fontFamily: "Inter, sans-serif",
