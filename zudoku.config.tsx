@@ -1,11 +1,22 @@
 import type { ZudokuConfig } from "zudoku";
 import {
+  CheckpointTimeline,
+  FeatureRow,
+  FeatureTable,
   FlowArrow,
   FlowBox,
   FlowDiagram,
+  FlowGroup,
+  FlowRow,
   FlowStack,
   FlowStackItem,
+  UseCaseCard,
+  UseCaseCta,
+  UseCaseGroup,
+  ValueCard,
+  ValueCards,
 } from "./src/DiagramComponents";
+import { UseCaseCast, UseCaseVideo } from "./src/UseCaseMedia";
 
 const config: ZudokuConfig = {
   metadata: {
@@ -47,11 +58,23 @@ const config: ZudokuConfig = {
   },
   mdx: {
     components: {
+      CheckpointTimeline,
+      FeatureRow,
+      FeatureTable,
       FlowArrow,
       FlowBox,
       FlowDiagram,
+      FlowGroup,
+      FlowRow,
       FlowStack,
       FlowStackItem,
+      UseCaseCard,
+      UseCaseCast,
+      UseCaseCta,
+      UseCaseGroup,
+      UseCaseVideo,
+      ValueCard,
+      ValueCards,
     },
   },
   syntaxHighlighting: {
@@ -139,6 +162,7 @@ const config: ZudokuConfig = {
           icon: "lightbulb",
           collapsed: false,
           items: [
+            "/use-cases/overview",
             "/use-cases/sandboxes",
             "/use-cases/headless-browsers",
             "/use-cases/mcp-servers",
@@ -643,6 +667,7 @@ const config: ZudokuConfig = {
     { from: "/cli", to: "/cli/overview" },
     { from: "/kraftfile", to: "/kraftfile/v0.7" },
     { from: "/guides", to: "/guides/overview" },
+    { from: "/use-cases", to: "/use-cases/overview" },
     { from: "/releases", to: "/releases/index" },
   ],
   apis: [
@@ -656,6 +681,18 @@ const config: ZudokuConfig = {
     customCss: `
       .prose td code {
         white-space: normal;
+      }
+
+      .prose header h1 {
+        margin-bottom: 1rem;
+      }
+
+      .prose .not-prose h2 {
+        margin: 0;
+      }
+
+      .prose > .h-16 {
+        height: 1rem;
       }
     `,
     fonts: {
