@@ -67,7 +67,7 @@ List your plugins in the `plugins` field of a [`POST /instances`](/api/platform/
 
 ```bash title="unikraft"
 unikraft api /v1/instances \
-  -d '{
+  '{
     "name": "my-instance",
     "plugins": [
       {
@@ -110,7 +110,7 @@ Set `prop` to `plugins`, and pass the plugins in `value`:
 
 ```bash title="unikraft"
 unikraft api /v1/instances -X PATCH \
-  -d '[{
+  '[{
     "name": "my-instance",
     "prop": "plugins",
     "op": "add",

@@ -63,7 +63,7 @@ To use a relay, reference another interface by name inside a `relay` object:
 
 ```bash title="Relay instance"
 unikraft api /v1/instances \
-  -d '{
+  '{
     "name": "my-relay",
     "network_interfaces": [
       {
@@ -75,7 +75,7 @@ unikraft api /v1/instances \
 
 ```bash title="Sandbox instance (relay client)"
 unikraft api /v1/instances \
-  -d '{
+  '{
     "name": "my-sandbox",
     "network_interfaces": [
       {

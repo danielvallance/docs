@@ -26,7 +26,7 @@ To create a template on demand, add `prepare: true` and a `create_args` object t
 
 ```bash title="POST /instances"
 unikraft api /v1/instances --metro=fra \
-   -d '{
+   '{
    "name": "my-instance",
    "template": {
       "name": "my-template",
@@ -92,7 +92,7 @@ To pass data that differs per instance—a session ID, a config file, a function
 
 ```bash title="POST /instances"
 unikraft api /v1/instances --metro=fra \
-   -d '{
+   '{
    "name": "my-instance",
    "template": {
       "name": "my-template",
@@ -143,7 +143,7 @@ A common shape is a generic worker template, a more specific function template b
 
 ```bash title="POST /instances"
 unikraft api /v1/instances --metro=fra \
-   -d '{
+   '{
    "name": "my-instance",
    "template": {
       "name": "my-function-template",
@@ -191,7 +191,7 @@ To release that space automatically, give the template an [autokill](/features/a
 
 ```bash title="POST /instances"
 unikraft api /v1/instances --metro=fra \
-   -d '{
+   '{
    "name": "my-instance",
    "template": {
       "name": "my-template",

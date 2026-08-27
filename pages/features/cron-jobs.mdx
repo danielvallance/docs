@@ -41,7 +41,7 @@ For example, to start an instance every day at 09:00 UTC and stop it at 18:00 UT
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
 unikraft api /v1/instances -X POST --metro fra \
-  -d '{
+  '{
     "image": "...",
     "schedules": [
       {
@@ -85,7 +85,7 @@ To run a command inside the instance every night at midnight, use the `exec` act
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
 unikraft api /v1/instances -X POST --metro fra \
-  -d '{
+  '{
     "image": "...",
     "schedules": [
       {
@@ -123,7 +123,7 @@ Add, set, or remove scheduled operations via [PATCH](/api/platform/v1/instances#
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
 unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
-  -d '{
+  '{
     "prop": "schedules",
     "op": "add",
     "value": [
@@ -159,7 +159,7 @@ Add an `exec` schedule the same way, but include `args` with the command to run:
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
 unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
-  -d '{
+  '{
     "prop": "schedules",
     "op": "add",
     "value": [
@@ -197,7 +197,7 @@ curl -X PATCH \
 <CodeTabs syncKey="cli">
 ```bash title="unikraft"
 unikraft api /v1/instances/<instance-uuid> -X PATCH --metro fra \
-  -d '{
+  '{
     "prop": "schedules",
     "op": "del",
     "value": [
