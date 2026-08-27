@@ -101,8 +101,10 @@ cmd: ["/usr/bin/python3", "/src/server.py"]
 The `runtime` specifies one of the Unikraft Cloud runtimes (microVMs) built to run different languages and apps.
 Here it specifies a Python runtime.
 
-The `targets` parameter specifies the platform and architecture to build for.
+The `targets` parameter specifies the platform and architecture pairs to build for.
 Here it targets `kraftcloud` (Unikraft Cloud) on `x86_64`.
+No architecture is the default, so list every one you need, for example `kraftcloud/arm64` alongside `kraftcloud/x86_64`.
+See [architectures](/platform/images#architectures) for more detail.
 
 The `rootfs` parameter tells the CLI to use a `Dockerfile` in the same directory to build the root filesystem as an [EROFS image](/tutorials/rootfs-formats).
 
@@ -222,9 +224,10 @@ Windows isn't officially supported, but you can use [WSL](https://learn.microsof
 #### What CPU architectures can you deploy to?
 {/* vale on */}
 
-Today, instances run on `x86_64` hosts, so build your images for that architecture.
-`arm64` support is coming soon.
-If you have an `arm64` workload in mind, please [get in touch](https://unikraft.com/contact).
+Both `x86_64` and `arm64`.
+The architecture of the guest image must match the host architecture, so name the architectures you deploy to in the `targets` key of your `Kraftfile` or through the `--arch` flag.
+Neither architecture is the default, and a single `unikraft build` invocation produces an image for every architecture you ask for.
+See [architectures](/platform/images#architectures) for more detail.
 
 
 #### How can you track instances on Unikraft Cloud?
