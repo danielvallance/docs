@@ -125,7 +125,7 @@ Achieve this with the following commands:
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale -X POST --metro fra \
-  -d '{
+  '{
     "min_size": 1,
     "max_size": 8,
     "warmup_time_ms": 1000,
@@ -136,7 +136,7 @@ unikraft api /v1/services/<service-uuid>/autoscale -X POST --metro fra \
   }'
 
 unikraft api /v1/services/<service-uuid>/autoscale/policies -X POST --metro fra \
-  -d '{
+  '{
     "name": "scale-out-policy",
     "type": "step",
     "metric": "cpu",
@@ -148,7 +148,7 @@ unikraft api /v1/services/<service-uuid>/autoscale/policies -X POST --metro fra 
   }'
 
 unikraft api /v1/services/<service-uuid>/autoscale/policies -X POST --metro fra \
-  -d '{
+  '{
     "name": "scale-in-policy",
     "type": "step",
     "metric": "cpu",
@@ -314,7 +314,7 @@ You should order steps by lower bound with no gaps between them and no overlaps:
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale/policies -X POST --metro fra \
-  -d '{
+  '{
     "name": "my-step-policy",
     "type": "step",
     "metric": "cpu",
@@ -354,7 +354,7 @@ This prevents request queuing but introduces cold start delays.
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale -X POST --metro fra \
-  -d '{
+  '{
     "policies": [
       {
         "name": "scale-out",
@@ -392,7 +392,7 @@ Setting `replace` to true deletes the original VM after the new one starts.
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale -X POST --metro fra \
-  -d '{
+  '{
     "policies": [
       {
         "name": "create",
@@ -434,7 +434,7 @@ The `idle` policy scales in (removes instances) when the service has been idleâ€
 
 ```bash title="unikraft"
 unikraft api /v1/services/<service-uuid>/autoscale -X POST --metro fra \
-  -d '{
+  '{
     "policies": [
       {
         "name": "scale-in",
