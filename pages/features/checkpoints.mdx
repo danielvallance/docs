@@ -244,6 +244,9 @@ They remain available to load until you delete them explicitly or their [autokil
 
 ## Error handling
 
+The CLI rejects a checkpoint in a different metro from the new instance before it sends anything, with `cannot create instance: metro mismatch between checkpoint ("fra") and instance ("dal2")`.
+Otherwise, a checkpoint request can fail for the following reasons:
+
 | Error message | Cause |
 |---------------|-------|
 | `Insufficient license. Please make sure your license is valid and includes checkpointing` | Your account's license doesn't include the checkpointing feature. |
@@ -254,6 +257,10 @@ They remain available to load until you delete them explicitly or their [autokil
 
 ## Limitations
 
+- A checkpoint and the instances you load from it must stay in the same metro.
+  The CLI catches a cross-metro checkpoint before it sends the request.
+- Checkpointing needs the default `micro` instance type.
+  QEMU-backed full VMs (`type: full`), which [GPU instances](/platform/instances#gpus) require, don't support checkpointing, and a create request can't combine `type` with a checkpoint source.
 - Checkpointing builds on [branching](/features/branching), so it only works with block-based volumes (for example, `ext4`).
   The checkpoint clones the source's volume state consistently with its memory snapshot, which isn't supported for other volume types.
 - Checkpointing requires a license that includes the feature (see the note at the top of this page).
