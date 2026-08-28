@@ -71,6 +71,8 @@ unikraft api /v1/instances/checkpoints \
   }'
 ```
 
+To take checkpoints on a recurring schedule rather than on demand, give the instance a `checkpoint` [scheduled operation](/features/cron-jobs#scheduled-checkpoints).
+
 ## Checkpoint history
 
 Every instance keeps an ordered history of its checkpoints, spanning the full lineage rather than only the checkpoints taken directly from that instance.
@@ -272,4 +274,5 @@ Otherwise, a checkpoint request can fail for the following reasons:
 * [Autokill](/features/autokill): automatically removing checkpoints and templates the platform hasn't loaded recently.
 * [Snapshots](/features/snapshots): the copy-on-write snapshotting that underpins checkpoints.
 * [Serverless databases](/use-cases/serverless-databases): a use case that checkpoints a running PostgreSQL instance to capture and restore its state.
+* [Cron jobs / scheduled wake-ups](/features/cron-jobs#scheduled-checkpoints): the `checkpoint` action periodically creates restore points for an instance.
 * Unikraft Cloud's [REST API reference](/api/platform/v1), in particular the section on [instances](/api/platform/v1/instances).
