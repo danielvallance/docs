@@ -95,7 +95,7 @@ First, create a new service with the CLI:
 ```bash title="unikraft"
 unikraft services create --metro fra \
   --name my-service \
-  --services 443:8080/http+tls
+  --service 443:8080/http+tls
 ```
 
 ```bash title="kraft"
@@ -286,9 +286,9 @@ For example, the following creates the service `my-service` with three published
 ```bash title="unikraft"
 unikraft services create --metro fra \
   --name my-service \
-  --services 443:8080/tls+http \
-  --services 80:8080/http+redirect \
-  --services 10000:10000/tls
+  --service 443:8080/tls+http \
+  --service 80:8080/http+redirect \
+  --service 10000:10000/tls
 ```
 
 ```bash title="kraft"
@@ -347,7 +347,7 @@ You can use the CLI to set the connection limits for a service:
 ```bash title="unikraft"
 unikraft services create --metro fra \
   --name my-service \
-  --services 443:8080/http+tls \
+  --service 443:8080/http+tls \
   --soft-limit 5 \
   --hard-limit 10
 ```

@@ -104,8 +104,8 @@ Create a new persistent [service](/platform/services) for autoscale to manage:
 ```bash title="unikraft"
 unikraft service create --metro fra \
   --name nginx-autoscale-service \
-  --domains nginx-autoscale \
-  --services 443:8080/http+tls
+  --domain nginx-autoscale \
+  --service 443:8080/http+tls
 ```
 
 The command prints the new service's details, including its `uuid` (for example, `996d006f-a491-44ae-a1dc-7a6186971351`).
