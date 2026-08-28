@@ -642,6 +642,11 @@ Kraftlet supports the following Unikraft Cloud platform features on Kraftlet-man
   Instances can carry addresses and TAP devices that you choose instead of ones from the platform pool.
   Kraftlet drives this through CNI plugins.
 
+* [**Annotations**](/features/annotations)
+
+  Instance metadata that also reaches the guest.
+  Kraftlet writes the [CNI result](/features/annotations#guest-network-configuration-with-cni) that a guest configures its own interfaces from.
+
 ## Custom networking with CNI
 
 {/* vale off */}
@@ -661,6 +666,11 @@ The platform then creates the instance with [custom network interfaces](/feature
 Instances join the same networks as native Pods and follow the same address management as the rest of the cluster.
 
 A companion component, `remote-cni`, exposes the plugins over gRPC for clusters where Kraftlet runs apart from the machine that hosts the instances.
+
+An instance's `network_interfaces` only accept IPv4 addresses.
+Therefore, the Kraftlet hands the rest of a plugin result—IPv6 addresses, in practice—to the guest through the [`unikraft.com/cni` annotation](/features/annotations#guest-network-configuration-with-cni), and the guest configures them on its own interfaces.
+Kraftlet does this for the Pod's default network, a secondary network contributes its IPv4 addresses alone.
+You can write the same annotation yourself on an instance you create through the API, for an [interface without an address](/features/custom-network-configuration#interfaces-without-an-address) whose addressing an IPAM system owns.
 
 ## Annotations
 
