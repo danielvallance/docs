@@ -176,6 +176,23 @@ Refer to the API autoscale [reference](/api/platform/v1/autoscale) for more deta
 Keep in mind that a few restrictions apply to how you define scale-in/scale-out steps.
 :::
 
+### High watermark
+
+{/* vale off */}
+:::caution[**Limited Access**]
+The high watermark signal is available to enterprise customers.
+If you would like to try it out now, please reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+{/* vale on */}
+
+An autoscale group can be configured with a high watermark - as an early warning that it's getting close to its maximum size.
+Set it through the `high_watermark` field, as a fraction of `max_size` between `0` and `1`.
+The default is `0`, which turns the signal off.
+
+Once a service crosses its watermark, the platform can report this on the responses it sends back.
+A client that spreads load across metros uses this to steer new work elsewhere before the service fills up.
+Your metro operator switches that response header on.
+
 To check it's working, list the autoscale properties of the service:
 
 <CodeTabs syncKey="cli">
