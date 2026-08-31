@@ -160,6 +160,7 @@ const config: ZudokuConfig = {
           items: [
             "/integrations/kubernetes",
             "/integrations/sdks/go",
+            "/integrations/sdks/plugin",
           ],
         },
       ],
