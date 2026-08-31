@@ -6,7 +6,7 @@ navigation_icon: sticky-note
 {/* vale off */}
 :::caution[**Limited Access**]
 Instance annotations are available as part of enterprise plans.
-To enable them for your account, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+To try them out, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
 :::
 {/* vale on */}
 
@@ -30,7 +30,9 @@ In the meantime, drive annotations through the [API](/api/platform/v1/instances)
 
 ## Annotation keys
 
-An annotation is a set of key-value pairs, and values can be any string.
+An annotation is a set of key-value pairs.
+A value is any string without ASCII control characters (`0x00`–`0x1f` and `0x7f`, which covers tab, newline and carriage return), and multi-byte UTF-8 goes through fine.
+The API rejects a value carrying an ASCII control character with `400 Bad Request`.
 Keys follow the [Kubernetes annotation key syntax](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/#syntax-and-character-set):
 
 - A key can be a plain name (`my-key`) or carry an optional DNS prefix separated by a slash (`example.com/annotation2`).
@@ -204,13 +206,32 @@ When the guest writes to the app console (for example, `echo "blub" > /dev/vport
 }
 ```
 
+## Annotation events
+
+The platform's event log carries a `vm.annotate` event, which it emits whenever an instance's annotations change:
+
+```json
+{
+  "type": "vm.annotate",
+  "timestamp": "2026-08-19T10:04:11Z",
+  "data": {
+    "vm": "b495f451-0370-4d8e-8b94-a5b22d2212f9",
+    "annotations": { "env": "prod", "team": "search" }
+  }
+}
+```
+
+An external system consumes the event to keep track of the instance's annotation values, without polling the instance API.
+The event also gives log processing a way to map an instance UUID back to its annotations.
+
 ## Limitations
 
 - An instance holds at most 256 annotations.
-- Annotation keys must follow the [Kubernetes key syntax](#annotation-keys), and values are strings.
+- Annotation keys must follow the [Kubernetes key syntax](#annotation-keys), and values are strings with no ASCII control characters in them.
 - A [patched](#patching-annotations) annotation change applies once the instance reaches the `stopped` state.
 - Dedicated `unikraft` CLI subcommands aren't available yet, so drive annotations through the [API](/api/platform/v1/instances).
 - The platform sets up [log-output](#annotations-in-log-output) forwarding at the node level, not through the instances API.
+- The [`vm.annotate` event](#annotation-events) needs switching on in the node's event configuration.
 
 ## Learn more
 
