@@ -314,12 +314,14 @@ You should first experiment with this or discuss it with a Unikraft Engineer to 
 
 #### What can you push as an image?
 
-An image is specifically a pair of a kernel and a rootfs bundled together as different layers of an OCI package.
+An image typically bundles a kernel and a rootfs together as different layers of an OCI package.
 To keep things light, certain optimizations are in place to not repush existing kernels and to reuse them from your account.
 If these aren't automatically detected, the CLI pushes the kernel again.
 
 At the same time, things like [ROMs](/features/roms) use the same packaging systems, but push images with a missing kernel and only a rootfs.
 These have specific metadata that identifies them as ROMs.
+
+An image can also ship a rootfs alone and boot on the kernel installed on the node instead of one of its own, which the [platform kernel](/platform/images#platform-kernel) section covers.
 
 Finally, kernels can also run without a rootfs.
 They don't do anything, but support exists to run them.
