@@ -448,6 +448,46 @@ unikraft instance create --rm ...
 To use the "delete-on-stop" feature, set the `restart_policy` to `never`.
 :::
 
+### Nested virtualization
+
+{/* vale off */}
+:::caution[**Limited Access**]
+Nested virtualization is available as part of enterprise plans.
+To enable it for your account, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+{/* vale on */}
+
+An instance runs without the host's virtualization extensions by default, since the platform hides them from the guest.
+Pass `nested-virt` in the features array to expose them, so that a workload shipping its own virtual machines runs as an ordinary instance:
+
+```json title="POST /instances"
+{
+  ...
+  "image": "my-workload:latest",
+  "memory_mb": 4096,
+  "features": ["nested-virt"],
+  ...
+}
+```
+
+You can also use the CLI to set this up:
+
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instance create --feature nested-virt ...
+```
+
+</CodeTabs>
+
+The guest kernel needs the matching driver to use the extensions.
+A Linux guest needs `CONFIG_KVM` together with `CONFIG_KVM_INTEL` or `CONFIG_KVM_AMD`, and exposes `/dev/kvm` once it loads the module.
+
+:::note
+A create request that starts from a snapshot—an [instance template](#instance-templates), a [branch](/features/branching), or a [checkpoint](/features/checkpoints)—can't add `nested-virt`.
+Set the feature on the instance that you snapshot instead, and every instance that starts from that snapshot inherits it.
+:::
+
 ## Stopping instances
 
 ### Drain timeout
