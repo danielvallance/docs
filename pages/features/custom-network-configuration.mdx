@@ -139,6 +139,9 @@ An interface that carries a `tap_name` but no `ip` hands you the link without an
 This is what a fully customer-managed network needs—an external IPAM, a CNI plugin, or a virtual appliance that handles its own addressing.
 The platform provides the link, and your side decides what runs on it.
 
+A CNI plugin can also supply the link's addressing without requiring your application or image to configure it.
+Write the plugin's result into the instance's [`unikraft.com/cni` annotation](/features/annotations#guest-network-configuration-with-cni), and the guest matches the addresses in it to this interface by MAC address and configures them itself.
+
 Such an interface differs from an addressed one in three ways:
 
 - `autoconfig` has to be `false`, because the platform has no address to configure in the guest.
@@ -192,6 +195,8 @@ Both ends of a relay have to be interfaces that Unikraft Cloud allocates, meanin
 ## Learn more
 
 * [Network shield and relay](/features/network-shield): route an instance's traffic through another instance that filters it and injects credentials.
+* [Annotations](/features/annotations#guest-network-configuration-with-cni): hand a CNI result to the guest through the `unikraft.com/cni` annotation, and let it address its own interfaces.
+* [Kubernetes](/integrations/kubernetes#custom-networking-with-cni): how Kraftlet runs the CNI plugins of your cluster for Unikraft Cloud instances.
 * [Instances](/platform/instances): how instances work, including their lifecycle and configuration.
 * [Branching](/features/branching) and [Checkpoints](/features/checkpoints): create independent copies and reusable restore points of running instances.
 * [Instance templates](/platform/instances#instance-templates): reusable images that you clone into new instances.
