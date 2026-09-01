@@ -91,6 +91,27 @@ Be aware that this choice may increase image size, memory use, and boot time.
 :::
 
 
+## Platform kernel
+
+{/* vale off */}
+:::caution[**Limited Access**]
+Kernel-less images are available as part of enterprise plans.
+To try out this feature, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+{/* vale on */}
+
+An image doesn't have to carry its own kernel.
+An image that ships only a rootfs boots on the kernel installed on the node, which your metro operator maintains as a separate package.
+Images that do ship a kernel keep working exactly as before.
+
+This decouples the guest kernel from your app.
+A kernel update, including a security fix, becomes available to workloads that cold-boot after the operator rolls out the new kernel package.
+You no longer rebuild and re-push every image to pick one up.
+Images also get smaller, which shortens image pull times.
+
+A new kernel on the node applies to the next instance that starts.
+Running instances keep the kernel they booted with until they fully shut down, and an instance resuming from a [snapshot](/features/snapshots) always boots the kernel that snapshot captured.
+
 ## Architectures
 
 The Unikraft Cloud platform runs on both `x86_64` and `arm64` hosts.
