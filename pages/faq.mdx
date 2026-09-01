@@ -102,7 +102,7 @@ The `runtime` specifies one of the Unikraft Cloud runtimes (microVMs) built to r
 Here it specifies a Python runtime.
 
 The `targets` parameter specifies the platform and architecture pairs to build for.
-Here it targets `kraftcloud` (Unikraft Cloud) on `x86_64`.
+Here it targets `kraftcloud` (Unikraft Cloud) on `x86_64`, which is the architecture the hosted platform runs on.
 No architecture is the default, so list every one you need, for example `kraftcloud/arm64` alongside `kraftcloud/x86_64`.
 See [architectures](/platform/images#architectures) for more detail.
 
@@ -224,10 +224,17 @@ Windows isn't officially supported, but you can use [WSL](https://learn.microsof
 #### What CPU architectures can you deploy to?
 {/* vale on */}
 
-Both `x86_64` and `arm64`.
+Both `x86_64` and `arm64`, and the hosted platform runs on `x86_64`.
 The architecture of the guest image must match the host architecture, so name the architectures you deploy to in the `targets` key of your `Kraftfile` or through the `--arch` flag.
 Neither architecture is the default, and a single `unikraft build` invocation produces an image for every architecture you ask for.
 See [architectures](/platform/images#architectures) for more detail.
+
+{/* vale off */}
+:::caution[**Limited Access**]
+`arm64` hosts are available as part of enterprise plans.
+To deploy to them, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+{/* vale on */}
 
 
 #### How can you track instances on Unikraft Cloud?

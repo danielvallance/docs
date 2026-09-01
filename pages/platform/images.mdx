@@ -114,8 +114,16 @@ Running instances keep the kernel they booted with until they fully shut down, a
 
 ## Architectures
 
-The Unikraft Cloud platform runs on both `x86_64` and `arm64` hosts.
+The Unikraft Cloud platform runs on both `x86_64` and `arm64` hosts, and the hosted platform runs on `x86_64`.
 The architecture of the guest images must match the host architecture.
+
+{/* vale off */}
+:::caution[**Limited Access**]
+`arm64` hosts are available as part of enterprise plans.
+To deploy to them, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+{/* vale on */}
+
 List the architectures you want under `targets` in the `Kraftfile`:
 
 ```yaml title="Kraftfile"
