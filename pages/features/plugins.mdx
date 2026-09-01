@@ -22,6 +22,22 @@ Unikraft Cloud built plugins to provide a native sandbox experience.
 In the sandbox case, a plugin runs a small HTTP server that accepts commands to run inside the instance, exposes filesystem services, and more.
 The same mechanism fits any helper you want to reach over a per-instance, authenticated endpoint.
 
+## Official plugins
+
+### Sandbox plugin
+
+{/* vale off */}
+:::caution[**Limited Access**]
+The sandbox plugin is available as part of enterprise plans.
+To try it out, reach out to the [Unikraft Cloud Discord](https://kraft.cloud/discord) or send an email to [support@unikraft.com](mailto:support@unikraft.com).
+:::
+{/* vale on */}
+
+The sandbox plugin lets you run commands and manipulate the filesystem inside an instance, over the plugin endpoint:
+
+- **Commands**: start a shell command inside the instance, inspect it, read its output, feed its standard input, wait for it, and signal it.
+- **Filesystem**: create directories, and read, write, and upload files.
+
 ## How it works
 
 Each plugin loads from its own [ROM image](/features/roms).
@@ -228,6 +244,7 @@ Plugins fit other patterns too. A few ideas:
 ## Learn more
 
 * [Plugin SDK](/integrations/sdks/plugin): build a plugin in Go without hand-rolling the platform contract.
+* [Sandboxes](/use-cases/sandboxes): run untrusted code in a hardware-isolated microVM.
 * [ROMs](/features/roms): the image format that plugins build on.
 * [Instances](/platform/instances): create and manage the instances that host plugins.
 * [Scale-to-zero](/features/scale-to-zero): how an idle instance wakes to serve a plugin request.
