@@ -84,6 +84,7 @@ Each entry in `network_interfaces` accepts the following fields:
 An `ip` and a `mac` each require a `tap_name`, while a `tap_name` on its own is enough.
 When you omit all three, Unikraft Cloud allocates the interface, its address, and its MAC from the platform's own pools.
 Each value you supply has to stay outside the matching pool: the platform's address ranges for an `ip`, its `12:b0:` prefix for a `mac`, and its TAP device names for a `tap_name`.
+The TAP device itself is yours to create: Unikraft Cloud attaches the interface to a device that already exists.
 Nothing caps a custom network at a `/30`, though a `/31` or a `/32` leaves the platform no address to derive a gateway or nameserver from.
 
 The top-level `gateway` and `nameserver` fields override the values configured inside the guest.
@@ -121,7 +122,7 @@ Whether you pick the address or leave it to the platform, [`GET /instances`](/ap
 
 ### Interfaces without an address
 
-An interface that carries a `tap_name` but no `ip` hands you the link without an address on it:
+An interface that carries a `tap_name` but no `ip` gives the guest a link on your TAP device with no address on it:
 
 ```json title="POST /instances"
 {
@@ -137,7 +138,7 @@ An interface that carries a `tap_name` but no `ip` hands you the link without an
 ```
 
 This is what a fully customer-managed network needs—an external IPAM, a CNI plugin, or a virtual appliance that handles its own addressing.
-The platform provides the link, and your side decides what runs on it.
+Your side provides the TAP device and decides the addressing on it, and the platform only attaches the guest's interface to that device.
 
 A CNI plugin can also supply the link's addressing without requiring your application or image to configure it.
 Write the plugin's result into the instance's [`unikraft.com/cni` annotation](/features/annotations#guest-network-configuration-with-cni), and the guest matches the addresses in it to this interface by MAC address and configures them itself.
