@@ -110,7 +110,7 @@ This hands the addressing of an instance to an external [CNI](https://www.cni.de
 The plugin decides the addresses, writes its result into the annotation, and the guest configures itself from it.
 Your image needs no agent for it and no boot script of its own.
 
-The annotation pairs with an [interface without an address](/features/custom-network-configuration#interfaces-without-an-address), which the platform hands to the guest as a bare link.
+The annotation pairs with an [interface without an address](/features/custom-network-configuration#interfaces-without-an-address), which reaches the guest as a bare link on a TAP device of your own.
 See [Kubernetes](/integrations/kubernetes#custom-networking-with-cni) for the CNI integration that Kraftlet drives on the cluster side.
 
 The annotation value is the document as a JSON string, so the JSON inside it carries escapes:
