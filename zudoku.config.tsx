@@ -161,6 +161,7 @@ const config: ZudokuConfig = {
             "/integrations/kubernetes",
             "/integrations/karpenter",
             "/integrations/sdks/go",
+            "/integrations/sdks/js",
             "/integrations/sdks/plugin",
           ],
         },
