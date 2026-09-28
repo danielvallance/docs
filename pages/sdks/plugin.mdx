@@ -144,7 +144,7 @@ Attach a `config` to the plugin in the [create instance](/api/platform/v1/instan
 ```json
 {
   "name": "example",
-  "rom": "user/example:latest",
+  "image": "user/example:latest",
   "config": { "greeting": "Bonjour" }
 }
 ```
@@ -404,19 +404,11 @@ Attach the plugin when you create the instance, naming the ROM image and an opti
 <CodeTabs syncKey="cli">
 
 ```bash title="unikraft"
-unikraft api /v1/instances \
-  '{
-    "name": "my-instance",
-    "plugins": [
-      {
-        "name": "example",
-        "rom": "<my-org>/example:latest",
-        "config": {
-          "greeting": "Bonjour"
-        }
-      }
-    ]
-  }'
+unikraft instance create \
+  --name my-instance \
+  --metro fra \
+  --image my-app:latest \
+  --plugin 'name=example,image=<my-org>/example:latest,config={"greeting":"Bonjour"}'
 ```
 
 </CodeTabs>
