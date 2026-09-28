@@ -52,7 +52,7 @@ unikraft instance checkpoint create my-instance --set wait-timeout=60s
 
 </CodeTabs>
 
-To choose the name yourself, or to give the checkpoint an [autokill](#autokill) policy, call [`POST /instances/checkpoints`](/api/platform/v1/instances) directly—the CLI covers neither:
+To choose the name yourself, call [`POST /instances/checkpoints`](/api/platform/v1/instances) directly—the CLI doesn't cover it:
 
 ```bash title="POST /instances/checkpoints"
 unikraft api /v1/instances/checkpoints \
@@ -162,42 +162,32 @@ Loading a checkpoint that's still in the `starting` state fails (see [Error hand
 Like instance templates, checkpoints persist on the machine once created, holding onto the storage their snapshot occupies.
 A checkpoint can carry an [autokill](/features/autokill) policy that removes it automatically when nothing loads it for a configured time, measured from the last load.
 
-The `unikraft` CLI doesn't expose checkpoint autokill yet, so set the policy (with the time in milliseconds) through the API when you create the checkpoint:
+Set the policy with `--autokill` when you create the checkpoint:
 
-```bash title="POST /instances/checkpoints"
-unikraft api /v1/instances/checkpoints \
-  '{
-    "name": "my-checkpoint",
-    "from": {
-      "name": "my-instance"
-    },
-    "autokill": {
-      "time_ms": 3600000
-    }
-  }'
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instance checkpoint create my-instance --autokill time=1h
 ```
+
+</CodeTabs>
 
 You can also set or update the policy on an existing checkpoint:
 
-```bash title="PATCH /instances/checkpoints"
-unikraft api /v1/instances/checkpoints -X PATCH \
-  '[{
-    "name": "my-checkpoint",
-    "prop": "autokill",
-    "op": "set",
-    "value": {
-      "time_ms": 3600000
-    }
-  }]'
+<CodeTabs syncKey="cli">
+
+```bash title="unikraft"
+unikraft instance checkpoint edit my-checkpoint --autokill time=1h
 ```
 
+</CodeTabs>
+
 This example removes the checkpoint after 1 hour without a load.
-The configured policy appears as a `checkpoint_autokill` object in the API status response.
-`unikraft instance checkpoint get` doesn't report it.
+`unikraft instance checkpoint get` reports the policy as `autokill.time`.
 
 ## Editing a checkpoint
 
-Use `unikraft instance checkpoint edit` to update a checkpoint's tags and delete lock:
+Use `unikraft instance checkpoint edit` to update a checkpoint's tags, delete lock, and [autokill](#autokill) policy:
 
 <CodeTabs syncKey="cli">
 
