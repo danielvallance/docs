@@ -112,6 +112,22 @@ Images also get smaller, which shortens image pull times.
 A new kernel on the node applies to the next instance that starts.
 Running instances keep the kernel they booted with until they fully shut down, and an instance resuming from a [snapshot](/features/snapshots) always boots the kernel that snapshot captured.
 
+### Build from a `Dockerfile`
+
+A kernel-less image doesn't need a `Kraftfile`.
+Pass a `Dockerfile` to `unikraft build`, and it builds an image with only the rootfs that the `Dockerfile` describes:
+
+```bash title="unikraft"
+unikraft build ./Dockerfile --arch x86_64 --output <my-org>/my-app:latest
+```
+
+The CLI identifies a `Dockerfile` by its filename, so names such as `Dockerfile.prod` also work.
+A directory without a `Kraftfile` builds from its `Dockerfile`.
+If both files are present, the `Kraftfile` takes precedence.
+
+A `Dockerfile` has no targets to take an architecture from, so you must pass `--arch`.
+The image runs only in metros that have a platform kernel installed.
+
 ## Architectures
 
 The Unikraft Cloud platform runs on both `x86_64` and `arm64` hosts, and the hosted platform runs on `x86_64`.
