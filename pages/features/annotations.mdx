@@ -299,6 +299,7 @@ The platform's event log carries a `vm.annotate` event, which it emits whenever 
 
 An external system consumes the event to keep track of the instance's annotation values, without polling the instance API.
 The event also gives log processing a way to map an instance UUID back to its annotations.
+The [audit event stream](/platform/audit-events) doesn't carry `vm.annotate`, so read it from the node event log.
 
 ## Limitations
 
