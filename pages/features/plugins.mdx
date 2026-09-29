@@ -102,17 +102,13 @@ Operators set the range with the node-level `--vmm-plugin-port-start` (default `
 
 Pass `--plugin` to [`unikraft instance create`](/cli/unikraft/instances/create) or [`unikraft instance run`](/cli/unikraft/instances/run), once for each plugin:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance create \
   --name my-instance \
   --metro fra \
   --image my-app:latest \
   --plugin 'name=my-plugin,image=user/myplugin:latest,config={"workdir":"/tmp"}'
 ```
-
-</CodeTabs>
 
 The flag takes `name`, `image`, and an optional `config`, which must be valid JSON.
 The CLI sends these in the `plugins` field of a [`POST /instances`](/api/platform/v1/instances#create-instance) request.
@@ -152,9 +148,7 @@ The token has to belong to a platform user with access to the instance, so the t
 With `"type": "bearer"` the platform compares the supplied token against the plugin's own token and consults no user account.
 Send the request with [`unikraft api`](/cli/unikraft/api), because the `--plugin` flag can't set `authorization`:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft api /v1/instances \
   '{
     "name": "my-instance",
@@ -170,8 +164,6 @@ unikraft api /v1/instances \
     ]
   }'
 ```
-
-</CodeTabs>
 
 A caller then reaches the plugin with that token alone:
 
@@ -206,9 +198,7 @@ A plugin name has a maximum length of 63 characters and contains only these char
 Use [`unikraft instance edit`](/cli/unikraft/instances/edit) to change the plugins of an existing instance.
 `--plugin` replaces the instance's plugin list, `--add plugins=...` appends to it, and `--del plugins=<name>` removes one plugin:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 # Replace the plugin list
 unikraft instance edit my-instance \
   --plugin name=my-plugin,image=user/myplugin:latest
@@ -221,8 +211,6 @@ unikraft instance edit my-instance \
 unikraft instance edit my-instance \
   --del plugins=my-other-plugin
 ```
-
-</CodeTabs>
 
 Each flag sends a [`PATCH /instances`](/api/platform/v1/instances) request with `prop` set to `plugins`.
 `--plugin` sends the `set` op, `--add` sends `add`, and `--del` sends `del`.
