@@ -25,15 +25,10 @@ The autokill timer doesn't fire while a delete lock is active.
 
 Automatically kill an instance after it stops and remains stopped for a given time:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance create --metro fra \
   --autokill time=1h ...
 ```
-
-
-</CodeTabs>
 
 This example kills the instance 1 hour after it stops.
 
@@ -41,25 +36,16 @@ This example kills the instance 1 hour after it stops.
 
 Kill an instance after it serves a specified request count:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance create --metro fra \
   --autokill num-requests=1000 ...
 ```
 
-
-</CodeTabs>
-
 ### Updating autokill on a stopped instance
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance edit <instance-name> --autokill time=10s
 ```
-
-</CodeTabs>
 
 The new value replaces the whole policy.
 To keep a request limit, pass it again, for example `--autokill time=10s,num-requests=1000`.
@@ -68,15 +54,10 @@ To keep a request limit, pass it again, for example `--autokill time=10s,num-req
 
 Automatically kill a service group after it stays empty (no instances) for a given time:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft service create --metro fra \
   --autokill time=5m ...
 ```
-
-
-</CodeTabs>
 
 This example kills the service group 5 minutes after its last instance leaves.
 
@@ -88,15 +69,10 @@ When you clone an instance from a template, the new instance inherits the autoki
 
 Automatically kill an instance template if nobody clones it within a given time:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance template create --metro fra \
   --autokill time=24h ...
 ```
-
-
-</CodeTabs>
 
 This example removes the template after 24 hours without a clone.
 
@@ -104,14 +80,10 @@ This example removes the template after 24 hours without a clone.
 
 Automatically kill a [checkpoint](/features/checkpoints) if nobody restores it within a given time:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance checkpoint create my-instance \
   --autokill time=1h
 ```
-
-</CodeTabs>
 
 This example removes the checkpoint after 1 hour without a restore.
 
@@ -119,28 +91,20 @@ This example removes the checkpoint after 1 hour without a restore.
 
 Use the `edit` command of the resource to set or change its autokill policy:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft service edit <service-name> --autokill time=10m
 unikraft instance template edit <template-name> --autokill time=48h
 unikraft instance checkpoint edit <checkpoint-name> --autokill time=2h
 ```
-
-</CodeTabs>
 
 ## Listing and filtering
 
 The `autokill.time` and `autokill.num-requests` fields work like any other field.
 You can list, filter, sort, and inspect them:
 
-<CodeTabs syncKey="cli">
-
-```bash title="unikraft"
+```bash
 unikraft instance list --filter 'autokill.time>0s' --sort autokill.time
 ```
-
-</CodeTabs>
 
 ## Learn more
 
