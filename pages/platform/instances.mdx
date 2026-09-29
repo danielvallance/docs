@@ -278,9 +278,9 @@ Every instance runs as one of two virtual machine types, which you pick with `--
 | `micro` | The default, running on Firecracker. |
 | `full` | Runs on QEMU, which [GPU support](#gpus) requires, and needs a plan with full VM support. |
 
-Full VMs trade platform features for that extra hardware access.
-A QEMU-backed instance supports neither [scale-to-zero](/features/scale-to-zero), [instance templates](#instance-templates), [branching](/features/branching), nor [checkpointing](/features/checkpoints), and works only with block-based volumes rather than [virtiofs](/platform/volumes#filesystems).
-A create request therefore can't combine `--type` with `--template`, `--branch`, or `--checkpoint`.
+Full VMs running on QEMU are required for [GPU support](#gpus).
+They don't support [branching](/features/branching) or [checkpointing](/features/checkpoints) yet, and work only with block-based volumes rather than [virtiofs](/platform/volumes#filesystems).
+A create request therefore can't combine `--type=full` with `--branch` or `--checkpoint`.
 
 ### Replicas
 
@@ -466,11 +466,6 @@ An instance template is a snapshotted instance that acts as a source for cloning
 Cloning a template creates a new instance that resumes from the exact original system state.
 It preserves memory contents, open files, and populated caches to bypass the standard boot sequence.
 Once you convert an instance into a template, you can't reverse the process.
-
-:::note
-Templates need the default `micro` [instance type](#instance-types).
-QEMU-backed full VMs (`--type full`), which [GPU instances](#gpus) require, don't support them.
-:::
 
 To transition an actively running instance into a template, from the guest write the value 1 to `/uk/libukp/template_instance`:
 
